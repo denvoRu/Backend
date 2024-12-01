@@ -1,2 +1,5 @@
-fastapi
-uvicorn
+fastapi~=0.115.4
+uvicorn~=0.32.0
+SQLAlchemy~=2.0.36
+aiomysql~=0.2.0
+python-decouple~=3.8

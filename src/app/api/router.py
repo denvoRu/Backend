@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from src.app.api.routes import auth, moderation, teacher
+from src.app.api.routers import auth, moderation, teacher
 
 api_router = APIRouter()
 api_router.include_router(auth.router, prefix="/auth", tags=["auth"])
