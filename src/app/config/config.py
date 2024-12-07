@@ -13,3 +13,6 @@ DATABASE = {
 }
 DATABASE_URL = URL.create(DATABASE["plugins"], username=DATABASE["username"], password=DATABASE["password"],
                           host=DATABASE["host"], port=DATABASE["port"], database=DATABASE["database"])
+
+ALGORITHM = "HS256"
+JWT_SECRET_KEY = config("JWT_SECRET_KEY")
