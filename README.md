@@ -1,6 +1,4 @@
 # denvo-backend
-
-## Информация
 [denvoRu/Backend](https://github.com/denvoRu/Backend) - это бекенд приложение для приложения УрФУ - Оценка пар
 
 ## Стек
@@ -14,15 +12,13 @@
 ## Запуск
 
 ### Установка Зависимостей
+Сначала нам необходимо установить зависимости:
 ```
 pip install -r requirements.txt
 ```
-### Исполнение
-```python
-python main.py
-```
 
-## Пример .ENV
+### Файл конфигурации
+Для работы с базой данных мы скрываем информацию о подключение в `.env` файле, выглядит его содержимое примерно так:
 ```
 # Database 
 DATABASE_DRIVER_NAME=""
@@ -35,4 +31,10 @@ DATABASE=""
 # APP
 PROJECT_NAME="Student Voice"
 JWT_SECRET_KEY=""
+```
+
+### Исполнение
+Для запуска сервера используем команду:
+```python
+python main.py
 ```
