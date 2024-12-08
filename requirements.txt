@@ -10,3 +10,4 @@ jose~=1.0.0
 python-jose~=3.3.0
 python-multipart~=0.0.19
 cryptography~=44.0.0
+email-validator

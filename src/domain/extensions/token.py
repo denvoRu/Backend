@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta, timezone
-from src.app.config.config import JWT_SECRET_KEY, ALGORITHM
-from src.app.api.models.token import Token
+from src.infrastructure.config.config import JWT_SECRET_KEY, ALGORITHM
+from src.domain.models.token import Token
 from jose import jwt
 
 from typing import Union
