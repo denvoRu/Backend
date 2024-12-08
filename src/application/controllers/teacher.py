@@ -2,7 +2,7 @@ from fastapi import APIRouter
 
 router = APIRouter()
 
-@router.get("/lessons", description="Show all lessons as a teacher")
+@router.get("/lesson", description="Show all lessons as a teacher")
 async def show_lessons():
     return "Lessons are shown"
 

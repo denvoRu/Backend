@@ -3,6 +3,6 @@ from src.domain.enums.role import Role
 
 
 class RegisterDTO(BaseModel):
-    email: EmailStr
+    username: EmailStr
     password: str = Field(min_length=6, max_length=100)
     role: Role = Field(default=Role.TEACHER)

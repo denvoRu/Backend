@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta, timezone
+from src.domain.models.user import User
 from src.infrastructure.config.config import JWT_SECRET_KEY, ALGORITHM
 from src.domain.models.token import Token
 from jose import jwt
@@ -21,9 +22,11 @@ def decode_user(token):
     return decoded_data
 
 
-def create_token(user) -> Token:
+def create_token(user: User) -> Token:
     access_token_expires = timedelta(minutes=3600)
     access_token = encode_user(
-        data={"sub": user["email"], "role": user["role"]}, expires_delta=access_token_expires
+        data={"sub": user.username, "role": user.role}, 
+        expires_delta=access_token_expires
     )
+    
     return Token(access_token=access_token, token_type="bearer")
