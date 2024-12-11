@@ -1,6 +1,7 @@
 from fastapi import APIRouter
-from application.controllers import administrator, teacher, auth, form
-
+from application.controllers import (
+    administrator, teacher, auth, form
+)
 api_router = APIRouter()
 
 api_router.include_router(auth.router, prefix="/auth", tags=["auth"])
