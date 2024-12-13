@@ -19,6 +19,6 @@ async def register(dto: Union[CurrentAdmin, RegisterDTO]) -> Any:
 async def login(form_data: Annotated[ExtendedOAuth2PasswordRequestForm, Depends()]):
     return auth_service.login(form_data)
 
-@router.post("/token", description="Get new token, ")
+@router.post("/token", description="Get new token, if old token is valid")
 async def token(token: str):
     return auth_service.token(token)
