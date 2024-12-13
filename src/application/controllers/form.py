@@ -1,18 +1,20 @@
+from src.domain.extensions.check_role import CurrentTeacher
 from fastapi import APIRouter
+
 
 router = APIRouter()
 
 
-@router.get("/form/:form_id", description="Get an existing form with id")
-async def get_form(form_id):
+@router.get("/:form_id", description="Get an existing form with id")
+async def get_form(teacher: CurrentTeacher, form_id: int):
     return "Form is shown"
 
 
-@router.patch("/form/:form_id", description="Edit an existing form with id")
-async def edit_form(form_id):
+@router.patch("/:form_id", description="Edit an existing form with id")
+async def edit_form(teacher: CurrentTeacher, form_id: int):
     return "Form is updated"
 
 
-@router.post("/form/:form_id", description="Create a form")
-async def create_form():
+@router.post("/:form_id", description="Create a form")
+async def create_form(teacher: CurrentTeacher, form_id: int):
     return "New form is created"

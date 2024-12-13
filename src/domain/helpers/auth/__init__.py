@@ -2,3 +2,5 @@ from .get_user_password import get_user_password_by_email_and_role
 from .is_in_admin_or_teacher import is_in_teacher_or_admin
 from .add_in_teacher_or_admin import add_in_teacher_or_admin
 from .add_token_in_redis import add_token_in_redis
+from .create_new_user_by_token import create_new_user_by_token
+from .is_token_in_redis import is_token_in_redis

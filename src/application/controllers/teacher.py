@@ -1,38 +1,39 @@
+from src.domain.extensions.check_role import CurrentTeacher
 from fastapi import APIRouter
 
 router = APIRouter()
 
 
 @router.get("/lessons", description="Show all lessons")
-async def show_lessons():
+async def show_lessons(teacher: CurrentTeacher):
     return "Lessons are shown"
 
 
 @router.get("/lessons/:lesson_id", description="Show certain lesson")
-async def show_lesson():
+async def show_lesson(teacher: CurrentTeacher, lesson_id: int):
     return "Lesson is shown"
 
 
 @router.post("/lessons", description="Create a new lesson")
-async def create_lesson():
+async def create_lesson(teacher: CurrentTeacher):
     return "New lesson is added"
 
 
 @router.patch("/lessons/:lesson_id", description="Update an existing lesson")
-async def edit_lesson(lesson_id):
+async def edit_lesson(teacher: CurrentTeacher, lesson_id: int):
     return "Current lesson is edited"
 
 
 @router.post("/qr", description="Create a new QR for a lesson")
-async def create_qr():
+async def create_qr(teacher: CurrentTeacher):
     return "QR for current lesson is created"
 
 
 @router.patch("/qr/:qr_id", description="Update QR info for a lesson")
-async def edit_qr(qr_id):
+async def edit_qr(teacher: CurrentTeacher, qr_id: int):
     return "Current QR is edited"
 
 
 @router.get("/lesson/:lesson_id/reviews", description="Get students that added reviews for a certain lesson")
-async def show_students(lesson_id):
+async def show_students(teacher: CurrentTeacher, lesson_id: int):
     return "List of students is given"
