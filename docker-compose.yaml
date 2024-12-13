@@ -1,0 +1,14 @@
+services:
+  postgresql:
+    image: postgres:latest
+    environment: 
+      POSTGRES_USER: "root"
+      POSTGRES_PASSWORD: "123"
+      POSTGRES_DB: "database"
+    ports:
+      - "5432:5432"
+  redis:
+    image: redis/redis-stack
+    ports:
+      - "6379:6379"
+      - "8001:8001"

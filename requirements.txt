@@ -13,3 +13,4 @@ cryptography~=44.0.0
 email-validator
 Jinja2
 redis-om
+mysqlclient

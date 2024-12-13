@@ -1,27 +1,35 @@
+from src.infrastructure.database.initialize_database import get_session
+from src.infrastructure.database.models.administrator import Administrator
+from src.infrastructure.database.models.teacher import Teacher
 from typing import TypeVar
-from infrastructure.database.models.administrator import Administrator
-from infrastructure.database.models.teacher import Teacher
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 
 T = TypeVar("T")
 
-def __get_hashed_password_by_email(table: T, email: str) -> T:
-    s = select(getattr(table, "password")).where(getattr(table, "email") == email)
-    return Session.scalars(s).one()
+async def __get_hashed_password_by_email(table: T, email: str) -> T:
+    s = select(table.password).where(table.email == email)
+    session_async = get_session()
+    async with session_async() as session:
+        scalar = await session.execute(s)
+        return scalar.one()[0]
 
-def is_in_table(table: T, email: str) -> bool:
-    s = select(getattr(table, "email")).where(getattr(table, "email") == email)
-    return Session.scalars(s).one() is not None
-
-
-def get_teacher_password_by_email(email: str):
-    return __get_hashed_password_by_email(Teacher, email)
-
-def get_admin_password_by_email(email: str):
-    return __get_hashed_password_by_email(Administrator, email)
+async def is_in_table(table: T, email: str) -> bool:
+    s = select(table.email).where(table.email == email)
+    session_async = get_session()
+    async with session_async as session:
+        return (await session.execute(s)).one_or_none() is not None
 
 
-def add_user(user: T):
-    Session.add(user)
-    Session.commit()
+async def get_teacher_password_by_email(email: str):
+    return await __get_hashed_password_by_email(Teacher, email)
+
+async def get_admin_password_by_email(email: str):
+    return await __get_hashed_password_by_email(Administrator, email)
+
+
+async def add_user(user: T):
+    s = get_session()
+    async with s() as session:
+        session.add(user)
+        await session.commit()

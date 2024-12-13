@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.infrastructure.config import config
-from application.controllers import api_router
+from src.application.controllers import api_router
 
 app = FastAPI(
     title=config.PROJECT_NAME,

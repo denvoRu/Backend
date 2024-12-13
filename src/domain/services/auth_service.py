@@ -1,3 +1,4 @@
+from src.domain.enums.role import Role
 from src.domain.extensions.email.email_sender import EmailSender
 from src.domain.extensions.token import create_token
 from src.application.dto.auth.register_dto import RegisterDTO
@@ -7,15 +8,13 @@ from src.domain.helpers.auth import (
     is_in_teacher_or_admin, add_token_in_redis, is_token_in_redis,
     create_new_user_by_token
 )
-from src.domain.models.extended_oauth_request_form import (
-    ExtendedOAuth2PasswordRequestForm
-)
 
 from fastapi import HTTPException, status
 from bcrypt import checkpw, hashpw, gensalt
+from fastapi.security import OAuth2PasswordRequestForm
 
-def register(dto: RegisterDTO) -> str:
-    if is_in_teacher_or_admin(dto.username, dto.role):
+async def register(dto: RegisterDTO) -> str:
+    if await is_in_teacher_or_admin(dto.username, dto.role):
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="User already exists"
@@ -29,15 +28,15 @@ def register(dto: RegisterDTO) -> str:
 
     return { "status": "ok" }
 
-def login(form_data: ExtendedOAuth2PasswordRequestForm) -> str:
-    password = get_user_password_by_email_and_role(
-        form_data.username, form_data.role
+async def login(form_data: OAuth2PasswordRequestForm, role: Role) -> str:
+    password = await get_user_password_by_email_and_role(
+        form_data.username, role
     )
-    
-    if checkpw(form_data.password, password):
-        token = create_token(form_data)
-        pk = add_token_in_redis(form_data.username, form_data.role, token.access_token)
 
+    if checkpw(form_data.password.encode(), password.encode()):
+        token = create_token(form_data, role)
+        pk = add_token_in_redis(form_data.username, role, token.access_token)
+        print(pk)
         if pk != token.access_token:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
@@ -51,7 +50,8 @@ def login(form_data: ExtendedOAuth2PasswordRequestForm) -> str:
         detail="Incorrect username or password"
     )
 
-def token(token: str) -> str:
+async def token(token: str) -> str:
+    # Выдаёт ошибку
     if not is_token_in_redis(token):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, 
@@ -60,4 +60,5 @@ def token(token: str) -> str:
     
     token = create_new_user_by_token(token)
     return token
+
     

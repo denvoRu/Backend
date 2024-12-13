@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from application.controllers import (
+from src.application.controllers import (
     administrator, teacher, auth, form
 )
 api_router = APIRouter()

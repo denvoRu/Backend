@@ -1,7 +1,7 @@
-from domain.enums.role import Role
-from infrastructure.database.models.administrator import Administrator
-from infrastructure.database.models.teacher import Teacher
-from infrastructure.repositories.auth_repository.auth import add_user
+from src.domain.enums.role import Role
+from src.infrastructure.database.models.administrator import Administrator
+from src.infrastructure.database.models.teacher import Teacher
+from src.infrastructure.repositories.auth_repository.auth import add_user
 from src.application.dto.auth.register_dto import RegisterDTO
 
 def add_in_teacher_or_admin(dto: RegisterDTO, hashed_password: str):

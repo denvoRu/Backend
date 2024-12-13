@@ -1,3 +1,4 @@
+from bcrypt import gensalt, hashpw
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.ext.declarative import declarative_base
@@ -15,13 +16,10 @@ async def initialize_database(engine):
     async with engine.begin() as connection:
         await connection.run_sync(Base.metadata.create_all)
 
+def get_session():
+    engine = get_engine()
+    return sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)
 
 async def run_database():
     engine = get_engine()
     await initialize_database(engine)
-    async_session = sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)
-
-    async with async_session() as session:
-        async with session.begin():
-            ...
-        result = await session.execute(text("SELECT 1"))

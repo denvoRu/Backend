@@ -1,10 +1,10 @@
-from domain.enums.role import Role
-from infrastructure.repositories.auth_repository import (
-    get_admin_by_email, get_teacher_by_email
+from src.domain.enums.role import Role
+from src.infrastructure.repositories.auth_repository import (
+    get_admin_password_by_email, get_teacher_password_by_email
 )
 
 
-def get_user_password_by_email_and_role(email: str, role: Role) -> str:
+async def get_user_password_by_email_and_role(email: str, role: Role) -> str:
     if role == Role.TEACHER:
-        return get_teacher_by_email(email)
-    return get_admin_by_email(email)
+        return await get_teacher_password_by_email(email)
+    return await get_admin_password_by_email(email)

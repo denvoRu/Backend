@@ -1,10 +1,11 @@
-from datetime import datetime, timedelta, timezone
+from src.domain.enums.role import Role
 from src.domain.models.user import User
 from src.infrastructure.config.config import JWT_SECRET_KEY, ALGORITHM
 from src.domain.models.token import Token
 from jose import jwt
 
 from typing import Union
+from datetime import datetime, timedelta, timezone
 
 
 def encode_user(data: dict, expires_delta: Union[timedelta, None] = None):
@@ -22,10 +23,10 @@ def decode_user(token):
     return decoded_data
 
 
-def create_token(user: User) -> Token:
+def create_token(user: User, role: Role) -> Token:
     access_token_expires = timedelta(minutes=3600)
     access_token = encode_user(
-        data={"sub": user.username, "role": user.role}, 
+        data={"sub": user.username, "role": role}, 
         expires_delta=access_token_expires
     )
     

@@ -1,5 +1,5 @@
-from domain.enums.role import Role
-from infrastructure.redis import Users
+from src.domain.enums.role import Role
+from src.infrastructure.redis import Users
 
 
 def add_token_in_redis(username: str, role: Role, access_token: str) -> str:
@@ -9,4 +9,4 @@ def add_token_in_redis(username: str, role: Role, access_token: str) -> str:
         access_token=access_token
     )
     u.save()
-    return u.pk()
+    return u.access_token

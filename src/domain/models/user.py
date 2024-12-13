@@ -5,4 +5,4 @@ from src.domain.enums.role import Role
 @dataclass
 class User:
     username: str
-    role: Role
+    password: str
