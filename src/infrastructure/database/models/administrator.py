@@ -4,7 +4,7 @@ from sqlmodel import SQLModel, Field
 class Administrator(SQLModel, table=True):
     __tablename__ = "administrator"
 
-    id: int = Field(primary_key=True,)
+    id: int = Field(primary_key=True)
     first_name: str = Field(max_length=100)
     second_name: str = Field(max_length=100)
     third_name: str = Field(max_length=100)

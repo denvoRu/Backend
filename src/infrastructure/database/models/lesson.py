@@ -1,9 +1,10 @@
-from sqlmodel import SQLModel, Field, ForeignKey
+from sqlmodel import SQLModel, Field, ForeignKey, Time
+from datetime import time
+
 
 class Lesson(SQLModel):
     __tablename__ = "lesson"
 
-    lesson_id: int = Field(primary_key=True)
-    timetable_id: int = Field(ForeignKey("timetable_of_day.timetable_id"))
-    lesson_info_id: int = Field(ForeignKey("lesson_info.lesson_info_id"))
-    lesson_time_id: int = Field(ForeignKey("lesson_time.lesson_time_id"))
+    id: int = Field(primary_key=True)
+    date: time = Time()
+    study_group_id: int = Field(ForeignKey("study_group.id"))
