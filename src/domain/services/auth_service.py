@@ -23,7 +23,7 @@ async def register(dto: RegisterDTO) -> str:
     salt = gensalt()
     hashed_password = hashpw(dto.password.encode(), salt).decode()
 
-    add_in_teacher_or_admin(dto, hashed_password)
+    print(await add_in_teacher_or_admin(dto, hashed_password))
     EmailSender.send_registered(dto.username, dto.password)
 
     return { "status": "ok" }

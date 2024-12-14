@@ -10,7 +10,7 @@ CurrentUser = Annotated[User, Depends(get_current_user)]
 
 class RoleChecker:
     @staticmethod
-    async def __create_role_checker(role: Role):
+    def __create_role_checker(role: Role):
         def get_current_active_user(
             current_user: CurrentUser,
         ):
@@ -28,10 +28,10 @@ class RoleChecker:
         current_user: CurrentUser,
     ):
         func = RoleChecker.__create_role_checker(Role.TEACHER)
-        return await func(current_user)
+        return func(current_user)
 
     @staticmethod
     async def admin(current_user: CurrentUser):
         func = RoleChecker.__create_role_checker(Role.ADMIN)
-        return await func(current_user)
+        return func(current_user)
 

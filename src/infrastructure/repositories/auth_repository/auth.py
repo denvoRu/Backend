@@ -30,6 +30,9 @@ async def get_admin_password_by_email(email: str):
 
 async def add_user(user: T):
     s = get_session()
+    
     async with s() as session:
         session.add(user)
         await session.commit()
+
+    return user

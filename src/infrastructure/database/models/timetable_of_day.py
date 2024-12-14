@@ -8,4 +8,4 @@ class TimetableOfDay(Base):
 
     timetable_id: Mapped[int] = mapped_column(primary_key=True, auto_increment=True, nullable=False)
     teacher_id: Mapped[int] = mapped_column(ForeignKey("teacher.id"))
-    timetable_day: Mapped[Date] = mapped_column()
+    timetable_day = Date()

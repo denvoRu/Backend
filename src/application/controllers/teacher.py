@@ -1,15 +1,23 @@
-from src.domain.extensions.check_role import CurrentTeacher
+from src.domain.extensions.check_role import CurrentTeacher, CurrentAdmin
 from fastapi import APIRouter
 
 router = APIRouter()
 
+
+@router.get("/", description="Show all teachers")
+async def show_teachers(teacher: CurrentTeacher):
+    return "Teachers are shown"
+
+@router.get("/{teacher_id}", description="Show teacher data")
+async def show_teacher(teacher: CurrentTeacher):
+    return 
 
 @router.get("/lessons", description="Show all lessons")
 async def show_lessons(teacher: CurrentTeacher):
     return "Lessons are shown"
 
 
-@router.get("/lessons/:lesson_id", description="Show certain lesson")
+@router.get("/lessons/{lesson_id}", description="Show certain lesson")
 async def show_lesson(teacher: CurrentTeacher, lesson_id: int):
     return "Lesson is shown"
 
@@ -19,7 +27,7 @@ async def create_lesson(teacher: CurrentTeacher):
     return "New lesson is added"
 
 
-@router.patch("/lessons/:lesson_id", description="Update an existing lesson")
+@router.patch("/lessons/{lesson_id}", description="Update an existing lesson")
 async def edit_lesson(teacher: CurrentTeacher, lesson_id: int):
     return "Current lesson is edited"
 
@@ -29,11 +37,11 @@ async def create_qr(teacher: CurrentTeacher):
     return "QR for current lesson is created"
 
 
-@router.patch("/qr/:qr_id", description="Update QR info for a lesson")
+@router.patch("/qr/{qr_id}", description="Update QR info for a lesson")
 async def edit_qr(teacher: CurrentTeacher, qr_id: int):
     return "Current QR is edited"
 
 
-@router.get("/lesson/:lesson_id/reviews", description="Get students that added reviews for a certain lesson")
+@router.get("/lesson/{lesson_id}/reviews", description="Get students that added reviews for a certain lesson")
 async def show_students(teacher: CurrentTeacher, lesson_id: int):
     return "List of students is given"

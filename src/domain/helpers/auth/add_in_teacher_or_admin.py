@@ -4,7 +4,7 @@ from src.infrastructure.database.models.teacher import Teacher
 from src.infrastructure.repositories.auth_repository.auth import add_user
 from src.application.dto.auth.register_dto import RegisterDTO
 
-def add_in_teacher_or_admin(dto: RegisterDTO, hashed_password: str):
+async def add_in_teacher_or_admin(dto: RegisterDTO, hashed_password: str):
     instance = Teacher if dto.role == Role.TEACHER else Administrator
     user = instance(
         first_name=dto.first_name,
@@ -14,5 +14,5 @@ def add_in_teacher_or_admin(dto: RegisterDTO, hashed_password: str):
         password=hashed_password
     )
     
-    return add_user(user)
+    return await add_user(user)
         
