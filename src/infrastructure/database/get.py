@@ -25,7 +25,7 @@ async def get_all(
     query = select(instance)
 
     if columns is not None and columns != "all":
-        query = select(from_obj=instance, columns=convert_columns(columns))
+        query = select(instance, convert_columns(columns))
 
     if filter is not None and filter != "null":
         criteria = dict(x.split("*") for x in filter.split('-'))
