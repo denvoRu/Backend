@@ -1,4 +1,4 @@
-from src.domain.enums.role import Role
+from src.infrastructure.enums.role import Role
 from src.infrastructure.repositories.auth_repository import (
     get_admin_password_by_email, get_teacher_password_by_email
 )

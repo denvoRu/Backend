@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field, EmailStr
-from src.domain.enums.role import Role
+from src.infrastructure.enums.role import Role
 
 
 class RegisterDTO(BaseModel):

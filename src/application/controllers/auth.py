@@ -1,4 +1,4 @@
-from src.domain.enums.role import Role
+from src.infrastructure.enums.role import Role
 from src.domain.services import auth_service
 from src.domain.extensions.check_role import CurrentAdmin
 from src.application.dto import RegisterDTO

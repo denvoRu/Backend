@@ -1,5 +1,5 @@
 from src.domain.extensions.get_hex_uuid import get_hex_uuid
-from src.domain.enums.role import Role
+from src.infrastructure.enums.role import Role
 from src.domain.models.user import User
 from src.infrastructure.config.config import JWT_SECRET_KEY, ALGORITHM
 from src.domain.models.token import Token

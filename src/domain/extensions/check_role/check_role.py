@@ -1,5 +1,5 @@
 from src.domain.extensions.get_current_user import get_current_user
-from src.domain.enums.role import Role
+from src.infrastructure.enums.role import Role
 from .user import User
 
 from fastapi import Depends, HTTPException, status

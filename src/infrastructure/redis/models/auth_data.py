@@ -1,4 +1,4 @@
-from src.domain.enums.role import Role
+from src.infrastructure.enums.role import Role
 from redis_om import JsonModel, Field, Migrator
 
 class Users(JsonModel):

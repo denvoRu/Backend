@@ -1,4 +1,4 @@
-from src.domain.enums.role import Role
+from src.infrastructure.enums.role import Role
 from src.domain.extensions.email.email_sender import EmailSender
 from src.domain.extensions.token import create_token
 from src.application.dto.auth.register_dto import RegisterDTO

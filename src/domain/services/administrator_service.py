@@ -1,4 +1,4 @@
-from src.application.dto.admin.edit_user_dto import EditUserDTO
+from src.application.dto.shared import EditUserDTO
 from src.infrastructure.repositories import administrator_repository
 
 

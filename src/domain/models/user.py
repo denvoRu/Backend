@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from src.domain.enums.role import Role
+from src.infrastructure.enums.role import Role
 
 
 @dataclass

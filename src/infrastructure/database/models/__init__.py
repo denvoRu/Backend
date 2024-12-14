@@ -7,3 +7,4 @@ from .review_tag import ReviewTag
 from .tag import Tag
 from .teacher import Teacher
 from .timetable_of_day import TimetableOfDay
+from .privileges import Privileges

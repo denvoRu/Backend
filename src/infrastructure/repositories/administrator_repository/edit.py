@@ -1,6 +1,6 @@
 from src.infrastructure.database.models.teacher import Teacher
 from src.infrastructure.database.models.administrator import Administrator
-from src.application.dto.admin.edit_user_dto import EditUserDTO
+from src.application.dto.shared import EditUserDTO
 from src.infrastructure.database.initialize_database import get_session
 
 from sqlalchemy import update
