@@ -1,4 +1,9 @@
 from src.infrastructure.redis import Users
 
-def is_token_in_redis(token: str) -> bool:
-    return Users.get(token) is not None
+def is_token_in_redis(refresh_token: str) -> bool:
+    try:
+        Users.get(refresh_token)
+        return True
+    except Exception:
+        return False
+        

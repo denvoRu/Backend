@@ -1,4 +1,4 @@
-from src.domain.extensions import get_current_user
+from src.domain.extensions.get_current_user import get_current_user
 from src.domain.enums.role import Role
 from .user import User
 
@@ -6,7 +6,7 @@ from fastapi import Depends, HTTPException, status
 from typing_extensions import Annotated
 
 
-class CurrentUser(Annotated[User, Depends(get_current_user)]): ...
+CurrentUser = Annotated[User, Depends(get_current_user)]
 
 class RoleChecker:
     @staticmethod

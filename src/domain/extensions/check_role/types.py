@@ -4,5 +4,5 @@ from .check_role import RoleChecker
 
 from typing_extensions import Annotated
 
-class CurrentTeacher(Annotated[User, Depends(RoleChecker.teacher)]): ...
-class CurrentAdmin(Annotated[User, Depends(RoleChecker.admin)]): ...
+CurrentTeacher = Annotated[User, Depends(RoleChecker.teacher)]
+CurrentAdmin = Annotated[User, Depends(RoleChecker.admin)]

@@ -35,9 +35,11 @@ async def login(form_data: OAuth2PasswordRequestForm, role: Role) -> str:
 
     if checkpw(form_data.password.encode(), password.encode()):
         token = create_token(form_data, role)
-        pk = add_token_in_redis(form_data.username, role, token.access_token)
-        print(pk)
-        if pk != token.access_token:
+        pk = add_token_in_redis(
+            form_data.username, role, 
+            token.access_token, token.refresh_token
+        )
+        if pk != token.refresh_token:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
                 detail="Error adding token in redis"
@@ -50,15 +52,16 @@ async def login(form_data: OAuth2PasswordRequestForm, role: Role) -> str:
         detail="Incorrect username or password"
     )
 
-async def token(token: str) -> str:
+async def token(refresh_token: str) -> str:
     # Выдаёт ошибку
-    if not is_token_in_redis(token):
+    print(is_token_in_redis(refresh_token))
+    if not is_token_in_redis(refresh_token):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, 
-            detail="Invalid token"
+            detail="Invalid refresh_token"
         )
     
-    token = create_new_user_by_token(token)
+    token = create_new_user_by_token(refresh_token)
     return token
 
     

@@ -1,3 +1,4 @@
+from src.domain.extensions.get_hex_uuid import get_hex_uuid
 from src.domain.enums.role import Role
 from src.domain.models.user import User
 from src.infrastructure.config.config import JWT_SECRET_KEY, ALGORITHM
@@ -30,4 +31,8 @@ def create_token(user: User, role: Role) -> Token:
         expires_delta=access_token_expires
     )
     
-    return Token(access_token=access_token, token_type="bearer")
+    return Token(
+        access_token=access_token, 
+        refresh_token=get_hex_uuid(), 
+        token_type="bearer"
+    )

@@ -3,7 +3,7 @@ from src.domain.services import auth_service
 from src.domain.extensions.check_role import CurrentAdmin
 from src.application.dto import RegisterDTO
 
-from typing import Any, Union
+from typing import Any
 from typing_extensions import Annotated
 from fastapi import APIRouter, Body, Depends
 from fastapi.security import OAuth2PasswordRequestForm
@@ -13,13 +13,16 @@ router = APIRouter()
 
 
 @router.post("/register", description="Register a new user")
-async def register(dto: Union[CurrentAdmin, RegisterDTO]) -> Any:
+async def register(admin: CurrentAdmin, dto: RegisterDTO) -> Any:
     return await auth_service.register(dto)
 
 @router.post("/login", description="Authorizes the user")
-async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], role: Role = Body(...)):
+async def login(
+    form_data: Annotated[OAuth2PasswordRequestForm, Depends()], 
+    role: Role = Body(...)
+):
     return await auth_service.login(form_data, role)
 
-@router.post("/token", description="Get new token, if old token is valid")
-async def token(token: str):
-    return await auth_service.token(token)
+@router.post("/token", description="Get new token, if refresh token is valid")
+async def token(refresh_token: str):
+    return await auth_service.token(refresh_token)

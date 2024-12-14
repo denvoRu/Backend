@@ -17,7 +17,7 @@ async def __get_hashed_password_by_email(table: T, email: str) -> T:
 async def is_in_table(table: T, email: str) -> bool:
     s = select(table.email).where(table.email == email)
     session_async = get_session()
-    async with session_async as session:
+    async with session_async() as session:
         return (await session.execute(s)).one_or_none() is not None
 
 
