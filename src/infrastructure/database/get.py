@@ -8,7 +8,6 @@ from .extensions import user_to_save_dict
 TableInstance = TypeVar("TableInstance")
 
 async def get_by_id(instance_id: str, instance: TableInstance) -> TableInstance:
-    
     select(instance).where(instance.id == instance_id)
     s = await db.execute(select(instance).where(instance.id == instance_id))
     
@@ -58,14 +57,13 @@ async def get_all(
 
     result = (await db.execute(query)).fetchall()
 
-    print(result)
-    
+
     return PageResponse(
         page_number=page,
         page_size=limit,
         total_pages=total_page,
         total_record=total_record,
-        content=result
+        content=list([i[0].model_dump() for i in result])
     )
         
 def convert_sort(sort):
