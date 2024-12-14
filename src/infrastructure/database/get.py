@@ -25,7 +25,7 @@ async def get_all(
     query = select(instance)
 
     if columns is not None and columns != "all":
-        query = select(instance, convert_columns(columns))
+        query = select(*[getattr(instance, x) for x in columns.split(',')])
 
     if filter is not None and filter != "null":
         criteria = dict(x.split("*") for x in filter.split('-'))
@@ -56,14 +56,19 @@ async def get_all(
     total_page = math.ceil(total_record / limit)
 
     result = (await db.execute(query)).fetchall()
-
-
+    
+    if columns is not None and columns != "all":
+        result = list(
+            {j[1]: j[0] for j in zip(i, columns.split(','))} for i in result
+        )
+    else:
+        result = list([i[0].model_dump() for i in result])
     return PageResponse(
         page_number=page,
         page_size=limit,
         total_pages=total_page,
         total_record=total_record,
-        content=list([i[0].model_dump() for i in result])
+        content=result
     )
         
 def convert_sort(sort):
