@@ -2,7 +2,7 @@ from src.infrastructure.enums.privileges import Privileges
 from src.application.dto.shared import EditUserDTO
 from src.domain.services import teacher_service
 from src.domain.extensions.check_role import CurrentTeacher, CurrentAdmin
-from fastapi import APIRouter, Body
+from fastapi import APIRouter, Body, Query
 
 router = APIRouter()
 
@@ -12,7 +12,14 @@ async def show_me(teacher: CurrentTeacher):
 
 
 @router.get("/", description="Show all teachers (for admins)")
-async def show_teachers(admin: CurrentAdmin):
+async def show_teachers(
+    admin: CurrentAdmin, 
+    page: int = 1,
+    limit: int = 10,
+    columns: str = Query(None, alias="columns"),
+    sort: str = Query(None, alias="sort"),
+    filter: str = Query(None, alias="filter"),
+):
     return await teacher_service.show_teachers()
 
 

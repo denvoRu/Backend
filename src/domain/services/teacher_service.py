@@ -6,8 +6,14 @@ from src.infrastructure.repositories import (
 from fastapi import HTTPException, status
 
 
-async def show_teachers():
-    return await teacher_repository.all()
+async def show_teachers(
+        page: int = 1,
+        limit: int = 10,
+        columns: str = None,
+        sort: str = None,
+        filter: str = None
+):
+    return await teacher_repository.all(page, limit, columns, sort, filter)
 
 async def get_by_id(teacher_id: str):
     return await teacher_repository.get_by_id(teacher_id)

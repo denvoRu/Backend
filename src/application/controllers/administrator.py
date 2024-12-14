@@ -1,7 +1,7 @@
 from src.domain.services import administrator_service
 from src.application.dto.shared import EditUserDTO
 from src.domain.extensions.check_role import CurrentAdmin
-from fastapi import APIRouter, Body
+from fastapi import APIRouter, Body, Query
 
 
 router = APIRouter()
@@ -13,8 +13,21 @@ async def show_me(admin: CurrentAdmin):
 
 
 @router.get("/", description="Return all admins")
-async def show_admins(admin: CurrentAdmin):
-    return await administrator_service.show_administrators()
+async def show_admins(
+    admin: CurrentAdmin, 
+    page: int = 1,
+    limit: int = 10,
+    columns: str = Query(None, alias="columns"),
+    sort: str = Query(None, alias="sort"),
+    filter: str = Query(None, alias="filter")
+):
+    return await administrator_service.show_administrators(
+        page, 
+        limit, 
+        columns, 
+        sort, 
+        filter
+    )
 
 
 @router.patch("/{admin_id}", description="Edit an existing user")
