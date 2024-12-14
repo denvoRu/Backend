@@ -4,5 +4,5 @@ from src.infrastructure.enums.role import Role
 
 @dataclass
 class User:
-    username: str
+    user_id: int
     password: str

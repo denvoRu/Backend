@@ -4,8 +4,8 @@ from src.infrastructure.database import (
 from typing import List
 
 
-async def get_by_email(email: str,) -> dict:
-    return await get.get_by_email(email, Administrator)
+async def get_by_id(admin_id: str,) -> dict:
+    return await get.get_by_id(admin_id, Administrator)
     
 async def all() -> List[dict]:
     return await get.get_all(Administrator)

@@ -24,10 +24,10 @@ def decode_user(token):
     return decoded_data
 
 
-def create_token(user: User, role: Role) -> Token:
+def create_token(user_id: str, role: Role) -> Token:
     access_token_expires = timedelta(hours=8)
     access_token = encode_user(
-        data={"sub": user.username, "role": role}, 
+        data={"sub": str(user_id), "role": role}, 
         expires_delta=access_token_expires
     )
     

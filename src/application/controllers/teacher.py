@@ -8,7 +8,7 @@ router = APIRouter()
 
 @router.get("/me", description="Show me")
 async def show_me(teacher: CurrentTeacher):
-    return await teacher_service.get_by_email(teacher.username)
+    return await teacher_service.get_by_id(teacher.id)
 
 
 @router.get("/", description="Show all teachers (for admins)")

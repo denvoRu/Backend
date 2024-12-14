@@ -3,7 +3,7 @@ from src.infrastructure.repositories import administrator_repository
 
 
 async def get_by_email(admin_email: str):
-    return await administrator_repository.get_by_email(admin_email)
+    return await administrator_repository.get_by_id(admin_email)
 
 async def show_administrators(): 
     return await administrator_repository.all()

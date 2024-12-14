@@ -8,11 +8,11 @@ from sqlalchemy import select
 T = TypeVar("T")
 
 async def __get_hashed_password_by_email(table: T, email: str) -> T:
-    s = select(table.password).where(table.email == email)
+    s = select(table.id, table.password).where(table.email == email)
     session_async = get_session()
     async with session_async() as session:
         scalar = await session.execute(s)
-        return scalar.one()[0]
+        return scalar.one()
 
 async def is_in_table(table: T, email: str) -> bool:
     s = select(table.email).where(table.email == email)

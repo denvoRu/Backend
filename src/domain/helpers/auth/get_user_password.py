@@ -4,7 +4,7 @@ from src.infrastructure.repositories.auth_repository import (
 )
 
 
-async def get_user_password_by_email_and_role(email: str, role: Role) -> str:
+async def get_user_password_and_id_by_email_and_role(email: str, role: Role) -> str:
     if role == Role.TEACHER:
         return await get_teacher_password_by_email(email)
     return await get_admin_password_by_email(email)

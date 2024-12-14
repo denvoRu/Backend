@@ -5,12 +5,12 @@ from .extensions import user_to_save_dict
 
 TableInstance = TypeVar("TableInstance")
 
-async def get_by_email(email: str, instance: TableInstance) -> TableInstance:
+async def get_by_id(instance_id: str, instance: TableInstance) -> TableInstance:
     async_session = get_session()
 
     async with async_session() as session:
-        select(instance).where(instance.email == email)
-        s = await session.execute(select(instance).where(instance.email == email))
+        select(instance).where(instance.id == instance_id)
+        s = await session.execute(select(instance).where(instance.id == instance_id))
         
         data: TableInstance = s.first()[0]
         return user_to_save_dict(data)

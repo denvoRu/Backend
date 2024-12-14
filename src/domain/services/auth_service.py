@@ -4,7 +4,7 @@ from src.domain.extensions.token import create_token
 from src.application.dto.auth.register_dto import RegisterDTO
 
 from src.domain.helpers.auth import (
-    add_in_teacher_or_admin, get_user_password_by_email_and_role, 
+    add_in_teacher_or_admin, get_user_password_and_id_by_email_and_role, 
     is_in_teacher_or_admin, add_token_in_redis, is_token_in_redis,
     create_new_user_by_token
 )
@@ -29,14 +29,14 @@ async def register(dto: RegisterDTO) -> str:
     return { "status": "ok" }
 
 async def login(form_data: OAuth2PasswordRequestForm, role: Role) -> str:
-    password = await get_user_password_by_email_and_role(
+    user = await get_user_password_and_id_by_email_and_role(
         form_data.username, role
     )
 
-    if checkpw(form_data.password.encode(), password.encode()):
-        token = create_token(form_data, role)
+    if checkpw(form_data.password.encode(), user.password.encode()):
+        token = create_token(user.id, role)
         pk = add_token_in_redis(
-            form_data.username, role, 
+            user.id, role, 
             token.access_token, token.refresh_token
         )
         if pk != token.refresh_token:
