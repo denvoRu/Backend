@@ -23,7 +23,7 @@ async def register(dto: RegisterDTO) -> str:
     salt = gensalt()
     hashed_password = hashpw(dto.password.encode(), salt).decode()
 
-    print(await add_in_teacher_or_admin(dto, hashed_password))
+    await add_in_teacher_or_admin(dto, hashed_password)
     EmailSender.send_registered(dto.username, dto.password)
 
     return { "status": "ok" }
@@ -53,8 +53,6 @@ async def login(form_data: OAuth2PasswordRequestForm, role: Role) -> str:
     )
 
 async def token(refresh_token: str) -> str:
-    # Выдаёт ошибку
-    print(is_token_in_redis(refresh_token))
     if not is_token_in_redis(refresh_token):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, 

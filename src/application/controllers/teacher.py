@@ -34,16 +34,16 @@ async def delete_teacher(admin: CurrentAdmin, teacher_id: int):
 
 @router.get("/{teacher_id}/privilege", description="Get a teacher's privilege (for admins)")
 async def get_teacher_privilege(admin: CurrentAdmin, teacher_id: int):
-    return ''
+    return await teacher_service.get_privileges(teacher_id)
 
 @router.post("/{teacher_id}/privilege/{privilege}", description="Add teacher privilege (for admins)")
 async def get_teacher_privilege(
     admin: CurrentAdmin, teacher_id: int, privilege: Privileges
 ):
-    return ''
+    return await teacher_service.add_privilege(teacher_id, privilege)
 
 @router.delete("/{teacher_id}/privilege/{privilege}", description="Delete teacher privilege (for admins)")
 async def get_teacher_privilege(
     admin: CurrentAdmin, teacher_id: int, privilege: Privileges
 ):
-    return ''
+    return await teacher_service.delete_privilege(teacher_id, privilege)

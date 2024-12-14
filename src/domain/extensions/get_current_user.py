@@ -14,7 +14,6 @@ async def get_current_user(
         decode_user(access_token)
         return Users.find(Users.access_token == access_token).first()
     except Exception as e:
-        print(e)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate credentials",
