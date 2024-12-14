@@ -18,8 +18,7 @@ async def edit_user(user_id, dto: EditUserDTO, instance):
         
         await session.execute(stmt)
         await session.commit()
-    
-    return { "status": "ok" }
+        
 
 async def edit_admin(admin_id: int, dto: EditUserDTO):
     return await edit_user(admin_id, dto, Administrator)

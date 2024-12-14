@@ -1,3 +1,4 @@
+from src.domain.services import teacher_service
 from src.domain.extensions.check_role import CurrentTeacher, CurrentAdmin
 from fastapi import APIRouter
 
@@ -5,16 +6,19 @@ router = APIRouter()
 
 
 @router.get("/", description="Show all teachers")
-async def show_teachers(teacher: CurrentTeacher):
-    return "Teachers are shown"
+async def show_teachers(admin: CurrentAdmin):
+    return await teacher_service.show_teachers()
+
 
 @router.get("/{teacher_id}", description="Show teacher data")
-async def show_teacher(teacher: CurrentTeacher):
-    return 
+async def show_teacher(admin: CurrentAdmin):
+    return await teacher_service.get_by_id(teacher_email)
+
 
 @router.get("/lessons", description="Show all lessons")
 async def show_lessons(teacher: CurrentTeacher):
     return "Lessons are shown"
+
 
 
 @router.get("/lessons/{lesson_id}", description="Show certain lesson")
