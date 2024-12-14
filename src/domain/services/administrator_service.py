@@ -5,8 +5,8 @@ from src.infrastructure.repositories import administrator_repository
 async def get_by_id(admin_id: str):
     return await administrator_repository.get_by_id(admin_id)
 
-async def show_administrators(page, limit, columns, sort, filter): 
-    return await administrator_repository.all(page, limit, columns, sort, filter)
+async def show_administrators(page, limit, columns, sort, filter, desc): 
+    return await administrator_repository.all(page, limit, columns, sort, filter, desc)
 
 async def edit_administrator(admin_id: int, dto: EditUserDTO):
     await administrator_repository.edit_admin(admin_id, dto)

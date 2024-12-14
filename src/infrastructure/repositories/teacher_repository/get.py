@@ -1,8 +1,8 @@
 from src.infrastructure.database import get, Teacher
 from typing import List
 
-async def all(page, limit, columns, sort, filter) -> List[dict]:
-    result = await get.get_all(Teacher, page, limit, columns, sort, filter)
+async def all(page, limit, columns, sort, filter, desc) -> List[dict]:
+    result = await get.get_all(Teacher, page, limit, columns, sort, filter, desc)
     print(result)
     return result
     

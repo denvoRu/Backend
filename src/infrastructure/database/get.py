@@ -2,7 +2,7 @@ import math
 from typing import List, TypeVar
 from src.infrastructure.models.page_response import PageResponse
 from src.infrastructure.database import db
-from sqlalchemy import column, func, or_, select, text
+from sqlalchemy import func, or_, select, text, desc as order_desc
 from .extensions import user_to_save_dict
 
 TableInstance = TypeVar("TableInstance")
@@ -20,15 +20,18 @@ async def get_all(
     limit: int = 10,
     columns: str = None,
     sort: str = None,
-    filter: str = None
+    filter: str = None,
+    desc: int = 0
 ) -> List[TableInstance]:
+    hasColumn = columns is not None and columns != "all"
+    hasSort = sort is not None and sort != "null"
     query = select(instance)
 
-    if columns is not None and columns != "all":
+    if hasColumn:
         query = select(*[getattr(instance, x) for x in columns.split(',')])
 
     if filter is not None and filter != "null":
-        criteria = dict(x.split("*") for x in filter.split('-'))
+        criteria = dict(x.split("*") for x in filter.split(','))
         criteria_list = []
 
         for attr, value in criteria.items():
@@ -39,8 +42,14 @@ async def get_all(
         query = query.filter(or_(*criteria_list))
 
 
-    if sort is not None and sort != "null":
-        query = query.order_by(text(convert_sort(sort)))
+    if hasSort:
+        stmt = list(map(text, sort.split(',')))
+                    
+        if desc == 1:
+            stmt = list(map(order_desc, stmt))
+            
+        query = query.order_by(*stmt)
+    
 
     # count query
     count_query = select(func.count(1)).select_from(query)
@@ -56,10 +65,11 @@ async def get_all(
     total_page = math.ceil(total_record / limit)
 
     result = (await db.execute(query)).fetchall()
-    
-    if columns is not None and columns != "all":
+
+    if hasColumn or hasSort:
+        iterable = columns if hasColumn else sort
         result = list(
-            {j[1]: j[0] for j in zip(i, columns.split(','))} for i in result
+            {j[1]: j[0] for j in zip(i, iterable.split(','))} for i in result
         )
     else:
         result = list([i[0].model_dump() for i in result])
@@ -71,28 +81,3 @@ async def get_all(
         content=result
     )
         
-def convert_sort(sort):
-    """
-    # separate string using split('-')
-    split_sort = sort.split('-')
-    # join to list with ','
-    new_sort = ','.join(split_sort)
-    """
-    return ','.join(sort.split('-'))
-
-
-def convert_columns(columns):
-    """
-    # seperate string using split ('-')
-    new_columns = columns.split('-')
-
-    # add to list with column format
-    column_list = []
-    for data in new_columns:
-        column_list.append(data)
-
-    # we use lambda function to make code simple
-
-    """
-
-    return list(map(lambda x: column(x), columns.split('-')))

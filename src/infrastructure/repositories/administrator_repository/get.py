@@ -7,6 +7,6 @@ from typing import List
 async def get_by_id(admin_id: str,) -> dict:
     return await get.get_by_id(admin_id, Administrator)
     
-async def all(page, limit, columns, sort, filter) -> List[dict]:
-    return await get.get_all(Administrator, page, limit, columns, sort, filter)
+async def all(page, limit, columns, sort, filter, desc) -> List[dict]:
+    return await get.get_all(Administrator, page, limit, columns, sort, filter, desc)
     

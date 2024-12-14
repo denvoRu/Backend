@@ -16,11 +16,12 @@ async def show_teachers(
     admin: CurrentAdmin, 
     page: int = 1,
     limit: int = 10,
+    desc: int = 0,
     columns: str = Query(None, alias="columns"),
     sort: str = Query(None, alias="sort"),
     filter: str = Query(None, alias="filter"),
 ):
-    return await teacher_service.show_teachers(page, limit, columns, sort, filter)
+    return await teacher_service.show_teachers(page, limit, columns, sort, filter, desc)
 
 
 @router.get("/{teacher_id}", description="Show teacher data (for admins)")
