@@ -1,11 +1,8 @@
 from sqlalchemy import delete
-from src.infrastructure.database.initialize_database import get_session
+from src.infrastructure.database import db, commit_rollback
 
 
 async def delete_user(admin_id: int, instance):
-    async_session = get_session()
-
-    async with async_session() as session:
-        stmt = delete(instance).where(instance.id == admin_id)
-        await session.execute(stmt)
-        await session.commit()
+    stmt = delete(instance).where(instance.id == admin_id)
+    await db.execute(stmt)
+    await commit_rollback()

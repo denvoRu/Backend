@@ -1,13 +1,12 @@
-from sqlalchemy.orm import mapped_column, Mapped
-from ..initialize_database import Base
+from sqlmodel import SQLModel, Field, ForeignKey
 
 
-class Teacher(Base):
+class Teacher(SQLModel):
     __tablename__ = "teacher"
 
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement="auto", nullable=False)
-    first_name: Mapped[str] = mapped_column()
-    second_name: Mapped[str] = mapped_column()
-    third_name: Mapped[str] = mapped_column()
-    email: Mapped[str] = mapped_column(unique=True, nullable=False, index=True)
-    password: Mapped[str] = mapped_column(nullable=False)
+    id: int = Field(primary_key=True)
+    first_name: str = Field()
+    second_name: str = Field()
+    third_name: str = Field()
+    email: str = Field(unique=True, nullable=False, index=True)
+    password: str = Field(nullable=False)

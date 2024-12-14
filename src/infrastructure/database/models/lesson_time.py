@@ -1,11 +1,9 @@
-from sqlalchemy import Time
-from sqlalchemy.orm import mapped_column, Mapped
-from ..initialize_database import Base
+from datetime import time
+from sqlmodel import SQLModel, Field, Time, Column
 
-
-class LessonTime(Base):
+class LessonTime(SQLModel):
     __tablename__ = "lesson_time"
 
-    lesson_time_id: Mapped[int] = mapped_column(primary_key=True, auto_increment=True, nullable=False)
-    lesson_time_start = Time()
-    lesson_time_end = Time()
+    lesson_time_id: int = Field(primary_key=True)
+    lesson_time_start: time = Time()
+    lesson_time_end: time = Time()

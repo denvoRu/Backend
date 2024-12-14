@@ -1,9 +1,8 @@
-from sqlalchemy.orm import mapped_column, Mapped
-from ..initialize_database import Base
+from sqlmodel import SQLModel, Field, ForeignKey
 
 
-class Tag(Base):
+class Tag(SQLModel):
     __tablename__ = "tag"
 
-    tag_id: Mapped[int] = mapped_column(primary_key=True, auto_increment=True, nullable=False)
-    tag_name: Mapped[str] = mapped_column()
+    tag_id: int = Field(primary_key=True)
+    tag_name: str = Field()

@@ -1,9 +1,8 @@
-from sqlalchemy.orm import mapped_column, Mapped
-from ..initialize_database import Base
+from sqlmodel import SQLModel, Field
 
-
-class Privileges(Base):
+class Privileges(SQLModel):
     __tablename__ = "privileges"
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement="auto", nullable=False)
-    teacher_id: Mapped[int]
-    privilage: Mapped[str]
+
+    id: int = Field(primary_key=True)
+    teacher_id: int
+    privilage: str

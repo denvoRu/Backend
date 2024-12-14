@@ -1,9 +1,7 @@
-from sqlalchemy.orm import mapped_column, Mapped
-from ..initialize_database import Base
+from sqlmodel import SQLModel, Field
 
-
-class LessonInfo(Base):
+class LessonInfo(SQLModel):
     __tablename__ = "lesson_info"
 
-    lesson_info_id: Mapped[int] = mapped_column(primary_key=True, auto_increment=True, nullable=False)
-    lesson_info_name: Mapped[str] = mapped_column()
+    lesson_info_id: int = Field(primary_key=True)
+    lesson_info_name: str = Field()

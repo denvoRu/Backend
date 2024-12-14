@@ -1,6 +1,4 @@
-from src.infrastructure.database import (
-    get, Teacher
-)
+from src.infrastructure.database import get, Teacher
 from typing import List
 
 async def all(page, limit, columns, sort, filter) -> List[dict]:

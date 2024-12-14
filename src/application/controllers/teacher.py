@@ -8,7 +8,7 @@ router = APIRouter()
 
 @router.get("/me", description="Show me")
 async def show_me(teacher: CurrentTeacher):
-    return await teacher_service.get_by_id(teacher.id)
+    return await teacher_service.get_by_id(teacher.user_id)
 
 
 @router.get("/", description="Show all teachers (for admins)")
@@ -20,7 +20,7 @@ async def show_teachers(
     sort: str = Query(None, alias="sort"),
     filter: str = Query(None, alias="filter"),
 ):
-    return await teacher_service.show_teachers()
+    return await teacher_service.show_teachers(page, limit, columns, sort, filter)
 
 
 @router.get("/{teacher_id}", description="Show teacher data (for admins)")

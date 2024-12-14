@@ -1,21 +1,19 @@
 import math
 from typing import List, TypeVar
 from src.infrastructure.models.page_response import PageResponse
-from src.infrastructure.database.initialize_database import get_session
+from src.infrastructure.database import db
 from sqlalchemy import column, func, or_, select, text
 from .extensions import user_to_save_dict
 
 TableInstance = TypeVar("TableInstance")
 
 async def get_by_id(instance_id: str, instance: TableInstance) -> TableInstance:
-    async_session = get_session()
-
-    async with async_session() as session:
-        select(instance).where(instance.id == instance_id)
-        s = await session.execute(select(instance).where(instance.id == instance_id))
-        
-        data: TableInstance = s.first()[0]
-        return user_to_save_dict(data)
+    
+    select(instance).where(instance.id == instance_id)
+    s = await db.execute(select(instance).where(instance.id == instance_id))
+    
+    data: TableInstance = s.first()[0]
+    return user_to_save_dict(data)
     
 async def get_all(
     instance: TableInstance,
@@ -25,64 +23,50 @@ async def get_all(
     sort: str = None,
     filter: str = None
 ) -> List[TableInstance]:
-    async_session = get_session()
+    query = select(instance)
 
-    async with async_session() as session:
-        query = select(from_obj=instance, columns="*")
+    if columns is not None and columns != "all":
+        query = select(from_obj=instance, columns=convert_columns(columns))
 
-        if columns is not None and columns != "all":
-        
-            query = select(from_obj=instance, columns=convert_columns(columns))
+    if filter is not None and filter != "null":
+        criteria = dict(x.split("*") for x in filter.split('-'))
+        criteria_list = []
 
-        # select filter dynamically
-        if filter is not None and filter != "null":
-            # we need filter format data like this  --> {'name': 'an','country':'an'}
+        for attr, value in criteria.items():
+            _attr = getattr(instance, attr)
+            search = "%{}%".format(value)
+            criteria_list.append(_attr.like(search))
 
-            # convert string to dict format
-            criteria = dict(x.split("*") for x in filter.split('-'))
+        query = query.filter(or_(*criteria_list))
 
-            criteria_list = []
 
-            # check every key in dict. are there any table attributes that are the same as the dict key ?
+    if sort is not None and sort != "null":
+        query = query.order_by(text(convert_sort(sort)))
 
-            for attr, value in criteria.items():
-                _attr = getattr(instance, attr)
+    # count query
+    count_query = select(func.count(1)).select_from(query)
+    offset_page = page - 1
 
-                # filter format
-                search = "%{}%".format(value)
+    # pagination
+    query = (query.offset(offset_page * limit).limit(limit))
 
-                # criteria list
-                criteria_list.append(_attr.like(search))
+    # total record
+    total_record = (await db.execute(count_query)).scalar() or 0
 
-            query = query.filter(or_(*criteria_list))
+    # total page
+    total_page = math.ceil(total_record / limit)
 
-        # select sort dynamically
-        if sort is not None and sort != "null":
-            # we need sort format data like this --> ['id','name']
-            query = query.order_by(text(convert_sort(sort)))
+    result = (await db.execute(query)).fetchall()
 
-        # count query
-        count_query = select(func.count(1)).select_from(query)
-
-        offset_page = page - 1
-        # pagination
-        query = (query.offset(offset_page * limit).limit(limit))
-
-        # total record
-        total_record = (await session.execute(count_query)).scalar() or 0
-
-        # total page
-        total_page = math.ceil(total_record / limit)
-
-        result = (await session.execute(query)).fetchall()
-
-        return PageResponse(
-            page_number=page,
-            page_size=limit,
-            total_pages=total_page,
-            total_record=total_record,
-            content=result
-        )
+    print(result)
+    
+    return PageResponse(
+        page_number=page,
+        page_size=limit,
+        total_pages=total_page,
+        total_record=total_record,
+        content=result
+    )
         
 def convert_sort(sort):
     """

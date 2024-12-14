@@ -1,11 +1,10 @@
-from sqlalchemy import ForeignKey
-from sqlalchemy.orm import mapped_column, Mapped
-from ..initialize_database import Base
+from sqlmodel import SQLModel, Field, ForeignKey
 
 
-class ReviewTag(Base):
+
+class ReviewTag(SQLModel):
     __tablename__ = "review_tag"
 
-    review_tag_id: Mapped[int] = mapped_column(primary_key=True, auto_increment=True, nullable=False)
-    tag_id: Mapped[int] = mapped_column(ForeignKey("tag.tag_id"))
-    review_id: Mapped[int] = mapped_column(ForeignKey("review.review_id"))
+    review_tag_id: int = Field(primary_key=True)
+    tag_id: int = Field(ForeignKey("tag.tag_id"))
+    review_id: int = Field(ForeignKey("review.review_id"))

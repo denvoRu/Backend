@@ -2,8 +2,8 @@ from src.application.dto.shared import EditUserDTO
 from src.infrastructure.repositories import administrator_repository
 
 
-async def get_by_email(admin_email: str):
-    return await administrator_repository.get_by_id(admin_email)
+async def get_by_id(admin_id: str):
+    return await administrator_repository.get_by_id(admin_id)
 
 async def show_administrators(page, limit, columns, sort, filter): 
     return await administrator_repository.all(page, limit, columns, sort, filter)

@@ -1,11 +1,19 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from src.infrastructure.database import db
 from src.infrastructure.config import config
 from src.application.controllers import api_router
 
+async def shutdown(app: FastAPI):
+    db.init(config.DATABASE_URL)
+    await db.create_all()
+    yield
+    await db.close()
+
 app = FastAPI(
     title=config.PROJECT_NAME,
+    lifespan=shutdown
 )
 
 app.add_middleware(

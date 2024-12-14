@@ -1,13 +1,12 @@
-from sqlalchemy.orm import mapped_column, Mapped
-from ..initialize_database import Base
+from sqlmodel import SQLModel, Field
 
 
-class Administrator(Base):
+class Administrator(SQLModel, table=True):
     __tablename__ = "administrator"
 
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement="auto", nullable=False)
-    first_name: Mapped[str] = mapped_column()
-    second_name: Mapped[str] = mapped_column()
-    third_name: Mapped[str] = mapped_column()
-    email: Mapped[str] = mapped_column(unique=True, nullable=False, index=True)
-    password: Mapped[str] = mapped_column(nullable=False)
+    id: int = Field(primary_key=True,)
+    first_name: str = Field(max_length=100)
+    second_name: str = Field(max_length=100)
+    third_name: str = Field(max_length=100)
+    email: str = Field(unique=True, nullable=False, index=True)
+    password: str = Field(nullable=False, min_length=6, max_length=100)
