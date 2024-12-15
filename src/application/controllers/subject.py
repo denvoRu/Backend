@@ -18,6 +18,7 @@ async def show_all_subject(
     rating_end: int = Query(-1, alias="rating_end"),
     teacher_ids: str = Query(None, alias="teacher_ids"),
 ):
+    # Add logic for teacher_ids
     return await subject_service.get_all(
         page, 
         limit,
@@ -32,13 +33,13 @@ async def show_all_subject(
 
 @router.get("/{subject_id}", description="Show certain subject (for admins)")
 async def show_subject(admin: CurrentAdmin, subject_id: int):
-    subject_service.get_by_id(subject_id)
+    return await subject_service.get_by_id(subject_id)
 
 @router.post("/", description="Create a new subject (for admins)")
 async def create_subject(
     teacher: CurrentAdmin, dto: CreateSubjectDTO = Body(...)
 ):
-    await subject_service.create_subject(dto)
+    return await subject_service.create_subject(dto)
 
 @router.patch("/{subject_id}", description="Edit an existing subject (for admins)")
 async def edit_subject(admin: CurrentAdmin, dto: EditSubjectDTO = Body(...)):
