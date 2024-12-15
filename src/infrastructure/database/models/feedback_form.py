@@ -8,5 +8,5 @@ class FeedbackForm(SQLModel):
     id: int = Field(primary_key=True)
     expire_date: time = Time()
     link: str = Field(nullable=False)
-    study_group_id = Field(ForeignKey("study_group.id"))
-    lesson_id = Field(ForeignKey("lesson.id"))
+    study_group_id: int = Field(ForeignKey("study_group.id"))
+    lesson_id: int = Field(ForeignKey("lesson.id"))

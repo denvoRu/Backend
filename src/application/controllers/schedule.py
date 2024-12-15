@@ -17,7 +17,7 @@ async def show_lesson(teacher: CurrentTeacher, lesson_id: int):
 
 
 @router.get("/{teacher_id}/lessons/{lesson_id}", description="Show certain lesson")
-async def show_lesson(admin: CurrentAdmin, lesson_id: int):
+async def show_lesson_teacher(admin: CurrentAdmin, lesson_id: int):
     return "Lesson is shown"
 
 
