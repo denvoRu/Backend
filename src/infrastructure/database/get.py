@@ -22,21 +22,26 @@ async def get_all(
     filter: str = None,
     desc: int = 0
 ) -> List[TableInstance]:
-    has_column = columns is not None and columns != "all"
-    has_sort = sort is not None and sort != "null"
-    has_filter = filter is not None and filter != "null"
-
-    if has_column: 
+    if columns is not None and columns != "all": 
         columns = columns.split(',')
         columns = delete_password_from_array(columns)
+        has_column = len(columns) > 0
+    else:
+        has_column = False
 
-    if has_sort: 
+    if sort is not None and sort != "null": 
         sort = sort.split(',')
         sort = delete_password_from_array(sort)
+        has_sort = len(sort) > 0
+    else:
+        has_sort = False
     
-    if has_filter: 
+    if filter is not None and filter != "null": 
         filter = filter.split(',')
         filter = delete_password_from_array(filter)
+        has_filter = len(filter) > 0
+    else:
+        has_filter = False
 
     query = select(instance)
 

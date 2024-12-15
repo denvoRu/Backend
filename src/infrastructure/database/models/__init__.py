@@ -7,5 +7,3 @@ from .privileges import Privileges
 from .study_group import StudyGroup
 from .subject import Subject
 from .teacher import Teacher
-from .teacher_subject import TeacherSubject
-from .university import University

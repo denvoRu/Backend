@@ -55,3 +55,6 @@ async def delete_privilege(teacher_id: int, privilege: Privileges):
     
     await teacher_repository.delete_privilege(teacher_id, privilege.value)
     return { "status": "ok" }
+
+async def get_rating(teacher_id: int):
+    return 

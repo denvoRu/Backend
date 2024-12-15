@@ -4,14 +4,20 @@ from fastapi import HTTPException, status
 
 
 async def get_all(page, limit, columns, sort, filter, desc):
-    return await institute_repository.get_all_institutes(
-        page, 
-        limit, 
-        columns, 
-        sort, 
-        filter, 
-        desc
-    )
+    try: 
+        return await institute_repository.get_all_institutes(
+            page, 
+            limit, 
+            columns, 
+            sort, 
+            filter, 
+            desc
+        )
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Institutes not found"
+        )
 
 async def get_by_id(institute_id: int):
     try:
@@ -33,6 +39,7 @@ async def create_institute(dto: CreateInstitudeDTO):
     
     await institute_repository.create_institute(
         dto.name, 
+        dto.short_name,
         dto.address
     )
     return { "status": "ok" }
