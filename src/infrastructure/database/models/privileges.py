@@ -1,7 +1,7 @@
 from sqlmodel import SQLModel, Field, ForeignKey
 
 
-class Privileges(SQLModel):
+class Privileges(SQLModel, table=True):
     __tablename__ = "privileges"
 
     id: int = Field(primary_key=True)

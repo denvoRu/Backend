@@ -1,7 +1,7 @@
 from sqlmodel import SQLModel, Field, ForeignKey
 
 
-class StudyGroup(SQLModel):
+class StudyGroup(SQLModel, table=True):
     __tablename__ = "study_group"
 
     id: int = Field(primary_key=True)

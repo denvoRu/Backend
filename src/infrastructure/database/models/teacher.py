@@ -1,7 +1,7 @@
 from sqlmodel import SQLModel, Field, ForeignKey
 
 
-class Teacher(SQLModel):
+class Teacher(SQLModel, table=True):
     __tablename__ = "teacher"
 
     id: int = Field(primary_key=True)

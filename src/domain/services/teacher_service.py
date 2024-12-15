@@ -49,7 +49,7 @@ async def delete_privilege(teacher_id: int, privilege: Privileges):
     
     if not hasPrivilege:
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, 
+            status_code=status.HTTP_404_NOT_FOUND, 
             detail="Privilege does not exist"
         )
     

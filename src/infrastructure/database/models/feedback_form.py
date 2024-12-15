@@ -2,7 +2,7 @@ from sqlmodel import SQLModel, Field, ForeignKey, Time
 from datetime import time
 
 
-class FeedbackForm(SQLModel):
+class FeedbackForm(SQLModel, table=True):
     __tablename__ = "feedback_form"
 
     id: int = Field(primary_key=True)

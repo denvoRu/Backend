@@ -3,7 +3,6 @@ from typing import List, TypeVar
 from src.infrastructure.models.page_response import PageResponse
 from src.infrastructure.database import db
 from sqlalchemy import func, or_, select, text, desc as order_desc
-from .extensions import user_to_save_dict
 
 TableInstance = TypeVar("TableInstance")
 
@@ -12,7 +11,7 @@ async def get_by_id(instance_id: str, instance: TableInstance) -> TableInstance:
     s = await db.execute(select(instance).where(instance.id == instance_id))
     
     data: TableInstance = s.first()[0]
-    return user_to_save_dict(data)
+    return data
     
 async def get_all(
     instance: TableInstance,
@@ -23,15 +22,29 @@ async def get_all(
     filter: str = None,
     desc: int = 0
 ) -> List[TableInstance]:
-    hasColumn = columns is not None and columns != "all"
-    hasSort = sort is not None and sort != "null"
+    has_column = columns is not None and columns != "all"
+    has_sort = sort is not None and sort != "null"
+    has_filter = filter is not None and filter != "null"
+
+    if has_column: 
+        columns = columns.split(',')
+        columns = delete_password_from_array(columns)
+
+    if has_sort: 
+        sort = sort.split(',')
+        sort = delete_password_from_array(sort)
+    
+    if has_filter: 
+        filter = filter.split(',')
+        filter = delete_password_from_array(filter)
+
     query = select(instance)
 
-    if hasColumn:
-        query = select(*[getattr(instance, x) for x in columns.split(',')])
+    if has_column:
+        query = select(*[getattr(instance, x) for x in columns])
 
-    if filter is not None and filter != "null":
-        criteria = dict(x.split("*") for x in filter.split(','))
+    if has_filter:
+        criteria = dict(x.split("*") for x in filter)
         criteria_list = []
 
         for attr, value in criteria.items():
@@ -42,8 +55,8 @@ async def get_all(
         query = query.filter(or_(*criteria_list))
 
 
-    if hasSort:
-        stmt = list(map(text, sort.split(',')))
+    if has_sort:
+        stmt = list(map(text, sort))
                     
         if desc == 1:
             stmt = list(map(order_desc, stmt))
@@ -66,13 +79,16 @@ async def get_all(
 
     result = (await db.execute(query)).fetchall()
 
-    if hasColumn or hasSort:
-        iterable = columns if hasColumn else sort
+    if has_column:
+        iterable = columns if has_column else sort
         result = list(
-            {j[1]: j[0] for j in zip(i, iterable.split(','))} for i in result
+            {j[0]: j[1] for j in zip(iterable, i)} for i in result
         )
     else:
-        result = list([i[0].model_dump() for i in result])
+        result = list([i[0].model_dump(
+            exclude=["password"]
+        ) for i in result])
+    
     return PageResponse(
         page_number=page,
         page_size=limit,
@@ -81,3 +97,11 @@ async def get_all(
         content=result
     )
         
+
+def delete_password_from_array(data: List[str]):
+    data = list(set(data))
+    try: 
+        data.remove("password")
+    except Exception as e: ...
+
+    return data

@@ -1,4 +1,5 @@
 from src.infrastructure.enums.role import Role
+from src.infrastructure.repositories. institute_repository import has_institute_by_id
 from src.domain.extensions.email.email_sender import EmailSender
 from src.domain.extensions.token import create_token
 from src.application.dto.auth.register_dto import RegisterDTO
@@ -14,17 +15,36 @@ from bcrypt import checkpw, hashpw, gensalt
 from fastapi.security import OAuth2PasswordRequestForm
 
 async def register(dto: RegisterDTO) -> str:
-    if await is_in_teacher_or_admin(dto.username, dto.role):
+    if await is_in_teacher_or_admin(dto.email, dto.role):
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="User already exists"
+        )
+    
+    if dto.role == Role.TEACHER and not dto.institute_id:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Institute id is required"
+        )
+    
+    if dto.role == Role.ADMINISTRATOR and dto.institute_id:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Institute id is not required"
+        )
+    
+    is_has = await has_institute_by_id(dto.institute_id)
+    if dto.role == Role.TEACHER and not(is_has):
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Institute not found"
         )
     
     salt = gensalt()
     hashed_password = hashpw(dto.password.encode(), salt).decode()
 
     await add_in_teacher_or_admin(dto, hashed_password)
-    EmailSender.send_registered(dto.username, dto.password)
+    EmailSender.send_registered(dto.email, dto.password)
 
     return { "status": "ok" }
 

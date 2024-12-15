@@ -2,7 +2,7 @@ from sqlmodel import SQLModel, Field, ForeignKey, Time
 from datetime import time
 
 
-class Lesson(SQLModel):
+class Lesson(SQLModel, table=True):
     __tablename__ = "lesson"
 
     id: int = Field(primary_key=True)
