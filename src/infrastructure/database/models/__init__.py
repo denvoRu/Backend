@@ -1,4 +1,5 @@
 from .administrator import Administrator
+from .module import Module
 from .feedback import Feedback
 from .feedback_form import FeedbackForm
 from .institute import Institute
