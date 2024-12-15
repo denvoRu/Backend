@@ -1,7 +1,4 @@
-from src.infrastructure.database import db, Institute, commit_rollback
-from sqlalchemy import delete
+from src.infrastructure.database import Institute, delete
 
 async def delete_institute(institute_id: int):
-    stmt = delete(Institute).where(Institute.id == institute_id)
-    await db.execute(stmt)
-    await commit_rollback()
+    await delete.delete_from_instance_by_id(Institute, institute_id,)

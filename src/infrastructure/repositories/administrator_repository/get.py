@@ -4,8 +4,8 @@ from typing import List
 
 
 async def get_by_id(admin_id: str,) -> dict:
-    return user_to_save_dict(await get.get_by_id(admin_id, Administrator))
+    return user_to_save_dict(await get.get_by_id(Administrator, admin_id))
     
-async def all(page, limit, columns, sort, filter, desc) -> List[dict]:
-    return await get.get_all(Administrator, page, limit, columns, sort, filter, desc)
+async def all(page, limit, columns, sort, search, desc) -> List[dict]:
+    return await get.get_all(Administrator, page, limit, columns, sort, search, desc)
     

@@ -1,4 +1,4 @@
-from src.application.dto.module import CreateModuleDTO, EditModuleDTO
+from src.application.dto.module import CreateModuleDTO
 from src.domain.services import module_service
 from src.domain.extensions.check_role import CurrentAdmin
 from fastapi import APIRouter, Body, Query
@@ -14,15 +14,14 @@ async def get_all_modules(
     desc: int = 0,
     columns: str = Query(None, alias="columns"),
     sort: str = Query(None, alias="sort"),
-    filter: str = Query(None, alias="filter"),
+    search: str = Query(None, alias="search"),
 ):
-    return await module_service.get_all(page, limit, columns, sort, filter, desc)
+    return await module_service.get_all(page, limit, columns, sort, search, desc)
 
 
-@router.get("/{module_id}", description="Create a new module")
+@router.get("/{module_id}", description="Get an existing module with id")
 async def get_module(current_user: CurrentAdmin, module_id: int):
     return await module_service.get_by_id(module_id)
-
 
 
 @router.post("/", description="Create a new module")
@@ -34,4 +33,4 @@ async def create_module(
 
 @router.delete("/{module_id}", description="Delete an existing module")
 async def delete_module(current_user: CurrentAdmin, module_id: int):
-    return await module_service.delete_module(module_id)
+    return await module_service.delete(module_id)

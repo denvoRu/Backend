@@ -19,7 +19,8 @@ async def add_privilege(teacher_id: int, privilege: str):
 async def has_privilege(teacher_id: int, privilege: str):
     s = await db.execute(
         select(Privileges.id)
-        .where(Privileges.privilage == privilege and Privileges.teacher_id == teacher_id)
+        .where(Privileges.privilage == privilege,
+               Privileges.teacher_id == teacher_id)
     )
     
     return len(s.all()) > 0
@@ -27,7 +28,7 @@ async def has_privilege(teacher_id: int, privilege: str):
 async def delete_privilege(teacher_id: int, privilege: str):
     stmt = (delete(Privileges)
             .where(Privileges.teacher_id == teacher_id, 
-                    Privileges.privilage == privilege))
+                   Privileges.privilage == privilege))
     
     await db.execute(stmt)
     await commit_rollback()

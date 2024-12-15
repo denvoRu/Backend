@@ -11,27 +11,57 @@ async def show_teachers(
         limit: int = 10,
         columns: str = None,
         sort: str = None,
-        filter: str = None,
+        search: str = None,
         desc: int = 0
 ):
-    return await teacher_repository.all(page, limit, columns, sort, filter, desc)
+    try:
+        return await teacher_repository.all(page, limit, columns, sort, search, desc)
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="One or more parameters are invalid"
+        )
 
 async def get_by_id(teacher_id: str):
-    return await teacher_repository.get_by_id(teacher_id)
+    try:
+        return await teacher_repository.get_by_id(teacher_id)
+    except TypeError:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Teacher not found"
+        )
 
 async def edit_teacher(admin_id: int, dto: EditUserDTO):
-    await administrator_repository.edit_teacher(admin_id, dto)
-    return { "status": "ok" }
+    try:
+        await administrator_repository.edit_teacher(admin_id, dto)
+        return { "status": "ok" }
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Teacher not found"
+        )
 
 async def delete_teacher(teacher_id: int):
-    await teacher_repository.delete_teacher(teacher_id)
-    return { "status": "ok" }
+    try:
+        await teacher_repository.delete_teacher(teacher_id)
+        return { "status": "ok" }
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Teacher not found"
+        )
 
 async def get_privileges(teacher_id: int):
-    data = await teacher_repository.get_privileges(teacher_id)
-    if len(data) > 0:
-        return list([i[0] for i in data])
-    return []
+    try:
+        data = await teacher_repository.get_privileges(teacher_id)
+        if len(data) > 0:
+            return list([i[0] for i in data])
+        return []
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Teacher not found"
+        )
 
 async def add_privilege(teacher_id: int, privilege: Privileges):
     hasPrivilege = await teacher_repository.has_privilege(teacher_id, privilege.value)
@@ -41,8 +71,14 @@ async def add_privilege(teacher_id: int, privilege: Privileges):
             detail="Privilege already exists"
         )
     
-    await teacher_repository.add_privilege(teacher_id, privilege.value)
-    return { "status": "ok" }
+    try: 
+        await teacher_repository.add_privilege(teacher_id, privilege.value)
+        return { "status": "ok" }
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Teacher not found"
+        )
 
 async def delete_privilege(teacher_id: int, privilege: Privileges):
     hasPrivilege = await teacher_repository.has_privilege(teacher_id, privilege.value)
@@ -53,8 +89,14 @@ async def delete_privilege(teacher_id: int, privilege: Privileges):
             detail="Privilege does not exist"
         )
     
-    await teacher_repository.delete_privilege(teacher_id, privilege.value)
-    return { "status": "ok" }
+    try:
+        await teacher_repository.delete_privilege(teacher_id, privilege.value)
+        return { "status": "ok" }
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Teacher not found"
+        )
 
 async def get_rating(teacher_id: int):
     return 

@@ -1,20 +1,8 @@
-from src.infrastructure.database import db, Institute
-
-from sqlalchemy import select
+from src.infrastructure.database import Institute, has
 
 
 async def has_institute(institude_name: str):
-    s = await db.execute(
-        select(Institute.id)
-        .where(Institute.name == institude_name)
-    )
-    
-    return len(s.all()) > 0
+    return await has.has_instance(Institute, Institute.name == institude_name)
 
 async def has_institute_by_id(institute_id: int):
-    s = await db.execute(
-        select(Institute.id)
-        .where(Institute.id == institute_id)
-    )
-    
-    return len(s.all()) > 0
+    return await has.has_instance(Institute, Institute.id == institute_id)

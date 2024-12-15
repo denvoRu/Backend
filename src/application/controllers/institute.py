@@ -14,9 +14,9 @@ async def get_all_institutes(
     desc: int = 0,
     columns: str = Query(None, alias="columns"),
     sort: str = Query(None, alias="sort"),
-    filter: str = Query(None, alias="filter"),
+    search: str = Query(None, alias="search"),
 ):
-    return await institute_service.get_all(page, limit, columns, sort, filter, desc)
+    return await institute_service.get_all(page, limit, columns, sort, search, desc)
 
 
 @router.get("/{institute_id}", description="Get an existing institute with id")

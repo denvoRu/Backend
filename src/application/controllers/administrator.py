@@ -20,14 +20,14 @@ async def show_admins(
     desc: int = 0,
     columns: str = Query(None, alias="columns"),
     sort: str = Query(None, alias="sort"),
-    filter: str = Query(None, alias="filter"),
+    search: str = Query(None, alias="search"),
 ):
     return await administrator_service.show_administrators(
         page, 
         limit, 
         columns, 
         sort, 
-        filter,
+        search,
         desc
     )
 

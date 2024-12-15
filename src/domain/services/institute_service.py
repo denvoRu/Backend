@@ -3,20 +3,20 @@ from src.infrastructure.repositories import institute_repository
 from fastapi import HTTPException, status
 
 
-async def get_all(page, limit, columns, sort, filter, desc):
+async def get_all(page, limit, columns, sort, search, desc):
     try: 
         return await institute_repository.get_all_institutes(
             page, 
             limit, 
             columns, 
             sort, 
-            filter, 
+            search, 
             desc
         )
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Institutes not found"
+            detail="One or more parameters are invalid"
         )
 
 async def get_by_id(institute_id: int):
