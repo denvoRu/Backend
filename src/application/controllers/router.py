@@ -2,7 +2,7 @@ from fastapi import APIRouter
 from src.application.controllers import (
     administrator, teacher, auth, form, 
     reviews, schedule, module,
-    institute, subject
+    institute, subject, lessons
 )
 api_router = APIRouter()
 
@@ -12,6 +12,7 @@ api_router.include_router(teacher.router, prefix="/teacher", tags=["teacher"])
 api_router.include_router(institute.router, prefix="/institute", tags=["institute"])
 api_router.include_router(module.router, prefix="/module", tags=["module"])
 api_router.include_router(subject.router, prefix="/subject", tags=["subject"])
+api_router.include_router(lessons.router, prefix="/lessons", tags=["lessons"])
 api_router.include_router(form.router, prefix="/form", tags=["form"])
 api_router.include_router(reviews.router, prefix="/form", tags=["form"])
 api_router.include_router(schedule.router, prefix="/schedule", tags=["schedule"])

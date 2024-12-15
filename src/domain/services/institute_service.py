@@ -30,8 +30,8 @@ async def get_by_id(institute_id: int):
 
 
 async def create_institute(dto: CreateInstitudeDTO):
-    has_institute = await institute_repository.has_institute(dto.name)
-    if has_institute:
+    has_by_name = await institute_repository.has_by_name(dto.name)
+    if has_by_name:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="Institute already exists"

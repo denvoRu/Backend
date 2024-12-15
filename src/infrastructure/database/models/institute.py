@@ -1,4 +1,4 @@
-from sqlmodel import SQLModel, Field, ForeignKey
+from sqlmodel import SQLModel, Field
 
 
 class Institute(SQLModel, table=True):

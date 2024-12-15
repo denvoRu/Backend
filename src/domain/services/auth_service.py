@@ -1,5 +1,5 @@
 from src.infrastructure.enums.role import Role
-from src.infrastructure.repositories. institute_repository import has_institute_by_id
+from src.infrastructure.repositories. institute_repository import has_by_id
 from src.domain.extensions.email.email_sender import EmailSender
 from src.domain.extensions.token import create_token
 from src.application.dto.auth.register_dto import RegisterDTO
@@ -33,7 +33,7 @@ async def register(dto: RegisterDTO) -> str:
             detail="Institute id is not required"
         )
     
-    is_has = await has_institute_by_id(dto.institute_id)
+    is_has = await has_by_id(dto.institute_id)
     if dto.role == Role.TEACHER and not(is_has):
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,

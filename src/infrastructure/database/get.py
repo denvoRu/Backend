@@ -21,7 +21,7 @@ async def get_all(
     sort: str = None,
     search: str = None,
     desc: int = 0,
-    filter: str = None
+    filters: list = None
 ) -> List[TableInstance]:
     try:
         if columns is not None and columns != "all": 
@@ -50,8 +50,8 @@ async def get_all(
         if has_column:
             query = select(*[getattr(instance, x) for x in columns])
 
-        if filter is not None:
-            query = query.where(filter)
+        if filters is not None:
+            query = query.where(*filters)
             
         if has_search:
             criteria = dict(x.split("*") for x in search)

@@ -30,7 +30,7 @@ async def create_module(dto: CreateModuleDTO):
             detail="Module already exists"
         )
     
-    await module_repository.add(dto.name)
+    await module_repository.add_module(dto.name)
     return { "status": "ok" }
 
 async def delete(module_id: int):

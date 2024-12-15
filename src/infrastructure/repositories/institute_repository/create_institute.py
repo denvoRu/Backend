@@ -1,4 +1,4 @@
-from src.infrastructure.database import db, commit_rollback, Institute
+from src.infrastructure.database import Institute, add as add_instance
 
 async def create_institute(
     institute_name: str,
@@ -12,5 +12,4 @@ async def create_institute(
         address=institute_address,
     )
 
-    db.add(institute)
-    await commit_rollback()
+    await add_instance(institute)
