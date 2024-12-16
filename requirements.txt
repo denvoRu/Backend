@@ -11,7 +11,8 @@ python-jose~=3.3.0
 python-multipart~=0.0.19
 cryptography~=44.0.0
 email-validator
-Jinja2
+Jinja2~=3.1.4
 redis-om
 asyncpg
-sqlmodel
+sqlmodel~=0.0.22
+aiosmtplib~=3.0.2
