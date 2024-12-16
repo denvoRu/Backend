@@ -50,9 +50,6 @@ async def get_all(
         if has_column:
             query = select(*[getattr(instance, x) for x in columns])
 
-        if filters is not None:
-            query = query.where(*filters)
-            
         if has_search:
             criteria = dict(x.split("*") for x in search)
             criteria_list = []
@@ -60,10 +57,13 @@ async def get_all(
             for attr, value in criteria.items():
                 _attr = getattr(instance, attr)
                 search_value = "%{}%".format(value)
-                criteria_list.append(_attr.like(search_value))
+                criteria_list.append(func.lower(_attr).like(search_value.lower()))
 
-            query = query.search(or_(*criteria_list))
+            query = query.filter(or_(*criteria_list))
 
+        if filters is not None:
+            query = query.where(*filters)
+            
 
         if has_sort:
             stmt = list(map(text, sort))
@@ -107,6 +107,7 @@ async def get_all(
             content=result
         )
     except Exception as e:
+        print(e)
         await commit_rollback()
         raise Exception(str(e))
         
