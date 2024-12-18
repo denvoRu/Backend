@@ -44,7 +44,7 @@ async def register(dto: RegisterDTO) -> str:
     hashed_password = hashpw(dto.password.encode(), salt).decode()
 
     await add_in_teacher_or_admin(dto, hashed_password)
-    EmailSender.send_registered(dto.email, dto.password)
+    # await EmailSender.send_registered(dto.email, dto.password)
 
     return { "status": "ok" }
 
