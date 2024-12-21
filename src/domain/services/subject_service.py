@@ -12,9 +12,11 @@ async def get_all(
 ):
     if teacher_ids is not None:
         teacher_ids = teacher_ids.split(",")
+
+    if search is not None and search != "":
+        search = "name*{0}".format(search)
+        
     try:
-        if search is not None and search != "":
-            search = "name*{0}".format(search)
         return await subject_repository.get_all(
             page, limit, columns, sort, search, desc, 
             rating_start, rating_end, teacher_ids, module_id
