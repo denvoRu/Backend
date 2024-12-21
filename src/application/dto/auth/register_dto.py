@@ -1,6 +1,6 @@
+from src.infrastructure.enums.role import Role
 from typing import Optional
 from pydantic import BaseModel, Field, EmailStr
-from src.infrastructure.enums.role import Role
 
 
 class RegisterDTO(BaseModel):

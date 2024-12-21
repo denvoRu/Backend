@@ -1,6 +1,8 @@
 from decouple import config
 from sqlalchemy import URL
 
+RESTORE_PASSWORD_TOKEN_EXPIRE_SECONDS = 60 * 60 * 2
+RESTORE_PASSWORD_LINK = config("RESTORE_PASSWORD_LINK")
 
 REGISTERED_HTML = '' 
 UPDATE_PASSWORD_HTML = ''

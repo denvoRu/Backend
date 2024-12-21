@@ -22,6 +22,12 @@ async def get_schedule(teacher_id: int, week: int = 1):
 
 
 async def add_lesson(teacher_id: int, dto: AddLessonInScheduleDTO):
+    if not await teacher_repository.has_by_id(teacher_id):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Teacher not found"
+        )
+    
     if not await schedule_repository.has_schedule(teacher_id):
         schedule_repository.add_schedule(teacher_id)
 
@@ -33,6 +39,12 @@ async def add_lesson(teacher_id: int, dto: AddLessonInScheduleDTO):
     
 
 async def delete_lesson(teacher_id: int, schedule_lesson_id: int):
+    if not await teacher_repository.has_by_id(teacher_id):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Teacher not found"
+        )
+    
     if not await schedule_repository.has_schedule(teacher_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -54,6 +66,12 @@ async def edit_lesson(
     schedule_lesson_id: int, 
     dto: EditLessonInScheduleDTO
 ): 
+    if not await teacher_repository.has_by_id(teacher_id):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Teacher not found"
+        )
+    
     if not await schedule_repository.has_schedule(teacher_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -70,4 +88,18 @@ async def edit_lesson(
     await schedule_repository.edit_lesson(schedule_lesson_id, dto_dict)
     return { "status": "ok" }
 
-async def import_from_modeus(teacher_id: int): ...
+
+async def import_from_modeus(teacher_id: int): 
+    if not await teacher_repository.has_by_id(teacher_id):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Teacher not found"
+        )
+    
+    if not await schedule_repository.has_schedule(teacher_id):
+        schedule_repository.add_schedule(teacher_id)
+    
+    return { "status": "ok" }
+
+
+async def set_start_date(teacher_id: int, start_date: str): ...

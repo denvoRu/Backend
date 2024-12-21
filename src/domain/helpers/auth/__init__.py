@@ -4,3 +4,6 @@ from .add_in_teacher_or_admin import add_in_teacher_or_admin
 from .add_token_in_redis import add_token_in_redis
 from .create_new_user_by_token import create_new_user_by_token
 from .is_token_in_redis import is_token_in_redis
+from .add_restore_data_in_redis import add_restore_data_in_redis
+from .get_restore_password_link import get_restore_password_link
+from .restore_in_redis import get_restore_token_from_redis

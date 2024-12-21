@@ -1,7 +1,9 @@
 from src.infrastructure.enums.role import Role
 from src.domain.services import auth_service
 from src.domain.extensions.check_role import CurrentAdmin
-from src.application.dto import RegisterDTO
+from src.application.dto.auth import (
+    RegisterDTO, RestorePasswordDTO, UpdatePasswordDTO
+)
 
 from typing import Any
 from typing_extensions import Annotated
@@ -13,7 +15,7 @@ router = APIRouter()
 
 
 @router.post("/register", description="Register a new user")
-async def register(dto: RegisterDTO = Body(...)) -> Any:
+async def register(admin: CurrentAdmin, dto: RegisterDTO = Body(...)) -> Any:
     return await auth_service.register(dto)
 
 @router.post("/login", description="Authorizes the user")
@@ -26,3 +28,13 @@ async def login(
 @router.post("/token", description="Get new token, if refresh token is valid")
 async def token(refresh_token: str):
     return await auth_service.token(refresh_token)
+
+
+@router.post("/restore_password", description="Restore password for user")
+async def restore_password(dto: RestorePasswordDTO = Body(...)):
+    return await auth_service.restore_password(dto)
+
+
+@router.post("/update_password", description="Update password for user")
+async def restore_password(dto: UpdatePasswordDTO = Body(...)):
+    return await auth_service.update_password_from_token(dto)

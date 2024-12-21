@@ -4,3 +4,4 @@ from .auth import (
     is_in_table,
     add_user
 )
+from .edit import update_password
