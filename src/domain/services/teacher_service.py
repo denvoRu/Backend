@@ -15,6 +15,8 @@ async def show_teachers(
         desc: int = 0
 ):
     try:
+        if search is not None and search != "":
+            search = "first_name*{0},second_name*{0},third_name*{0},email*{0}".format(search)
         return await teacher_repository.all(page, limit, columns, sort, search, desc)
     except Exception:
         raise HTTPException(

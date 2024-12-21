@@ -27,12 +27,6 @@ async def register(dto: RegisterDTO) -> str:
             detail="Institute id is required"
         )
     
-    if dto.role == Role.ADMIN and dto.institute_id:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Institute id is not required"
-        )
-    
     is_has = await has_by_id(dto.institute_id)
     if dto.role == Role.TEACHER and not(is_has):
         raise HTTPException(

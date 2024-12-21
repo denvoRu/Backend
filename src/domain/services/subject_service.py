@@ -7,14 +7,17 @@ from fastapi import HTTPException, status
 
 async def get_all(
     page, limit, columns, sort, search, desc, 
-    rating_start, rating_end, teacher_ids
+    rating_start, rating_end, teacher_ids,
+    module_id
 ):
     if teacher_ids is not None:
         teacher_ids = teacher_ids.split(",")
     try:
+        if search is not None and search != "":
+            search = "name*{0}".format(search)
         return await subject_repository.get_all(
             page, limit, columns, sort, search, desc, 
-            rating_start, rating_end, teacher_ids
+            rating_start, rating_end, teacher_ids, module_id
         )
     except Exception as e:
         print(e)
@@ -79,3 +82,4 @@ async def delete_subject(subject_id: int):
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Subject not found"
         )
+    

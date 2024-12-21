@@ -5,6 +5,8 @@ from fastapi import HTTPException, status
 
 async def get_all(page, limit, columns, sort, search, desc):
     try: 
+        if search is not None and search != "":
+            search = "name*{0},short_name*{0}".format(search)
         return await institute_repository.get_all_institutes(
             page, 
             limit, 
