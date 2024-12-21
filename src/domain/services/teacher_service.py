@@ -15,7 +15,7 @@ async def show_teachers(
         desc: int = 0
 ):
     if search is not None and search != "":
-        search = "first_name*{0},second_name*{0},third_name*{0},email*{0}".format(
+        search = "first_name*{0},second_name*{0},third_name*{0}".format(
             search
         )
         

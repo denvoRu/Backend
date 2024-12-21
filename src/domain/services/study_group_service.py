@@ -20,7 +20,7 @@ async def show_teachers(
         )
     
     if search is not None and search != "":
-        search = "first_name*{0},second_name*{0},third_name*{0},email*{0}".format(search)
+        search = "first_name*{0},second_name*{0},third_name*{0}".format(search)
     
     return await study_group_repository.get_by_id(
         subject_id, 
