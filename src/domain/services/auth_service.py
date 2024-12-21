@@ -1,8 +1,7 @@
 from src.domain.extensions.get_hex_uuid import get_hex_uuid
 from src.infrastructure.enums.role import Role
-from src.infrastructure.repositories.institute_repository import (
-    has_by_id, update_password
-)
+from src.infrastructure.repositories.institute_repository import has_by_id
+from src.infrastructure.repositories.auth_repository import update_password
 from src.domain.extensions.email.email_sender import EmailSender
 from src.domain.extensions.token import create_token
 from src.application.dto.auth import (
