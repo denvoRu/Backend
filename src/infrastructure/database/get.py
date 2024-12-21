@@ -9,7 +9,6 @@ TableInstance = TypeVar("TableInstance")
 async def get_by_id(instance: TableInstance, instance_id: str, attr_name: str = None, id_name = 'id') -> TableInstance:
     getted_instance =  getattr(instance, attr_name) if attr_name else instance
 
-    select(instance).where(instance.id == instance_id)
     s = await db.execute(
         select(getted_instance)
         .where(getattr(instance, id_name) == instance_id)

@@ -1,0 +1,2 @@
+from .add_lesson_in_schedule_dto import AddLessonInScheduleDTO
+from .edit_lesson_in_schedule_dto import EditLessonInScheduleDTO
