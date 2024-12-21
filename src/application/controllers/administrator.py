@@ -8,12 +8,12 @@ router = APIRouter()
 
 
 @router.get("/me", description="Return data about current user")
-async def show_me(admin: CurrentAdmin):
+async def get_me(admin: CurrentAdmin):
     return await administrator_service.get_by_id(admin.user_id)
 
 
 @router.get("/", description="Return all admins")
-async def show_admins(
+async def get_all_admins(
     admin: CurrentAdmin, 
     page: int = 1,
     limit: int = 10,
@@ -22,7 +22,7 @@ async def show_admins(
     sort: str = Query(None, alias="sort"),
     search: str = Query(None, alias="search"),
 ):
-    return await administrator_service.show_administrators(
+    return await administrator_service.get_administrators(
         page, 
         limit, 
         columns, 

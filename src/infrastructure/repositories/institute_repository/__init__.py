@@ -1,5 +1,5 @@
-from .get_institute import get_all_institutes, get_institute
-from .create_institute import create_institute
-from .delete_institute import delete_institute
-from .edit_institute import edit_institute
+from .get_institute import get_all, get_by_id
+from .create_institute import add
+from .delete_institute import delete_by_id
+from .edit_institute import update_by_id
 from .has_institute import has_by_name, has_by_id

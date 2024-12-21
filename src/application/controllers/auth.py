@@ -14,9 +14,10 @@ from fastapi.security import OAuth2PasswordRequestForm
 router = APIRouter()
 
 
-@router.post("/register", description="Register a new user")
+@router.post("/register", description="Register a new user", status_code=201)
 async def register(admin: CurrentAdmin, dto: RegisterDTO = Body(...)) -> Any:
     return await auth_service.register(dto)
+
 
 @router.post("/login", description="Authorizes the user")
 async def login(
@@ -24,6 +25,7 @@ async def login(
     role: Role = Body(...)
 ):
     return await auth_service.login(form_data, role)
+
 
 @router.post("/token", description="Get new token, if refresh token is valid")
 async def token(refresh_token: str):
@@ -36,5 +38,5 @@ async def restore_password(dto: RestorePasswordDTO = Body(...)):
 
 
 @router.post("/update_password", description="Update password for user")
-async def restore_password(dto: UpdatePasswordDTO = Body(...)):
+async def update_password(dto: UpdatePasswordDTO = Body(...)):
     return await auth_service.update_password_from_token(dto)

@@ -1,11 +1,11 @@
 from src.infrastructure.database import (
-    db, Schedule, ScheduleLesson, get_by_id
+    Schedule, ScheduleLesson, get_by_id, db
 )
 from sqlalchemy import select
 
 
 async def get_by_week(teacher_id: int, week: int):
-    schedule_id = await get_schedule(teacher_id)
+    schedule_id = await get_by_id(teacher_id)
 
     stmt = select(ScheduleLesson).where(
         ScheduleLesson.schedule_id == schedule_id,
@@ -14,7 +14,8 @@ async def get_by_week(teacher_id: int, week: int):
     executed = await db.execute(stmt)
     return executed.scalars().all()
 
-async def get_schedule(teacher_id: int):
+
+async def get_by_id(teacher_id: int):
     return await get_by_id(
         Schedule, 
         teacher_id,

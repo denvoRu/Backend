@@ -1,7 +1,8 @@
-from src.application.dto.institute import CreateInstitudeDTO, EditInstitudeDTO
+from src.application.dto.institute import CreateInstituteDTO, EditInstituteDTO
 from src.domain.services import institute_service
 from src.domain.extensions.check_role import CurrentAdmin
 from fastapi import APIRouter, Body, Query
+
 
 router = APIRouter()
 
@@ -24,16 +25,16 @@ async def get_current_institute(current_user: CurrentAdmin, institute_id: int):
     return await institute_service.get_by_id(institute_id)
 
 
-@router.post("/", description="Create a new institute")
+@router.post("/", description="Create a new institute", status_code=201)
 async def create_institute(
-    current_user: CurrentAdmin, dto: CreateInstitudeDTO = Body(...)
+    current_user: CurrentAdmin, dto: CreateInstituteDTO = Body(...)
 ):
     return await institute_service.create_institute(dto)
 
 
 @router.patch("/{institute_id}", description="Edit an existing institute")
 async def edit_institute(
-    current_user: CurrentAdmin, institute_id: int, dto: EditInstitudeDTO = Body(...)
+    current_user: CurrentAdmin, institute_id: int, dto: EditInstituteDTO = Body(...)
 ):
     return await institute_service.edit_institute(institute_id, dto)
 

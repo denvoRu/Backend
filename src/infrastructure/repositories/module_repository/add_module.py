@@ -1,4 +1,4 @@
-from src.infrastructure.database import Module, add as add_instance
+from src.infrastructure.database import Module, add_instance
 
 
 async def add(name: str):

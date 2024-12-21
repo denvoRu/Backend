@@ -1,5 +1,4 @@
 from src.domain.extensions.token import create_token
-from src.domain.models.user import User
 from src.infrastructure.redis import Users
 
 

@@ -1,11 +1,7 @@
 from src.infrastructure.repositories.study_group_repository import (
     get_subject_ids_by_teacher_statement
 )
-from src.infrastructure.database import get, Subject
-
-
-async def get_by_id(subject_id: int) -> Subject:
-    return await get.get_by_id(Subject, subject_id)
+from src.infrastructure.database import Subject, get
 
 
 async def get_all(
@@ -45,3 +41,7 @@ async def get_all(
         desc,
         filters
     )
+
+
+async def get_by_id(subject_id: int) -> Subject:
+    return await get.get_by_id(Subject, subject_id)

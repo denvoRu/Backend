@@ -9,4 +9,3 @@ class DayOfWeek(IntEnum):
     FRIDAY = 4
     SATURDAY = 5
     SUNDAY = 6
-

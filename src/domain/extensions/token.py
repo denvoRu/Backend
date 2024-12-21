@@ -3,8 +3,8 @@ from src.infrastructure.enums.role import Role
 from src.domain.models.user import User
 from src.infrastructure.config.config import JWT_SECRET_KEY, ALGORITHM
 from src.domain.models.token import Token
-from jose import jwt
 
+from jose import jwt
 from typing import Union
 from datetime import datetime, timedelta, timezone
 
@@ -18,6 +18,7 @@ def encode_user(data: dict, expires_delta: Union[timedelta, None] = None):
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, key=JWT_SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
+
 
 def decode_user(token):
     decoded_data = jwt.decode(token, key=JWT_SECRET_KEY, algorithms=ALGORITHM)

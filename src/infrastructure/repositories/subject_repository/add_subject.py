@@ -1,4 +1,5 @@
-from src.infrastructure.database import Subject, add as add_instance
+from src.infrastructure.database import Subject, add_instance
+
 
 async def add(institute_id: int, module_id: int, name: str):
     module = Subject(
@@ -8,4 +9,3 @@ async def add(institute_id: int, module_id: int, name: str):
         rating=0
     )
     await add_instance(module)
-   

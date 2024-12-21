@@ -1,7 +1,7 @@
 from src.application.dto.module import CreateModuleDTO
 from src.infrastructure.repositories import module_repository
 
-from fastapi import HTTPException, status
+from fastapi import HTTPException, Response, status
 
 
 async def get_by_id(module_id: int): 
@@ -12,6 +12,7 @@ async def get_by_id(module_id: int):
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Module not found"
         )
+
 
 async def get_all(page, limit, columns, sort, search, desc): 
     if search is not None and search != "":
@@ -27,6 +28,7 @@ async def get_all(page, limit, columns, sort, search, desc):
             detail="One or more parameters are invalid"
         )
 
+
 async def create_module(dto: CreateModuleDTO): 
     has_name = await module_repository.has_by_name(dto.name)
     if has_name:
@@ -35,8 +37,9 @@ async def create_module(dto: CreateModuleDTO):
             detail="Module already exists"
         )
     
-    await module_repository.add_module(dto.name)
-    return { "status": "ok" }
+    await module_repository.add(dto.name)
+    return Response(status_code=status.HTTP_201_CREATED)
+
 
 async def delete(module_id: int):
     has_id = await module_repository.has_by_id(module_id)
@@ -47,4 +50,4 @@ async def delete(module_id: int):
         )
     
     await module_repository.delete_by_id(module_id)
-    return { "status": "ok" }
+    return Response(status_code=status.HTTP_200_OK)

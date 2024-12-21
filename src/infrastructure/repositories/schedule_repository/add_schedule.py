@@ -1,11 +1,13 @@
-from src.infrastructure.database import db, add, Schedule, ScheduleLesson
+from src.infrastructure.database import (
+    Schedule, ScheduleLesson, add_instance
+)
 
 
-async def add_schedule(teacher_id: int):
+async def add(teacher_id: int):
     schedule = Schedule(
         teacher_id=teacher_id
     )
-    await add(schedule)
+    await add_instance(schedule)
 
 
 async def add_lesson(schedule_id: int, dto: dict):
@@ -13,4 +15,4 @@ async def add_lesson(schedule_id: int, dto: dict):
         schedule_id=schedule_id,
         **dto
     )
-    await add(schedule_lesson)
+    await add_instance(schedule_lesson)

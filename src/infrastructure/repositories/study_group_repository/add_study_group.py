@@ -1,4 +1,4 @@
-from src.infrastructure.database import StudyGroup, add as add_instance
+from src.infrastructure.database import StudyGroup, add_instance
 
 
 async def add(subject_id: int, teacher_id: int):

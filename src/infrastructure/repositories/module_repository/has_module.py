@@ -1,4 +1,4 @@
-from src.infrastructure.database import has_instance, Module
+from src.infrastructure.database import Module, has_instance
 
 
 async def has_by_id(module_id: int):

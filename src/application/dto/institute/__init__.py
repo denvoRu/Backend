@@ -1,2 +1,2 @@
-from .create_institude_dto import CreateInstitudeDTO
-from .edit_institute_dto import EditInstitudeDTO
+from .create_institude_dto import CreateInstituteDTO
+from .edit_institute_dto import EditInstituteDTO

@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field
 
-class CreateInstitudeDTO(BaseModel):
-    name: str = Field(max_length=100)
-    short_name: str = Field(max_length=50)
-    address: str = Field(max_length=100)
+
+class CreateInstituteDTO(BaseModel):
+    name: str = Field(max_length=100, examples=["Институт радиоэлектроники и информационных технологий-РТФ", "Институт новых материалов и технологий"])
+    short_name: str = Field(max_length=50, examples=["ИРИТ-РТФ", "ИНМИТ"])
+    address: str = Field(max_length=100, examples=["ул. Ленина, 1"])

@@ -1,20 +1,22 @@
-from fastapi import HTTPException, status
 from src.application.dto.shared import EditUserDTO
 from src.infrastructure.repositories import administrator_repository
 
+from fastapi import HTTPException, Response, status
+
 
 async def get_by_id(admin_id: str):
-    try:
-        return await administrator_repository.get_by_id(admin_id)
-    except Exception:
+    if not await administrator_repository.has_by_id(admin_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Administrator not found"
         )
+    
+    return await administrator_repository.get_by_id(admin_id)
 
-async def show_administrators(page, limit, columns, sort, search, desc): 
+
+async def get_administrators(page, limit, columns, sort, search, desc): 
     try:
-        return await administrator_repository.all(
+        return await administrator_repository.get_all(
             page, limit, columns, sort, search, desc
         )
     except Exception:
@@ -23,22 +25,27 @@ async def show_administrators(page, limit, columns, sort, search, desc):
             detail="One or more parameters are invalid"
         )
 
+
 async def edit_administrator(admin_id: int, dto: EditUserDTO):
-    try:
-        await administrator_repository.edit_admin(admin_id, dto)
-        return { "status": "ok" }
-    except Exception:
+    if not await administrator_repository.has_by_id(admin_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Administrator not found"
         )
 
+    dto_dict = dto.model_dump(exclude_none=True)
+
+    await administrator_repository.update_by_id(admin_id, dto)
+    return Response(status_code=status.HTTP_200_OK)
+
+
 async def delete_administrator(admin_id: str):
-    try:
-        await administrator_repository.delete_admin(admin_id)
-        return { "status": "ok" }
-    except Exception:
+    if not await administrator_repository.has_by_id(admin_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Administrator not found"
         )
+    
+    await administrator_repository.delete_by_id(admin_id)
+    return Response(status_code=status.HTTP_200_OK)
+        

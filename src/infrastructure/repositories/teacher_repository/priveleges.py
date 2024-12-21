@@ -1,34 +1,35 @@
 from src.infrastructure.database import (
-    db, Privileges, commit_rollback
+    Privileges, commit_rollback, 
+    has_instance, add_instance, db
 )
 from sqlalchemy import delete, select
 
 
 async def get_privileges(teacher_id: int):
-
     s = await db.execute(
-        select(Privileges.privilage)
+        select(Privileges.privilege)
         .where(Privileges.teacher_id == teacher_id)
     )
-    return s.all()
-    
+    return s.scalars().all()
+
+
 async def add_privilege(teacher_id: int, privilege: str):
-    db.add(Privileges(teacher_id=teacher_id, privilage=privilege))
-    await commit_rollback()
+    p = Privileges(teacher_id=teacher_id, privilage=privilege)
+    await add_instance(p)
+
 
 async def has_privilege(teacher_id: int, privilege: str):
-    s = await db.execute(
-        select(Privileges.id)
-        .where(Privileges.privilage == privilege,
-               Privileges.teacher_id == teacher_id)
+    return await has_instance(
+        Privileges, 
+        (Privileges.teacher_id == teacher_id,
+        Privileges.privilege == privilege)
     )
     
-    return len(s.all()) > 0
-    
+
 async def delete_privilege(teacher_id: int, privilege: str):
     stmt = (delete(Privileges)
             .where(Privileges.teacher_id == teacher_id, 
-                   Privileges.privilage == privilege))
+                   Privileges.privilege == privilege))
     
     await db.execute(stmt)
     await commit_rollback()

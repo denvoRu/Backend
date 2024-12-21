@@ -4,15 +4,17 @@ from src.domain.services import teacher_service
 from src.domain.extensions.check_role import CurrentTeacher, CurrentAdmin
 from fastapi import APIRouter, Body, Query
 
+
 router = APIRouter()
 
+
 @router.get("/me", description="Show me")
-async def show_me(teacher: CurrentTeacher):
+async def get_me(teacher: CurrentTeacher):
     return await teacher_service.get_by_id(teacher.user_id)
 
 
 @router.get("/", description="Show all teachers (for admins)")
-async def show_teachers(
+async def get_all_teachers(
     admin: CurrentAdmin, 
     page: int = 1,
     limit: int = 10,
@@ -21,11 +23,11 @@ async def show_teachers(
     sort: str = Query(None, alias="sort"),
     search: str = Query(None, alias="search"),
 ):
-    return await teacher_service.show_teachers(page, limit, columns, sort, search, desc)
+    return await teacher_service.get_all(page, limit, columns, sort, search, desc)
 
 
 @router.get("/{teacher_id}", description="Show teacher data (for admins)")
-async def show_teacher(admin: CurrentAdmin, teacher_id: int):
+async def get_current_teacher(admin: CurrentAdmin, teacher_id: int):
     return await teacher_service.get_by_id(teacher_id)
 
 
@@ -41,17 +43,17 @@ async def delete_teacher(admin: CurrentAdmin, teacher_id: int):
     return await teacher_service.delete_teacher(teacher_id)
 
 @router.get("/{teacher_id}/privilege", description="Get a teacher's privilege (for admins)")
-async def get_teacher_privilege(admin: CurrentAdmin, teacher_id: int):
+async def get_teacher_privileges(admin: CurrentAdmin, teacher_id: int):
     return await teacher_service.get_privileges(teacher_id)
 
-@router.post("/{teacher_id}/privilege/{privilege}", description="Add teacher privilege (for admins)")
-async def get_teacher_privilege(
+@router.post("/{teacher_id}/privilege/{privilege}", description="Add teacher privilege (for admins)", status_code=201)
+async def add_teacher_privilege(
     admin: CurrentAdmin, teacher_id: int, privilege: Privileges
 ):
     return await teacher_service.add_privilege(teacher_id, privilege)
 
 @router.delete("/{teacher_id}/privilege/{privilege}", description="Delete teacher privilege (for admins)")
-async def get_teacher_privilege(
+async def delete_teacher_privilege(
     admin: CurrentAdmin, teacher_id: int, privilege: Privileges
 ):
     return await teacher_service.delete_privilege(teacher_id, privilege)

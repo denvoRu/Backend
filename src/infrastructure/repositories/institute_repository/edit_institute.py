@@ -1,4 +1,5 @@
-from src.infrastructure.database import Institute, update
+from src.infrastructure.database import Institute, update_instance
 
-async def edit_institute(institute_id: int, data: dict):
-    await update.update_instance(Institute, institute_id, data)
+
+async def update_by_id(institute_id: int, data: dict):
+    await update_instance(Institute, institute_id, data)

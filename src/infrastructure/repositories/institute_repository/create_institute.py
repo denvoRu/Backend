@@ -1,6 +1,7 @@
-from src.infrastructure.database import Institute, add as add_instance
+from src.infrastructure.database import Institute, add_instance
 
-async def create_institute(
+
+async def add(
     institute_name: str,
     institute_short_name: str,
     institute_address: str

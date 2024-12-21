@@ -1,4 +1,4 @@
-from src.infrastructure.database import StudyGroup, db, commit_rollback
+from src.infrastructure.database import StudyGroup, commit_rollback, db
 from sqlalchemy import delete
 
 

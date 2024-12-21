@@ -1,10 +1,11 @@
 from src.infrastructure.repositories import (
     study_group_repository, subject_repository
 )
-from fastapi import HTTPException, status
+
+from fastapi import HTTPException, Response, status
 
 
-async def show_teachers(
+async def get_teachers(
         subject_id, 
         page: int = 1, 
         limit: int = 10, 
@@ -33,7 +34,6 @@ async def show_teachers(
     )
 
     
-    
 async def add_teacher(subject_id: int, teacher_id: int):
     if not await subject_repository.has_by_id(subject_id):
         raise HTTPException(
@@ -48,7 +48,7 @@ async def add_teacher(subject_id: int, teacher_id: int):
         )
     
     await study_group_repository.add(subject_id, teacher_id)
-    return { "status": "ok" }
+    return Response(status_code=status.HTTP_201_CREATED)
     
     
 async def delete_teacher(subject_id: int, teacher_id: int):
@@ -67,5 +67,5 @@ async def delete_teacher(subject_id: int, teacher_id: int):
     await study_group_repository.delete_from_subject(
         subject_id, teacher_id
     )
-    return { "status": "ok" }
+    return Response(status_code=status.HTTP_200_OK)
     

@@ -1,8 +1,8 @@
-from src.infrastructure.database import has, Subject
+from src.infrastructure.database import Subject, has_instance
 
 
 async def has_by_id(subject_id: int):
-    return await has.has_instance(Subject, Subject.id == subject_id)
+    return await has_instance(Subject, Subject.id == subject_id)
 
 async def has_by_name(name: int):
-    return await has.has_instance(Subject, Subject.name == name)
+    return await has_instance(Subject, Subject.name == name)

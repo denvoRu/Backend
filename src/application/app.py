@@ -6,6 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from redis_om import Migrator
 
+
 async def shutdown(app: FastAPI):
     db.init(config.DATABASE_URL)
     Migrator().run()
@@ -13,8 +14,11 @@ async def shutdown(app: FastAPI):
     yield
     await db.close()
 
+
 app = FastAPI(
+    version=config.VERSION,
     title=config.PROJECT_NAME,
+    summary=config.SUMMARY,
     lifespan=shutdown
 )
 

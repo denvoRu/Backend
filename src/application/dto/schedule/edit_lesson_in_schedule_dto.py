@@ -5,7 +5,7 @@ from typing import Optional
 
 
 class EditLessonInScheduleDTO(BaseModel):
-    subject_id: Optional[int] = Field(default=None)
-    day: Optional[DayOfWeek] = Field(default=None)
-    start_time: Optional[time] = Field(default=None)
-    end_time: Optional[time] = Field(default=None)
+    subject_id: int = Field(default=None, description="id of subject", examples=[1, 2])
+    day: DayOfWeek = Field(default=None, description="day of week", examples=[DayOfWeek.MONDAY, DayOfWeek.TUESDAY])
+    start_time: str = Field(default=None, description="time in format HH:MM", examples=["12:00", "13:00"])
+    end_time: str = Field(default=None, description="time in format HH:MM", examples=["13:30", "15:23"])

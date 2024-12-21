@@ -4,7 +4,9 @@ from src.infrastructure.models.page_response import PageResponse
 from src.infrastructure.database import db, commit_rollback
 from sqlalchemy import func, or_, select, text, desc as order_desc
 
+
 TableInstance = TypeVar("TableInstance")
+
 
 async def get_by_id(instance: TableInstance, instance_id: str, attr_name: str = None, id_name = 'id') -> TableInstance:
     getted_instance =  getattr(instance, attr_name) if attr_name else instance
@@ -16,7 +18,8 @@ async def get_by_id(instance: TableInstance, instance_id: str, attr_name: str = 
     
     data: TableInstance = s.first()[0]
     return data
-    
+
+  
 async def get_all(
     instance: TableInstance,
     page: int = 1,

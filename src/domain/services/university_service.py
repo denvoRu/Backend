@@ -1,2 +1,1 @@
-async def get_rating():
-    return
+async def get_rating(): ...
