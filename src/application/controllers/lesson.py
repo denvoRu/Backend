@@ -26,7 +26,12 @@ async def get_lessons_of_teacher(
     end_date: str = Query(None, alias="end_date"),
     filter = Query(None, alias="filter")
 ):
-    return "Lessons are shown"
+    return "lesso are shown"
+
+
+@router.get("/{lesson_id}", description="Show lesson data if this lesson is active")
+async def get_data_of_active_lesson(lesson_id: int):
+    return "Subject is shown"
 
 
 @router.get("/{lesson_id}/members", description="Show members of lesson")

@@ -18,5 +18,5 @@ api_router.include_router(institute.router, prefix="/institute", tags=["institut
 api_router.include_router(module.router, prefix="/module", tags=["module"])
 api_router.include_router(subject.router, prefix="/subject", tags=["subject"])
 api_router.include_router(schedule.router, prefix="/schedule", tags=["schedule"])
-api_router.include_router(lesson.router, prefix="/lessons", tags=["lessons"])
-api_router.include_router(feedback.router, prefix="/lessons", tags=["lessons"])
+api_router.include_router(lesson.router, prefix="/lesson", tags=["lesson"])
+api_router.include_router(feedback.router, prefix="/lesson", tags=["lesson"])
