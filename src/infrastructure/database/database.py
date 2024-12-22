@@ -4,7 +4,6 @@ from sqlmodel import SQLModel
 
 
 class AsyncDatabaseSession:
-
     def __init__(self):
         self.session = None
         self.engine = None

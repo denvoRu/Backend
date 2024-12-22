@@ -1,5 +1,5 @@
 from src.infrastructure.database import (
-    Schedule, ScheduleLesson, get_by_id, db
+    Schedule, Subject, ScheduleLesson, get_by_id, db
 )
 from sqlalchemy import select
 
@@ -7,9 +7,14 @@ from sqlalchemy import select
 async def get_by_week(teacher_id: int, week: int):
     schedule_id = await get_by_id(teacher_id)
 
-    stmt = select(ScheduleLesson).where(
+    stmt = select(
+        Subject.name,
+        ScheduleLesson.day,
+        ScheduleLesson.start_time,
+        ScheduleLesson.end_time
+    ).where(
         ScheduleLesson.schedule_id == schedule_id,
-        ScheduleLesson.week == week)
+        ScheduleLesson.week == week).join(Subject)
 
     executed = await db.execute(stmt)
     return executed.scalars().all()

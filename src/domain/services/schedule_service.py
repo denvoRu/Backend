@@ -2,6 +2,7 @@ from src.infrastructure.enums.week import Week
 from src.infrastructure.repositories import (
     schedule_repository, teacher_repository
 )
+from src.domain.helpers.schedule import get_last_monday
 from src.application.dto.schedule import (
     AddLessonInScheduleDTO, EditLessonInScheduleDTO
 )
@@ -9,7 +10,7 @@ from src.application.dto.schedule import (
 from fastapi import HTTPException, Response, status
 
 
-async def get_schedule(teacher_id: int, week: Week = 1): 
+async def get_schedule(teacher_id: int, week: Week = Week.FIRST): 
     if not await teacher_repository.has_by_id(teacher_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -30,7 +31,8 @@ async def add_lesson(teacher_id: int, dto: AddLessonInScheduleDTO):
         )
     
     if not await schedule_repository.has_by_id(teacher_id):
-        schedule_repository.add(teacher_id)
+        week = get_last_monday()
+        schedule_repository.add(teacher_id, week)
 
     dto_dict = dto.model_dump(exclude_none=True)
     schedule_id = await schedule_repository.get_by_id(teacher_id)
@@ -99,8 +101,6 @@ async def import_from_modeus(teacher_id: int):
     
     if not await schedule_repository.has_by_id(teacher_id):
         schedule_repository.add(teacher_id)
-    
+
+    # MODEUS API
     return Response(status_code=status.HTTP_200_OK)
-
-
-async def set_start_date(teacher_id: int, start_date: str): ...

@@ -123,6 +123,6 @@ def delete_password_from_array(data: List[str]):
     data = list(set(data))
     try: 
         data.remove("password")
-    except Exception as e: ...
+    except: ...
 
     return data

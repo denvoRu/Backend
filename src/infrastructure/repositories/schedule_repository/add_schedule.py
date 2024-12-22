@@ -3,9 +3,10 @@ from src.infrastructure.database import (
 )
 
 
-async def add(teacher_id: int):
+async def add(teacher_id: int, week_start):
     schedule = Schedule(
-        teacher_id=teacher_id
+        teacher_id=teacher_id,
+        week_start=week_start
     )
     await add_instance(schedule)
 

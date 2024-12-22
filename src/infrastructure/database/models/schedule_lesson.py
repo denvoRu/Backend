@@ -12,3 +12,4 @@ class ScheduleLesson(SQLModel, table=True):
     day: int = Field()
     start_time: time = Time()
     end_time: time = Time()
+    
