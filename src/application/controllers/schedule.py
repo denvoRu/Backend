@@ -16,7 +16,7 @@ async def get_my_schedule(teacher: CurrentTeacher, week: Week = 0):
     return await schedule_service.get_schedule(teacher.user_id, week)
 
 
-@router.get("/{teacher_id}", description="Show teacher schedules (for admins)")
+@router.get("/{teacher_id}", description="Show teacher schedule (for admins)")
 async def get_schedule_of_teacher(admin: CurrentAdmin, teacher_id: int, week: Week = 0):
     return await schedule_service.get_schedule(teacher_id, week)
 

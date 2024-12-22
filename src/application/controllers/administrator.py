@@ -7,12 +7,12 @@ from fastapi import APIRouter, Body, Query
 router = APIRouter()
 
 
-@router.get("/me", description="Return data about current user")
+@router.get("/me", description="Show data about current user")
 async def get_me(admin: CurrentAdmin):
     return await administrator_service.get_by_id(admin.user_id)
 
 
-@router.get("/", description="Return all admins")
+@router.get("/", description="Show all admins")
 async def get_all_admins(
     admin: CurrentAdmin, 
     page: int = 1,

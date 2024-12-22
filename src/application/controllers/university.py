@@ -5,6 +5,6 @@ from fastapi import APIRouter
 router = APIRouter()
 
 
-@router.get("/rating", description="Return overall rating")
+@router.get("/rating", description="Show overall rating")
 async def get_university_rating():
     return await university_service.get_rating()
