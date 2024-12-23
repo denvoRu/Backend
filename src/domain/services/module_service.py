@@ -50,7 +50,8 @@ async def get_all(page, limit, columns, sort, search, desc):
         return await module_repository.get_all(
             page, limit, columns, sort, search, desc
         )
-    except Exception:
+    except Exception as e:
+        print(e)
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="One or more parameters are invalid"
