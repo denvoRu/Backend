@@ -12,15 +12,31 @@ async def get_all(
         columns: str = None,
         sort: str = None,
         search: str = None,
-        desc: int = 0
+        desc: int = 0,
+        rating_start: int = -1,
+        rating_end: int = -1,
+        subject_ids: str = None
 ):
+    if subject_ids is not None:
+        subject_ids = subject_ids.split(",")
+
     if search is not None and search != "":
         search = "first_name*{0},second_name*{0},third_name*{0}".format(
             search
         )
         
     try:
-        return await teacher_repository.get_all(page, limit, columns, sort, search, desc)
+        return await teacher_repository.get_all(
+            page, 
+            limit, 
+            columns, 
+            sort, 
+            search, 
+            desc,
+            rating_start, 
+            rating_end, 
+            subject_ids
+        )
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,

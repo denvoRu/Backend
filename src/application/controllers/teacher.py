@@ -18,8 +18,21 @@ async def get_all_teachers(
     columns: str = Query(None, alias="columns"),
     sort: str = Query(None, alias="sort"),
     search: str = Query(None, alias="search"),
+    rating_start: int = Query(-1, alias="rating_start"),
+    rating_end: int = Query(-1, alias="rating_end"),
+    subject_ids: str = Query(None, alias="subject_ids")
 ):
-    return await teacher_service.get_all(page, limit, columns, sort, search, desc)
+    return await teacher_service.get_all(
+        page, 
+        limit, 
+        columns, 
+        sort, 
+        search, 
+        desc, 
+        rating_start, 
+        rating_end, 
+        subject_ids
+    )
 
 
 @router.get("/me", description="Show me")
