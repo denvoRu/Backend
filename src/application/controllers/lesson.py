@@ -1,9 +1,10 @@
+from src.domain.services import lesson_service
 from src.domain.extensions.check_role import (
     CurrentTeacher, CurrentAdmin, CurrentUser
 )
-from src.domain.services import lesson_service
 
 from fastapi import APIRouter, Query
+from pydantic import UUID4
 
 
 router = APIRouter()
@@ -30,15 +31,15 @@ async def get_lessons_of_teacher(
 
 
 @router.get("/{lesson_id}", description="Show lesson data if this lesson is active")
-async def get_data_of_active_lesson(lesson_id: int):
+async def get_data_of_active_lesson(lesson_id: UUID4):
     return "Subject is shown"
 
 
 @router.get("/{lesson_id}/members", description="Show members of lesson")
-async def get__members_of_lesson(user: CurrentUser, lesson_id: int):
+async def get__members_of_lesson(user: CurrentUser, lesson_id: UUID4):
     return "Subject is shown"
 
 
 @router.get("/{lesson_id}/statistics", description="Show statistics of lesson")
-async def get_statistics_of_lesson(user: CurrentUser, lesson_id: int):
+async def get_statistics_of_lesson(user: CurrentUser, lesson_id: UUID4):
     return "Reviews are shown"

@@ -1,9 +1,10 @@
 from src.application.dto.subject import CreateSubjectDTO, EditSubjectDTO
 from src.infrastructure.repositories import (
-    subject_repository, institute_repository, module_repository
+    subject_repository, module_repository
 )
 
 from fastapi import HTTPException, Response, status
+from uuid import UUID
 
 
 async def get_all(
@@ -29,7 +30,7 @@ async def get_all(
         )
 
 
-async def get_by_id(subject_id: int):
+async def get_by_id(subject_id: UUID):
     if not await subject_repository.has_by_id(subject_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -46,24 +47,17 @@ async def create(dto: CreateSubjectDTO):
             detail="Subject already exists"
         )
     
-    if not await institute_repository.has_by_id(dto.institute_id):
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Institute not found"
-        )
-    
     if not await module_repository.has_by_id(dto.module_id):
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="Module not found"
         )
-    
  
-    await subject_repository.add(dto.institute_id, dto.module_id, dto.name)
+    await subject_repository.add(dto.module_id, dto.name)
     return Response(status_code=status.HTTP_201_CREATED)
 
 
-async def edit(subject_id: int, dto: EditSubjectDTO):
+async def edit(subject_id: UUID, dto: EditSubjectDTO):
     try:
         return await subject_repository.update_by_id(subject_id, dto)
     except:
@@ -73,7 +67,7 @@ async def edit(subject_id: int, dto: EditSubjectDTO):
         )
 
 
-async def delete(subject_id: int):
+async def delete(subject_id: UUID):
     if not await subject_repository.has_by_id(subject_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

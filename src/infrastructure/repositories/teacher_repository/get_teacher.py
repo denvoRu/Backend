@@ -1,6 +1,7 @@
 from src.infrastructure.database.extensions import user_to_save_dict
 from src.infrastructure.database import Teacher, get
 
+from uuid import UUID
 
 
 async def get_all(page, limit, columns, sort, search, desc, filters = None):
@@ -17,5 +18,5 @@ async def get_all(page, limit, columns, sort, search, desc, filters = None):
     return result
 
 
-async def get_by_id(teacher_id: int) -> dict: 
+async def get_by_id(teacher_id: UUID) -> dict: 
     return user_to_save_dict(await get.get_by_id(Teacher, teacher_id))

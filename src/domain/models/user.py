@@ -1,8 +1,8 @@
 from dataclasses import dataclass
-from src.infrastructure.enums.role import Role
+from uuid import UUID
 
 
 @dataclass
 class User:
-    user_id: int
+    user_id: UUID
     password: str

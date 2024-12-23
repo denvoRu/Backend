@@ -1,7 +1,9 @@
 from src.application.dto.institute import CreateInstituteDTO, EditInstituteDTO
 from src.domain.services import institute_service
 from src.domain.extensions.check_role import CurrentAdmin
+
 from fastapi import APIRouter, Body, Query
+from pydantic import UUID4
 
 
 router = APIRouter()
@@ -21,7 +23,7 @@ async def get_all_institutes(
 
 
 @router.get("/{institute_id}", description="Get an existing institute with id")
-async def get_current_institute(current_user: CurrentAdmin, institute_id: int):
+async def get_current_institute(current_user: CurrentAdmin, institute_id: UUID4):
     return await institute_service.get_by_id(institute_id)
 
 
@@ -34,11 +36,11 @@ async def create_institute(
 
 @router.patch("/{institute_id}", description="Edit an existing institute")
 async def edit_institute(
-    current_user: CurrentAdmin, institute_id: int, dto: EditInstituteDTO = Body(...)
+    current_user: CurrentAdmin, institute_id: UUID4, dto: EditInstituteDTO = Body(...)
 ):
     return await institute_service.edit(institute_id, dto)
 
 
 @router.delete("/{institute_id}", description="Delete an existing institute")
-async def delete_institute(current_user: CurrentAdmin, institute_id: int):
+async def delete_institute(current_user: CurrentAdmin, institute_id: UUID4):
     return await institute_service.delete(institute_id)

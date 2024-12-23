@@ -1,7 +1,9 @@
 from src.infrastructure.database import Administrator, has
 
+from uuid import UUID
 
-async def has_by_id(admin_id: int):
+
+async def has_by_id(admin_id: UUID):
     return await has.has_instance(
         Administrator, 
         Administrator.id == admin_id

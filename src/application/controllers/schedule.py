@@ -1,11 +1,12 @@
 from src.infrastructure.enums.week import Week
+from src.domain.services import schedule_service
+from src.domain.extensions.check_role import CurrentTeacher, CurrentAdmin
 from src.application.dto.schedule import (
     AddLessonInScheduleDTO, EditLessonInScheduleDTO
 )
-from src.domain.services import schedule_service
-from src.domain.extensions.check_role import CurrentTeacher, CurrentAdmin
 
 from fastapi import APIRouter, Body
+from pydantic import UUID4
 
 
 router = APIRouter()
@@ -17,7 +18,7 @@ async def get_my_schedule(teacher: CurrentTeacher, week: Week = 0):
 
 
 @router.get("/{teacher_id}", description="Show teacher schedule (for admins)")
-async def get_schedule_of_teacher(admin: CurrentAdmin, teacher_id: int, week: Week = 0):
+async def get_schedule_of_teacher(admin: CurrentAdmin, teacher_id: UUID4, week: Week = 0):
     return await schedule_service.get_by_teacher_id(teacher_id, week)
 
 
@@ -39,7 +40,7 @@ async def add_lesson_in_my_schedule(
 @router.post("/{teacher_id}", description="Add lesson to teacher schedule (for admins)", status_code=201)
 async def add_lesson_in_schedule_of_teacher(    
     admin: CurrentAdmin, 
-    teacher_id: int,
+    teacher_id: UUID4,
     dto: AddLessonInScheduleDTO = Body(...)
 ):
     return await schedule_service.add_lesson(teacher_id, dto)
@@ -48,7 +49,7 @@ async def add_lesson_in_schedule_of_teacher(
 @router.patch("/{schedule_lesson_id}", description="Edit lesson in my schedule")
 async def edit_lesson_in_my_schedule(
     teacher: CurrentTeacher, 
-    schedule_lesson_id: int, 
+    schedule_lesson_id: UUID4, 
     dto: EditLessonInScheduleDTO
 ):
     return await schedule_service.edit_lesson(
@@ -61,8 +62,8 @@ async def edit_lesson_in_my_schedule(
 @router.patch("/{teacher_id}/{schedule_lesson_id}", description="Edit lesson in teacher schedule (for admins)")
 async def edit_lesson_in_schedule_of_teacher(
     admin: CurrentAdmin, 
-    teacher_id: int, 
-    schedule_lesson_id: int, 
+    teacher_id: UUID4, 
+    schedule_lesson_id: UUID4, 
     dto: EditLessonInScheduleDTO = Body(...)
 ):
     return await schedule_service.edit_lesson(
@@ -73,7 +74,7 @@ async def edit_lesson_in_schedule_of_teacher(
 
 
 @router.delete("/{schedule_lesson_id}", description="Delete lesson from my schedule")
-async def delete_lesson_from_my_schedule(teacher: CurrentTeacher, schedule_lesson_id: int):
+async def delete_lesson_from_my_schedule(teacher: CurrentTeacher, schedule_lesson_id: UUID4):
     return await schedule_service.delete_lesson(
         teacher.user_id, 
         schedule_lesson_id
@@ -83,8 +84,8 @@ async def delete_lesson_from_my_schedule(teacher: CurrentTeacher, schedule_lesso
 @router.delete("/{teacher_id}/{schedule_lesson_id}", description="Delete lesson from teacher schedule (for admins)")
 async def delete_lesson_from_schedule_of_teacher(
     admin: CurrentAdmin, 
-    teacher_id: int, 
-    schedule_lesson_id: int
+    teacher_id: UUID4, 
+    schedule_lesson_id: UUID4
 ):
     return await schedule_service.delete_lesson(
         teacher_id, 

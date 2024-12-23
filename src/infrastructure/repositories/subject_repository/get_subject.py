@@ -3,6 +3,8 @@ from src.infrastructure.repositories.study_group_repository import (
 )
 from src.infrastructure.database import Subject, get
 
+from uuid import UUID
+
 
 async def get_all(
     page, 
@@ -43,5 +45,5 @@ async def get_all(
     )
 
 
-async def get_by_id(subject_id: int) -> Subject:
+async def get_by_id(subject_id: UUID) -> Subject:
     return await get.get_by_id(Subject, subject_id)

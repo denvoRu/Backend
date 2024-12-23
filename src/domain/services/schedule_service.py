@@ -8,9 +8,10 @@ from src.application.dto.schedule import (
 )
 
 from fastapi import HTTPException, Response, status
+from uuid import UUID
 
 
-async def get_by_teacher_id(teacher_id: int, week: Week = Week.FIRST): 
+async def get_by_teacher_id(teacher_id: UUID, week: Week = Week.FIRST): 
     if not await teacher_repository.has_by_id(teacher_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -23,7 +24,7 @@ async def get_by_teacher_id(teacher_id: int, week: Week = Week.FIRST):
     return await schedule_repository.get_by_week(teacher_id, week)
 
 
-async def add_lesson(teacher_id: int, dto: AddLessonInScheduleDTO):
+async def add_lesson(teacher_id: UUID, dto: AddLessonInScheduleDTO):
     if not await teacher_repository.has_by_id(teacher_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -41,7 +42,7 @@ async def add_lesson(teacher_id: int, dto: AddLessonInScheduleDTO):
     return Response(status_code=status.HTTP_201_CREATED)
     
 
-async def delete_lesson(teacher_id: int, schedule_lesson_id: int):
+async def delete_lesson(teacher_id: UUID, schedule_lesson_id: UUID):
     if not await teacher_repository.has_by_id(teacher_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -65,8 +66,8 @@ async def delete_lesson(teacher_id: int, schedule_lesson_id: int):
 
 
 async def edit_lesson(
-    teacher_id: int, 
-    schedule_lesson_id: int, 
+    teacher_id: UUID, 
+    schedule_lesson_id: UUID, 
     dto: EditLessonInScheduleDTO
 ): 
     if not await teacher_repository.has_by_id(teacher_id):
@@ -92,7 +93,7 @@ async def edit_lesson(
     return Response(status_code=status.HTTP_200_OK)
 
 
-async def import_from_modeus(teacher_id: int): 
+async def import_from_modeus(teacher_id: UUID): 
     if not await teacher_repository.has_by_id(teacher_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

@@ -3,9 +3,10 @@ from src.infrastructure.repositories import (
 )
 
 from fastapi import HTTPException, Response, status
+from uuid import UUID
 
 
-async def get_all(teacher_id: int):
+async def get_all(teacher_id: UUID):
     if not await schedule_repository.has_by_id(teacher_id):
         return []
     

@@ -2,6 +2,7 @@ from src.application.dto.shared import EditUserDTO
 from src.infrastructure.repositories import administrator_repository
 
 from fastapi import HTTPException, Response, status
+from uuid import UUID
 
 
 async def get_all(page, limit, columns, sort, search, desc): 
@@ -26,7 +27,7 @@ async def get_by_id(admin_id: str):
     return await administrator_repository.get_by_id(admin_id)
 
 
-async def edit(admin_id: int, dto: EditUserDTO):
+async def edit(admin_id: UUID, dto: EditUserDTO):
     if not await administrator_repository.has_by_id(admin_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

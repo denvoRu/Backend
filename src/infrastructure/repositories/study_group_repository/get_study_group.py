@@ -1,5 +1,6 @@
 from src.infrastructure.database import StudyGroup, Teacher
 from src.infrastructure.repositories import teacher_repository
+
 from sqlmodel import select
 
 

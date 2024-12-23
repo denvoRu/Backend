@@ -1,7 +1,9 @@
 from src.application.dto.module import CreateModuleDTO
 from src.domain.services import module_service
 from src.domain.extensions.check_role import CurrentAdmin
+
 from fastapi import APIRouter, Body, Query
+from pydantic import UUID4
 
 
 router = APIRouter()
@@ -16,7 +18,7 @@ async def get_all_modules(
     columns: str = Query(None, alias="columns"),
     sort: str = Query(None, alias="sort"),
     search: str = Query(None, alias="search"),
-    institute_ids: int = Query(None, alias="institute_id"),
+    institute_ids: str = Query(None, alias="institute_ids"),
 ):
     return await module_service.get_all(
         page, limit, columns, sort, search, desc, institute_ids
@@ -24,7 +26,7 @@ async def get_all_modules(
 
 
 @router.get("/{module_id}", description="Get an existing module with id")
-async def get_current_module(current_user: CurrentAdmin, module_id: int):
+async def get_current_module(current_user: CurrentAdmin, module_id: UUID4):
     return await module_service.get_by_id(module_id)
 
 
@@ -36,5 +38,5 @@ async def create_module(
 
 
 @router.delete("/{module_id}", description="Delete an existing module")
-async def delete_module(current_user: CurrentAdmin, module_id: int):
+async def delete_module(current_user: CurrentAdmin, module_id: UUID4):
     return await module_service.delete(module_id)

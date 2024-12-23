@@ -1,9 +1,10 @@
+import uuid
 from sqlmodel import SQLModel, Field, ForeignKey
 
 
 class StudyGroup(SQLModel, table=True):
     __tablename__ = "study_group"
 
-    id: int = Field(primary_key=True)
-    subject_id: int = Field(ForeignKey("subject.id"))
-    teacher_id: int = Field(ForeignKey("teacher.id"))
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True, index=True)
+    subject_id: uuid.UUID = Field(ForeignKey("subject.id"))
+    teacher_id: uuid.UUID = Field(ForeignKey("teacher.id"))

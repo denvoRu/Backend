@@ -1,10 +1,12 @@
 from src.infrastructure.database import (
     Schedule, Subject, ScheduleLesson, get_by_id, db
 )
+
 from sqlalchemy import select
+from uuid import UUID
 
 
-async def get_by_week(teacher_id: int, week: int):
+async def get_by_week(teacher_id: UUID, week: int):
     schedule_id = await get_by_id(teacher_id)
 
     stmt = select(
@@ -20,7 +22,7 @@ async def get_by_week(teacher_id: int, week: int):
     return executed.scalars().all()
 
 
-async def get_by_id(teacher_id: int):
+async def get_by_id(teacher_id: UUID):
     return await get_by_id(
         Schedule, 
         teacher_id,

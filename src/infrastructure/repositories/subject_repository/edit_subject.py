@@ -1,4 +1,7 @@
 from src.infrastructure.database import Subject, update_instance
 
-async def update_by_id(subject_id: int, dto):
+from uuid import UUID
+
+
+async def update_by_id(subject_id: UUID, dto):
     await update_instance(Subject, subject_id, dto)

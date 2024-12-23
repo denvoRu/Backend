@@ -2,6 +2,7 @@ from src.application.dto.institute import CreateInstituteDTO, EditInstituteDTO
 from src.infrastructure.repositories import institute_repository
 
 from fastapi import HTTPException, Response, status
+from uuid import UUID
 
 
 async def get_all(page, limit, columns, sort, search, desc):
@@ -19,7 +20,7 @@ async def get_all(page, limit, columns, sort, search, desc):
         )
 
 
-async def get_by_id(institute_id: int):
+async def get_by_id(institute_id: UUID):
     if not await institute_repository.has_by_id(institute_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -44,7 +45,7 @@ async def create(dto: CreateInstituteDTO):
     return Response(status_code=status.HTTP_201_CREATED)
 
 
-async def edit(institute_id: int, dto: EditInstituteDTO):
+async def edit(institute_id: UUID, dto: EditInstituteDTO):
     if not await institute_repository.has_by_id(institute_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -58,7 +59,7 @@ async def edit(institute_id: int, dto: EditInstituteDTO):
     return Response(status_code=status.HTTP_200_OK)
 
 
-async def delete(institute_id: int):
+async def delete(institute_id: UUID):
     if not await institute_repository.has_by_id(institute_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

@@ -1,8 +1,9 @@
 from src.application.dto.subject import CreateSubjectDTO, EditSubjectDTO
 from src.domain.services import subject_service, study_group_service
 from src.domain.extensions.check_role import CurrentAdmin
-from fastapi import APIRouter, Body, Query
 
+from fastapi import APIRouter, Body, Query
+from pydantic import UUID4
 
 router = APIRouter()
 
@@ -13,7 +14,7 @@ async def get_all_subject(
     page: int = 1,
     limit: int = 10,
     desc: int = 0,
-    module_id: int = Query(None, alias="module_id"),
+    module_id: UUID4 = Query(None, alias="module_id"),
     columns: str = Query(None, alias="columns"),
     sort: str = Query(None, alias="sort"),
     search: str = Query(None, alias="search"),
@@ -35,7 +36,7 @@ async def get_all_subject(
 
 
 @router.get("/{subject_id}", description="Show certain subject (for admins)")
-async def get_current_subject(admin: CurrentAdmin, subject_id: int):
+async def get_current_subject(admin: CurrentAdmin, subject_id: UUID4):
     return await subject_service.get_by_id(subject_id)
 
 
@@ -52,14 +53,14 @@ async def edit_subject(admin: CurrentAdmin, dto: EditSubjectDTO = Body(...)):
 
 
 @router.delete("/{subject_id}", description="Delete an existing subject (for admins)")
-async def delete_subject(admin: CurrentAdmin, subject_id: int):
+async def delete_subject(admin: CurrentAdmin, subject_id: UUID4):
     return await subject_service.delete(subject_id)
 
 
 @router.get("/{subject_id}/teachers", description="Show all teachers (for admins)")
 async def get_teachers_by_subject(
     admin: CurrentAdmin, 
-    subject_id: int, 
+    subject_id: UUID4, 
     page: int = 1, 
     limit: int = 10,
     columns: str = Query(None, alias="columns"),
@@ -79,10 +80,10 @@ async def get_teachers_by_subject(
 
 
 @router.post("/{subject_id}/teachers/{teacher_id}", description="Add teacher to subject (for admins)", status_code=201)
-async def add_teacher_to_subject(admin: CurrentAdmin, subject_id: int, teacher_id: int):
+async def add_teacher_to_subject(admin: CurrentAdmin, subject_id: UUID4, teacher_id: UUID4):
     return await study_group_service.add_teacher(subject_id, teacher_id)
 
 
 @router.delete("/{subject_id}/teachers/{teacher_id}", description="Delete teacher from subject (for admins)")
-async def delete_teacher_from_subject(admin: CurrentAdmin, subject_id: int, teacher_id: int):
+async def delete_teacher_from_subject(admin: CurrentAdmin, subject_id: UUID4, teacher_id: UUID4):
     return await study_group_service.delete_teacher(subject_id, teacher_id)

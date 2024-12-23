@@ -2,11 +2,13 @@ from src.application.dto.module import CreateModuleDTO
 from src.infrastructure.repositories import module_repository
 
 from fastapi import HTTPException, Response, status
+from uuid import UUID
 
 
 async def get_all(page, limit, columns, sort, search, desc, institute_ids): 
     if institute_ids is not None:
         institute_ids = list(map(int, institute_ids.split(",")))
+        
     if search is not None and search != "":
         search = "name*{0}".format(search)
 
@@ -21,7 +23,7 @@ async def get_all(page, limit, columns, sort, search, desc, institute_ids):
         )
 
 
-async def get_by_id(module_id: int): 
+async def get_by_id(module_id: UUID): 
     if not await module_repository.has_by_id(module_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -39,11 +41,11 @@ async def create(dto: CreateModuleDTO):
             detail="Module already exists"
         )
     
-    await module_repository.add(dto.name)
+    await module_repository.add(dto.institute_id, dto.name)
     return Response(status_code=status.HTTP_201_CREATED)
 
 
-async def delete(module_id: int):
+async def delete(module_id: UUID):
     has_id = await module_repository.has_by_id(module_id)
     if not has_id:
         raise HTTPException(

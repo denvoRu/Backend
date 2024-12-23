@@ -1,9 +1,10 @@
+import uuid
 from sqlmodel import SQLModel, Field, ForeignKey
 
 
 class Module(SQLModel, table=True):
     __tablename__ = "module"
-    id: int = Field(primary_key=True)
-    institute_id: int = Field(ForeignKey("institute.id"))
-    name: str = Field()
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True, index=True)
+    institute_id: uuid.UUID = Field(ForeignKey("institute.id"))
+    name: str = Field(unique=True, nullable=False)
     rating: float = Field()

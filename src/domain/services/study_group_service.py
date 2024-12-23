@@ -3,6 +3,7 @@ from src.infrastructure.repositories import (
 )
 
 from fastapi import HTTPException, Response, status
+from uuid import UUID
 
 
 async def get_teachers(
@@ -34,7 +35,7 @@ async def get_teachers(
     )
 
     
-async def add_teacher(subject_id: int, teacher_id: int):
+async def add_teacher(subject_id: UUID, teacher_id: UUID):
     if not await subject_repository.has_by_id(subject_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -51,7 +52,7 @@ async def add_teacher(subject_id: int, teacher_id: int):
     return Response(status_code=status.HTTP_201_CREATED)
     
     
-async def delete_teacher(subject_id: int, teacher_id: int):
+async def delete_teacher(subject_id: UUID, teacher_id: UUID):
     if not await subject_repository.has_by_id(subject_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

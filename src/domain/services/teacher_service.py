@@ -3,6 +3,7 @@ from src.application.dto.shared import EditUserDTO
 from src.infrastructure.repositories import teacher_repository
                                              
 from fastapi import HTTPException, Response, status
+from uuid import UUID
 
 
 async def get_all(
@@ -37,7 +38,7 @@ async def get_by_id(teacher_id: str):
     return await teacher_repository.get_by_id(teacher_id)
 
 
-async def edit(teacher_id: int, dto: EditUserDTO):
+async def edit(teacher_id: UUID, dto: EditUserDTO):
     if not await teacher_repository.has_by_id(teacher_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -50,7 +51,7 @@ async def edit(teacher_id: int, dto: EditUserDTO):
     return Response(status_code=status.HTTP_200_OK)
 
 
-async def delete(teacher_id: int):
+async def delete(teacher_id: UUID):
     if not await teacher_repository.has_by_id(teacher_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -61,7 +62,7 @@ async def delete(teacher_id: int):
     return Response(status_code=status.HTTP_200_OK)
 
 
-async def get_privileges(teacher_id: int):    
+async def get_privileges(teacher_id: UUID):    
     if not await teacher_repository.has_by_id(teacher_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -71,7 +72,7 @@ async def get_privileges(teacher_id: int):
     return await teacher_repository.get_privileges(teacher_id)
 
 
-async def add_privilege(teacher_id: int, privilege: Privileges):
+async def add_privilege(teacher_id: UUID, privilege: Privileges):
     if not await teacher_repository.has_by_id(teacher_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -88,7 +89,7 @@ async def add_privilege(teacher_id: int, privilege: Privileges):
     return Response(status_code=status.HTTP_201_CREATED)
 
 
-async def delete_privilege(teacher_id: int, privilege: Privileges):
+async def delete_privilege(teacher_id: UUID, privilege: Privileges):
     if not await teacher_repository.has_by_id(teacher_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

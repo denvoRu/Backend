@@ -1,7 +1,9 @@
 from src.infrastructure.database import Module, has_instance
 
+from uuid import UUID
 
-async def has_by_id(module_id: int):
+
+async def has_by_id(module_id: UUID):
     return await has_instance(Module, Module.id == module_id)
 
 

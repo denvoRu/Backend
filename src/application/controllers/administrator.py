@@ -1,7 +1,9 @@
 from src.domain.services import administrator_service
 from src.application.dto.shared import EditUserDTO
 from src.domain.extensions.check_role import CurrentAdmin
+
 from fastapi import APIRouter, Body, Query
+from pydantic import UUID4
 
 
 router = APIRouter()
@@ -29,11 +31,11 @@ async def get_all_admins(
 
 @router.patch("/{admin_id}", description="Edit an existing user")
 async def edit_admin(
-    admin: CurrentAdmin, admin_id: int, dto: EditUserDTO = Body(...)
+    admin: CurrentAdmin, admin_id: UUID4, dto: EditUserDTO = Body(...)
 ):
     return await administrator_service.edit(admin_id, dto)
     
 
 @router.delete("/{admin_id}", description="Delete an existing user")
-async def delete_admin(admin: CurrentAdmin, admin_id: int):
+async def delete_admin(admin: CurrentAdmin, admin_id: UUID4):
     return await administrator_service.delete(admin_id)

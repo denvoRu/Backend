@@ -14,7 +14,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 router = APIRouter()
 
 
-@router.post("/register", description="Register a new user", status_code=201)
+@router.post("/register", description="Register a new user (for admins)", status_code=201)
 async def register(admin: CurrentAdmin, dto: RegisterDTO = Body(...)) -> Any:
     return await auth_service.register(dto)
 
