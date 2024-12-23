@@ -1,4 +1,4 @@
-from src.infrastructure.enums.privileges import Privileges
+from src.infrastructure.enums.privilege import Privilege
 from src.application.dto.shared import EditUserDTO
 from src.infrastructure.repositories import teacher_repository
                                              
@@ -85,39 +85,39 @@ async def get_privileges(teacher_id: UUID):
             detail="Teacher not found"
         )
     
-    return await teacher_repository.get_privileges(teacher_id)
+    return await teacher_repository.privelege.get_by_id(teacher_id)
 
 
-async def add_privilege(teacher_id: UUID, privilege: Privileges):
+async def add_privilege(teacher_id: UUID, privilege: Privilege):
     if not await teacher_repository.has_by_id(teacher_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Teacher not found"
         )
 
-    if await teacher_repository.has_privilege(teacher_id, privilege.value):
+    if await teacher_repository.privelege.has_by_name(teacher_id, privilege.value):
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, 
             detail="Privilege already exists"
         )
 
-    await teacher_repository.add_privilege(teacher_id, privilege.value)
+    await teacher_repository.privelege.add(teacher_id, privilege.value)
     return Response(status_code=status.HTTP_201_CREATED)
 
 
-async def delete_privilege(teacher_id: UUID, privilege: Privileges):
+async def delete_privilege(teacher_id: UUID, privilege: Privilege):
     if not await teacher_repository.has_by_id(teacher_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Teacher not found"
         )
 
-    if not await teacher_repository.has_privilege(teacher_id, privilege.value):
+    if not await teacher_repository.privelege.has_by_name(teacher_id, privilege.value):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, 
             detail="Privilege does not exist"
         )
     
-    await teacher_repository.delete_privilege(teacher_id, privilege.value)
+    await teacher_repository.privelege.delete_by_name(teacher_id, privilege.value)
     return Response(status_code=status.HTTP_200_OK)
 

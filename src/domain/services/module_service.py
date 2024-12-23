@@ -13,10 +13,14 @@ async def get_all_with_subjects(
         desc, 
         rating_start, 
         rating_end, 
-        institute_ids
+        institute_ids,
+        teacher_ids
 ): 
     if institute_ids is not None:
         institute_ids = institute_ids.split(",")
+        
+    if teacher_ids is not None:
+        teacher_ids = teacher_ids.split(",")
         
     try: 
         return await module_repository.get_all_with_subjects(
@@ -27,13 +31,16 @@ async def get_all_with_subjects(
             desc, 
             rating_start, 
             rating_end, 
-            institute_ids
+            institute_ids,
+            teacher_ids
         )
-    except Exception:
+    except Exception as e:
+        print(e)
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="One or more parameters are invalid"
         )
+
 
 async def get_all(page, limit, columns, sort, search, desc): 
     if search is not None and search != "":
@@ -48,6 +55,7 @@ async def get_all(page, limit, columns, sort, search, desc):
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="One or more parameters are invalid"
         )
+
 
 async def get_by_id(module_id: UUID): 
     if not await module_repository.has_by_id(module_id):

@@ -21,21 +21,21 @@ async def get_all(
     try:
         if columns is not None and columns != "all": 
             columns = columns.split(',')
-            columns = delete_password_from_array(columns)
+            columns = delete_unsafe_data_from_array(columns)
             has_column = len(columns) > 0
         else:
             has_column = False
 
         if sort is not None and sort != "null": 
             sort = sort.split(',')
-            sort = delete_password_from_array(sort)
+            sort = delete_unsafe_data_from_array(sort)
             has_sort = len(sort) > 0
         else:
             has_sort = False
         
         if search is not None and search != "null": 
             search = search.split(',')
-            search = delete_password_from_array(search)
+            search = delete_unsafe_data_from_array(search)
             has_search = len(search) > 0
         else:
             has_search = False
@@ -91,7 +91,7 @@ async def get_all(
             )
         else:
             result = list([i[0].model_dump(
-                exclude=["password"]
+                exclude=["password", "is_disabled"]
             ) for i in result])
         
         return PageResponse(
@@ -107,10 +107,13 @@ async def get_all(
         raise Exception(str(e))
         
 
-def delete_password_from_array(data: List[str]):
+def delete_unsafe_data_from_array(data: List[str]):
     data = list(set(data))
     try: 
         data.remove("password")
+    except: ...
+    try: 
+        data.remove("is_disabled")
     except: ...
 
     return data

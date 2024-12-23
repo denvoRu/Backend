@@ -39,4 +39,7 @@ async def get_all(
 
 
 async def get_by_id(teacher_id: UUID) -> dict: 
-    return user_to_save_dict(await get.get_by_id(Teacher, teacher_id))
+    return user_to_save_dict(
+        await get.get_by_id(Teacher, teacher_id), 
+        include=["institute_id"]
+    )

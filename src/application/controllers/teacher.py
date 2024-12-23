@@ -1,4 +1,4 @@
-from src.infrastructure.enums.privileges import Privileges
+from src.infrastructure.enums.privilege import Privilege
 from src.application.dto.shared import EditUserDTO
 from src.domain.services import teacher_service
 from src.domain.extensions.check_role import CurrentTeacher, CurrentAdmin
@@ -62,12 +62,12 @@ async def get_teacher_privileges(admin: CurrentAdmin, teacher_id: UUID4):
 
 @router.post("/{teacher_id}/privilege/{privilege}", description="Add teacher privilege (for admins)", status_code=201)
 async def add_teacher_privilege(
-    admin: CurrentAdmin, teacher_id: UUID4, privilege: Privileges
+    admin: CurrentAdmin, teacher_id: UUID4, privilege: Privilege
 ):
     return await teacher_service.add_privilege(teacher_id, privilege)
 
 @router.delete("/{teacher_id}/privilege/{privilege}", description="Delete teacher privilege (for admins)")
 async def delete_teacher_privilege(
-    admin: CurrentAdmin, teacher_id: UUID4, privilege: Privileges
+    admin: CurrentAdmin, teacher_id: UUID4, privilege: Privilege
 ):
     return await teacher_service.delete_privilege(teacher_id, privilege)

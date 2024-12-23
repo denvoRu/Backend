@@ -33,6 +33,7 @@ async def get_all_modules_with_subjects(
     rating_start: int = Query(-1, alias="rating_start"),
     rating_end: int = Query(-1, alias="rating_end"),
     institute_ids: str = Query(None, alias="institute_ids"),
+    teacher_ids: str = Query(None, alias="teacher_ids"),
 ):
     return await module_service.get_all_with_subjects(
         page, 
@@ -42,7 +43,8 @@ async def get_all_modules_with_subjects(
         desc, 
         rating_start,
         rating_end, 
-        institute_ids
+        institute_ids,
+        teacher_ids
     )
 
 

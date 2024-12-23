@@ -1,7 +1,9 @@
-from src.infrastructure.database import Module, Subject, get, db
 from src.infrastructure.models.page_response import PageResponse
 from src.infrastructure.models.module_with_subject_response import (
     ModuleWithSubjectResponse
+)
+from src.infrastructure.database import (
+    Module, Subject, StudyGroup, get, db
 )
 
 from sqlalchemy import select, desc as order_desc, text, func, or_
@@ -17,7 +19,8 @@ async def get_all_with_subjects(
     desc, 
     rating_start, 
     rating_end, 
-    institute_ids
+    institute_ids,
+    teacher_ids
 ):
     module_stmt = select(Module)
     module_filters = []
@@ -62,6 +65,21 @@ async def get_all_with_subjects(
 
     if institute_ids is not None and len(institute_ids) > 0:
         module_filters.append(Module.institute_id.in_(institute_ids))
+
+    if teacher_ids is not None and len(teacher_ids) > 0:
+        subject_filters.append(
+            Subject.id.in_(
+                select(StudyGroup.subject_id)
+                .where(StudyGroup.teacher_id.in_(teacher_ids))
+            )
+        )
+        module_filters.append(
+            Module.id.in_(
+                select(Subject.module_id).select_from(StudyGroup).join(
+                    Subject, StudyGroup.subject_id == Subject.id
+                ).where(StudyGroup.teacher_id.in_(teacher_ids))
+            )
+        )
 
     module_stmt = module_stmt.where(
         *module_filters
