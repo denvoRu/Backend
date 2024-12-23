@@ -102,7 +102,6 @@ async def get_all(
             content=result
         )
     except Exception as e:
-        print(e)
         await commit_rollback()
         raise Exception(str(e))
         

@@ -34,8 +34,7 @@ async def get_all_with_subjects(
             institute_ids,
             teacher_ids
         )
-    except Exception as e:
-        print(e)
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="One or more parameters are invalid"
@@ -50,8 +49,7 @@ async def get_all(page, limit, columns, sort, search, desc):
         return await module_repository.get_all(
             page, limit, columns, sort, search, desc
         )
-    except Exception as e:
-        print(e)
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="One or more parameters are invalid"

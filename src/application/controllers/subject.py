@@ -17,8 +17,8 @@ async def get_all_subject(
     columns: str = Query(None, alias="columns"),
     sort: str = Query(None, alias="sort"),
     search: str = Query(None, alias="search"),
-        module_id: UUID4 = Query(None, alias="module_id"),
     teacher_ids: str = Query(None, alias="teacher_ids"),
+    module_id: UUID4 = Query(None, alias="module_id"),
 ):
     return await subject_service.get_all(
         page, limit, columns, sort, search, desc, teacher_ids, module_id

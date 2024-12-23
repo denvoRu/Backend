@@ -13,19 +13,11 @@ async def get_all(
     sort, 
     search, 
     desc, 
-    rating_start = -1, 
-    rating_end = -1,
     teacher_ids = [],
     module_id = None
 ):
     filters = []
-
-    if rating_start is not None and rating_start != -1:
-        filters.append(Subject.rating >= rating_start)
-
-    if rating_end is not None and rating_end != -1:
-        filters.append(Subject.rating <= rating_end)
-
+    
     if module_id is not None:
         filters.append(Subject.module_id == module_id)
 
