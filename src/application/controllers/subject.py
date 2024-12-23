@@ -14,24 +14,14 @@ async def get_all_subject(
     page: int = 1,
     limit: int = 10,
     desc: int = 0,
-    module_id: UUID4 = Query(None, alias="module_id"),
     columns: str = Query(None, alias="columns"),
     sort: str = Query(None, alias="sort"),
     search: str = Query(None, alias="search"),
-    rating_start: int = Query(-1, alias="rating_start"),
-    rating_end: int = Query(-1, alias="rating_end"),
+        module_id: UUID4 = Query(None, alias="module_id"),
     teacher_ids: str = Query(None, alias="teacher_ids"),
 ):
     return await subject_service.get_all(
-        page, limit,
-        columns,
-        sort, 
-        search,
-        desc,
-        rating_start,
-        rating_end,
-        teacher_ids,
-        module_id
+        page, limit, columns, sort, search, desc, teacher_ids, module_id
     )
 
 

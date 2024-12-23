@@ -9,7 +9,7 @@ from pydantic import UUID4
 router = APIRouter()
 
 
-@router.get("/", description="Get all existing modules")
+@router.get('/', description="Get all existing modules")
 async def get_all_modules(
     current_user: CurrentAdmin,
     page: int = 1,
@@ -17,11 +17,32 @@ async def get_all_modules(
     desc: int = 0,
     columns: str = Query(None, alias="columns"),
     sort: str = Query(None, alias="sort"),
+    search: str = Query(None, alias="search"),    
+):
+    return await module_service.get_all(page, limit, columns, sort, search, desc)
+
+
+@router.get("/subjects", description="Get all existing modules and their subjects")
+async def get_all_modules_with_subjects(
+    current_user: CurrentAdmin,
+    page: int = 1,
+    limit: int = 10,
+    desc: int = 0,
+    sort: str = Query(None, alias="sort"),
     search: str = Query(None, alias="search"),
+    rating_start: int = Query(-1, alias="rating_start"),
+    rating_end: int = Query(-1, alias="rating_end"),
     institute_ids: str = Query(None, alias="institute_ids"),
 ):
-    return await module_service.get_all(
-        page, limit, columns, sort, search, desc, institute_ids
+    return await module_service.get_all_with_subjects(
+        page, 
+        limit, 
+        sort, 
+        search, 
+        desc, 
+        rating_start,
+        rating_end, 
+        institute_ids
     )
 
 

@@ -12,6 +12,6 @@ class Feedback(SQLModel, table=True):
     mark: int = Field(nullable=False)
     chosen_markers: str = Field(nullable=False)
     comment: str = Field()
-    time: time = Time()
+    created_at: time = Time()
     is_disabled: bool = Field(nullable=False, default=False)
 

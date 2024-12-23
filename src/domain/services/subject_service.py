@@ -13,7 +13,7 @@ async def get_all(
     module_id
 ):
     if teacher_ids is not None:
-        teacher_ids = list(map(int, teacher_ids.split(",")))
+        teacher_ids = teacher_ids.split(",")
 
     if search is not None and search != "":
         search = "name*{0}".format(search)

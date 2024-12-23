@@ -5,16 +5,29 @@ from fastapi import HTTPException, Response, status
 from uuid import UUID
 
 
-async def get_all(page, limit, columns, sort, search, desc, institute_ids): 
+async def get_all_with_subjects(
+        page, 
+        limit, 
+        sort, 
+        search, 
+        desc, 
+        rating_start, 
+        rating_end, 
+        institute_ids
+): 
     if institute_ids is not None:
-        institute_ids = list(map(int, institute_ids.split(",")))
+        institute_ids = institute_ids.split(",")
         
-    if search is not None and search != "":
-        search = "name*{0}".format(search)
-
     try: 
-        return await module_repository.get_all(
-            page, limit, columns, sort, search, desc, institute_ids
+        return await module_repository.get_all_with_subjects(
+            page, 
+            limit, 
+            sort, 
+            search, 
+            desc, 
+            rating_start, 
+            rating_end, 
+            institute_ids
         )
     except Exception:
         raise HTTPException(
@@ -22,6 +35,19 @@ async def get_all(page, limit, columns, sort, search, desc, institute_ids):
             detail="One or more parameters are invalid"
         )
 
+async def get_all(page, limit, columns, sort, search, desc): 
+    if search is not None and search != "":
+        search = "name*{0}".format(search)
+        
+    try:
+        return await module_repository.get_all(
+            page, limit, columns, sort, search, desc
+        )
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="One or more parameters are invalid"
+        )
 
 async def get_by_id(module_id: UUID): 
     if not await module_repository.has_by_id(module_id):
