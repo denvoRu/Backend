@@ -39,7 +39,7 @@ async def get_by_id(subject_id: int):
     return await subject_repository.get_by_id(subject_id)
     
 
-async def create_subject(dto: CreateSubjectDTO):
+async def create(dto: CreateSubjectDTO):
     if await subject_repository.has_by_name(dto.name):
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
@@ -63,7 +63,7 @@ async def create_subject(dto: CreateSubjectDTO):
     return Response(status_code=status.HTTP_201_CREATED)
 
 
-async def edit_subject(subject_id: int, dto: EditSubjectDTO):
+async def edit(subject_id: int, dto: EditSubjectDTO):
     try:
         return await subject_repository.update_by_id(subject_id, dto)
     except:
@@ -73,7 +73,7 @@ async def edit_subject(subject_id: int, dto: EditSubjectDTO):
         )
 
 
-async def delete_subject(subject_id: int):
+async def delete(subject_id: int):
     if not await subject_repository.has_by_id(subject_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

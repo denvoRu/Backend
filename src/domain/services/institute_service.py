@@ -10,18 +10,14 @@ async def get_all(page, limit, columns, sort, search, desc):
         
     try: 
         return await institute_repository.get_all(
-            page, 
-            limit, 
-            columns, 
-            sort, 
-            search, 
-            desc
+            page, limit, columns, sort, search, desc
         )
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="One or more parameters are invalid"
         )
+
 
 async def get_by_id(institute_id: int):
     if not await institute_repository.has_by_id(institute_id):
@@ -33,10 +29,8 @@ async def get_by_id(institute_id: int):
     return await institute_repository.get_by_id(institute_id)
         
 
-
-async def create_institute(dto: CreateInstituteDTO):
-    has_by_name = await institute_repository.has_by_name(dto.name)
-    if has_by_name:
+async def create(dto: CreateInstituteDTO):
+    if await institute_repository.has_by_name(dto.name):
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="Institute already exists"
@@ -49,20 +43,27 @@ async def create_institute(dto: CreateInstituteDTO):
     )
     return Response(status_code=status.HTTP_201_CREATED)
 
-async def edit_institute(institute_id: int, dto: EditInstituteDTO):
+
+async def edit(institute_id: int, dto: EditInstituteDTO):
+    if not await institute_repository.has_by_id(institute_id):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Institute not found"
+        )
+    
     await institute_repository.update_by_id(
         institute_id, 
         dto.model_dump(exclude_none=True)
     )
     return Response(status_code=status.HTTP_200_OK)
 
-async def delete_institute(institute_id: int):
-    try: 
-        await institute_repository.delete_by_id(institute_id)
-        return Response(status_code=status.HTTP_200_OK)
-    except Exception:
+
+async def delete(institute_id: int):
+    if not await institute_repository.has_by_id(institute_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Institute not found"
         )
-    
+
+    await institute_repository.delete_by_id(institute_id)
+    return Response(status_code=status.HTTP_200_OK)

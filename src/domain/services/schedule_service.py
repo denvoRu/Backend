@@ -10,7 +10,7 @@ from src.application.dto.schedule import (
 from fastapi import HTTPException, Response, status
 
 
-async def get_schedule(teacher_id: int, week: Week = Week.FIRST): 
+async def get_by_teacher_id(teacher_id: int, week: Week = Week.FIRST): 
     if not await teacher_repository.has_by_id(teacher_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

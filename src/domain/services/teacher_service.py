@@ -5,7 +5,7 @@ from src.infrastructure.repositories import teacher_repository
 from fastapi import HTTPException, Response, status
 
 
-async def get_teachers(
+async def get_all(
         page: int = 1,
         limit: int = 10,
         columns: str = None,
@@ -19,7 +19,7 @@ async def get_teachers(
         )
         
     try:
-        return await teacher_repository.all(page, limit, columns, sort, search, desc)
+        return await teacher_repository.get_all(page, limit, columns, sort, search, desc)
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
@@ -37,7 +37,7 @@ async def get_by_id(teacher_id: str):
     return await teacher_repository.get_by_id(teacher_id)
 
 
-async def edit_teacher(teacher_id: int, dto: EditUserDTO):
+async def edit(teacher_id: int, dto: EditUserDTO):
     if not await teacher_repository.has_by_id(teacher_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -50,7 +50,7 @@ async def edit_teacher(teacher_id: int, dto: EditUserDTO):
     return Response(status_code=status.HTTP_200_OK)
 
 
-async def delete_teacher(teacher_id: int):
+async def delete(teacher_id: int):
     if not await teacher_repository.has_by_id(teacher_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -104,4 +104,3 @@ async def delete_privilege(teacher_id: int, privilege: Privileges):
     await teacher_repository.delete_privilege(teacher_id, privilege.value)
     return Response(status_code=status.HTTP_200_OK)
 
-async def get_rating(teacher_id: int): ...

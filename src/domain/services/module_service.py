@@ -4,23 +4,15 @@ from src.infrastructure.repositories import module_repository
 from fastapi import HTTPException, Response, status
 
 
-async def get_by_id(module_id: int): 
-    try:
-        return await module_repository.get_by_id(module_id)
-    except TypeError:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Module not found"
-        )
-
-
-async def get_all(page, limit, columns, sort, search, desc): 
+async def get_all(page, limit, columns, sort, search, desc, institute_ids): 
+    if institute_ids is not None:
+        institute_ids = list(map(int, institute_ids.split(",")))
     if search is not None and search != "":
         search = "name*{0}".format(search)
 
     try: 
         return await module_repository.get_all(
-            page, limit, columns, sort, search, desc
+            page, limit, columns, sort, search, desc, institute_ids
         )
     except Exception:
         raise HTTPException(
@@ -29,7 +21,17 @@ async def get_all(page, limit, columns, sort, search, desc):
         )
 
 
-async def create_module(dto: CreateModuleDTO): 
+async def get_by_id(module_id: int): 
+    if not await module_repository.has_by_id(module_id):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Module not found"
+        )
+    
+    return await module_repository.get_by_id(module_id)
+
+
+async def create(dto: CreateModuleDTO): 
     has_name = await module_repository.has_by_name(dto.name)
     if has_name:
         raise HTTPException(

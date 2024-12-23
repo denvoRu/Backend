@@ -8,11 +8,6 @@ from fastapi import APIRouter, Body, Query
 router = APIRouter()
 
 
-@router.get("/me", description="Show me")
-async def get_me(teacher: CurrentTeacher):
-    return await teacher_service.get_by_id(teacher.user_id)
-
-
 @router.get("/", description="Show all teachers (for admins)")
 async def get_all_teachers(
     admin: CurrentAdmin, 
@@ -26,6 +21,11 @@ async def get_all_teachers(
     return await teacher_service.get_all(page, limit, columns, sort, search, desc)
 
 
+@router.get("/me", description="Show me")
+async def get_me(teacher: CurrentTeacher):
+    return await teacher_service.get_by_id(teacher.user_id)
+
+
 @router.get("/{teacher_id}", description="Show teacher data (for admins)")
 async def get_current_teacher(admin: CurrentAdmin, teacher_id: int):
     return await teacher_service.get_by_id(teacher_id)
@@ -35,12 +35,12 @@ async def get_current_teacher(admin: CurrentAdmin, teacher_id: int):
 async def edit_teacher(
     admin: CurrentAdmin, teacher_id: int, dto: EditUserDTO = Body(...)
 ):
-    return await teacher_service.edit_teacher(teacher_id, dto)
+    return await teacher_service.edit(teacher_id, dto)
 
 
 @router.delete("/{teacher_id}", description="Delete a teacher (for admins)")
 async def delete_teacher(admin: CurrentAdmin, teacher_id: int):
-    return await teacher_service.delete_teacher(teacher_id)
+    return await teacher_service.delete(teacher_id)
 
 @router.get("/{teacher_id}/privilege", description="Get a teacher's privilege (for admins)")
 async def get_teacher_privileges(admin: CurrentAdmin, teacher_id: int):

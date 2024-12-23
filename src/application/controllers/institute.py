@@ -29,16 +29,16 @@ async def get_current_institute(current_user: CurrentAdmin, institute_id: int):
 async def create_institute(
     current_user: CurrentAdmin, dto: CreateInstituteDTO = Body(...)
 ):
-    return await institute_service.create_institute(dto)
+    return await institute_service.create(dto)
 
 
 @router.patch("/{institute_id}", description="Edit an existing institute")
 async def edit_institute(
     current_user: CurrentAdmin, institute_id: int, dto: EditInstituteDTO = Body(...)
 ):
-    return await institute_service.edit_institute(institute_id, dto)
+    return await institute_service.edit(institute_id, dto)
 
 
 @router.delete("/{institute_id}", description="Delete an existing institute")
 async def delete_institute(current_user: CurrentAdmin, institute_id: int):
-    return await institute_service.delete_institute(institute_id)
+    return await institute_service.delete(institute_id)

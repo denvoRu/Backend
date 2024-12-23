@@ -22,8 +22,7 @@ async def get_all_subject(
     teacher_ids: str = Query(None, alias="teacher_ids"),
 ):
     return await subject_service.get_all(
-        page, 
-        limit,
+        page, limit,
         columns,
         sort, 
         search,
@@ -44,17 +43,17 @@ async def get_current_subject(admin: CurrentAdmin, subject_id: int):
 async def create_subject(
     teacher: CurrentAdmin, dto: CreateSubjectDTO = Body(...)
 ):
-    return await subject_service.create_subject(dto)
+    return await subject_service.create(dto)
 
 
 @router.patch("/{subject_id}", description="Edit an existing subject (for admins)")
 async def edit_subject(admin: CurrentAdmin, dto: EditSubjectDTO = Body(...)):
-    return await subject_service.edit_subject(dto)
+    return await subject_service.edit(dto)
 
 
 @router.delete("/{subject_id}", description="Delete an existing subject (for admins)")
 async def delete_subject(admin: CurrentAdmin, subject_id: int):
-    return await subject_service.delete_subject(subject_id)
+    return await subject_service.delete(subject_id)
 
 
 @router.get("/{subject_id}/teachers", description="Show all teachers (for admins)")
@@ -87,9 +86,3 @@ async def add_teacher_to_subject(admin: CurrentAdmin, subject_id: int, teacher_i
 @router.delete("/{subject_id}/teachers/{teacher_id}", description="Delete teacher from subject (for admins)")
 async def delete_teacher_from_subject(admin: CurrentAdmin, subject_id: int, teacher_id: int):
     return await study_group_service.delete_teacher(subject_id, teacher_id)
-
-
-@router.get("/{subject_id}/active", description="Show active lesson of subject if subject has infinity link")
-async def get_active_lesson_of_subject(subject_id: int):
-    # TODO check if subject has infinity link
-    return # await subject_service.get_by_id(subject_id)

@@ -5,7 +5,7 @@ from src.infrastructure.repositories import (
 from fastapi import HTTPException, Response, status
 
 
-async def get_lessons(teacher_id: int):
+async def get_all(teacher_id: int):
     if not await schedule_repository.has_by_id(teacher_id):
         return []
     

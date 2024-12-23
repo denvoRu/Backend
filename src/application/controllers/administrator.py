@@ -22,13 +22,8 @@ async def get_all_admins(
     sort: str = Query(None, alias="sort"),
     search: str = Query(None, alias="search"),
 ):
-    return await administrator_service.get_administrators(
-        page, 
-        limit, 
-        columns, 
-        sort, 
-        search,
-        desc
+    return await administrator_service.get_all(
+        page, limit, columns, sort, search, desc
     )
 
 
@@ -36,9 +31,9 @@ async def get_all_admins(
 async def edit_admin(
     admin: CurrentAdmin, admin_id: int, dto: EditUserDTO = Body(...)
 ):
-    return await administrator_service.edit_administrator(admin_id, dto)
+    return await administrator_service.edit(admin_id, dto)
     
 
 @router.delete("/{admin_id}", description="Delete an existing user")
 async def delete_admin(admin: CurrentAdmin, admin_id: int):
-    return await administrator_service.delete_administrator(admin_id)
+    return await administrator_service.delete(admin_id)
