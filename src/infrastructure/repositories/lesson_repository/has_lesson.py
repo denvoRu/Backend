@@ -1,7 +1,24 @@
-from src.infrastructure.database import Lesson, has_instance
+from src.infrastructure.database import Lesson, ScheduleLesson, has_instance
 
 from uuid import UUID
+from datetime import date
 
 
 async def has_by_id(lesson_id: UUID):
     return await has_instance(Lesson, Lesson.id == lesson_id)
+
+
+async def has_by_schedule(
+    study_group_id: UUID, 
+    schedule_lesson: ScheduleLesson, 
+    date: date
+):
+    return await has_instance(
+        Lesson,
+        (
+            Lesson.study_group_id == study_group_id,
+            Lesson.date == date,
+            Lesson.start_time == schedule_lesson.start_time,
+            Lesson.end_time == schedule_lesson.end_time
+        )
+    )

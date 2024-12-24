@@ -3,13 +3,15 @@ from src.infrastructure.enums.role import Role
 from src.domain.extensions.check_role.user import User
 from src.domain.helpers.schedule import get_last_monday
 from src.infrastructure.repositories import (
-    schedule_repository, teacher_repository
+    schedule_repository, teacher_repository,
+    lesson_repository, study_group_repository
 )
 from src.application.dto.schedule import (
     AddLessonInScheduleDTO, EditLessonInScheduleDTO
 )
 
 from fastapi import HTTPException, Response, status
+from datetime import date
 from uuid import UUID
 
 
@@ -103,3 +105,44 @@ async def import_from_modeus(teacher_id: UUID):
 
     # MODEUS API
     return Response(status_code=status.HTTP_200_OK)
+
+
+async def add_lesson_scheduled(
+    teacher_id: UUID, 
+    schedule_lesson_id: UUID, 
+    date: date
+):
+    if not await schedule_repository.has_lesson(schedule_lesson_id):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Schedule lesson not found"
+        )
+    
+    schedule_lesson = await schedule_repository.get_lesson_by_id(schedule_lesson_id)
+
+    if date.weekday() != schedule_lesson.day:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="You cannot create a lesson for this day"
+        )
+
+    study_group_id = await study_group_repository.get_by_ids(
+        teacher_id, 
+        schedule_lesson.subject_id
+    )
+
+    has_lesson = lesson_repository.has_by_schedule(
+        study_group_id, schedule_lesson, date
+    )
+    if await has_lesson:
+        return await lesson_repository.get_by_schedule(
+            study_group_id, 
+            schedule_lesson,
+            date
+        ) 
+
+    return await lesson_repository.add_lesson_by_schedule(
+        study_group_id, 
+        schedule_lesson, 
+        date
+    )

@@ -1,6 +1,7 @@
 from src.infrastructure.database.extensions import user_to_save_dict
-from src.infrastructure.database import Teacher, get
+from src.infrastructure.database import Teacher, StudyGroup, get
 
+from sqlalchemy import select
 from uuid import UUID
 
 
@@ -36,6 +37,22 @@ async def get_all(
         filters
     )
     return result
+
+
+async def get_by_study_group(subject_id, page, limit, columns, sort, search, desc):
+    stmt = select(StudyGroup.teacher_id).where(StudyGroup.subject_id == subject_id)
+    return await get_all(
+        page, 
+        limit, 
+        columns, 
+        sort, 
+        search, 
+        desc, 
+        None,
+        None,
+        None,
+        [Teacher.id.in_(stmt)]
+    )
 
 
 async def get_by_id(teacher_id: UUID) -> dict: 

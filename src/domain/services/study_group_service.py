@@ -1,5 +1,6 @@
 from src.infrastructure.repositories import (
-    study_group_repository, subject_repository
+    study_group_repository, subject_repository,
+    teacher_repository
 )
 
 from fastapi import HTTPException, Response, status
@@ -24,7 +25,7 @@ async def get_teachers(
     if search is not None and search != "":
         search = "first_name*{0},second_name*{0},third_name*{0}".format(search)
     
-    return await study_group_repository.get_by_id(
+    return await teacher_repository.get_by_study_group(
         subject_id, 
         page, 
         limit, 

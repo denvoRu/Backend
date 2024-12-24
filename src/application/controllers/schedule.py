@@ -6,6 +6,7 @@ from src.application.dto.schedule import (
 )
 
 from fastapi import APIRouter, Body
+from datetime import date
 from pydantic import UUID4
 
 
@@ -35,6 +36,32 @@ async def add_lesson_in_my_schedule(
     dto: AddLessonInScheduleDTO = Body(...)
 ):
     return await schedule_service.add_lesson(teacher.user_id, dto)
+
+
+@router.post("/{schedule_lesson_id}/lesson", description="Add a lesson from the schedule to the scheduled ones")
+async def get_lesson_id_of_shedule_lesson(
+    teacher: CurrentTeacher, 
+    schedule_lesson_id: UUID4,
+    date: date
+) -> UUID4:
+    return await schedule_service.add_lesson_scheduled(
+        teacher.user_id, 
+        schedule_lesson_id, 
+        date
+    )
+
+@router.post("/{teacher_id}/{schedule_lesson_id}/lesson", description="Add a lesson from the teacher schedule to the scheduled ones (for admins)")
+async def get_lesson_id_of_teacher_shedule_lesson(
+    admin: CurrentAdmin,
+    teacher_id: UUID4,
+    schedule_lesson_id: UUID4,
+    date: date
+) -> UUID4:
+    return await schedule_service.add_lesson_scheduled(
+        teacher_id, 
+        schedule_lesson_id, 
+        date
+    )
 
 
 @router.post("/{teacher_id}", description="Add lesson to teacher schedule (for admins)", status_code=201)
