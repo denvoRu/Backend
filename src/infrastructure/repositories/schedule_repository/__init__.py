@@ -3,3 +3,4 @@ from .has_schedule import has_by_id, has_lesson
 from .add_schedule import add, add_lesson
 from .delete_schedule import delete_lesson
 from .edit_schedule import update_lesson_by_id
+from .extra import is_teacher_of_lesson

@@ -1,8 +1,10 @@
 from src.infrastructure.enums.week import Week
+from src.infrastructure.enums.role import Role
+from src.domain.extensions.check_role.user import User
+from src.domain.helpers.schedule import get_last_monday
 from src.infrastructure.repositories import (
     schedule_repository, teacher_repository
 )
-from src.domain.helpers.schedule import get_last_monday
 from src.application.dto.schedule import (
     AddLessonInScheduleDTO, EditLessonInScheduleDTO
 )
@@ -42,8 +44,18 @@ async def add_lesson(teacher_id: UUID, dto: AddLessonInScheduleDTO):
     return Response(status_code=status.HTTP_201_CREATED)
     
 
-async def delete_lesson(user, schedule_lesson_id: UUID):
+async def delete_lesson(user: User, schedule_lesson_id: UUID):
     if not await schedule_repository.has_lesson(schedule_lesson_id):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Lesson not found"
+        )
+    
+    check_teacher = schedule_repository.is_teacher_of_lesson(
+        user.user_id, schedule_lesson_id
+    )
+    
+    if user.role == Role.TEACHER and not await check_teacher:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Lesson not found"
@@ -54,7 +66,7 @@ async def delete_lesson(user, schedule_lesson_id: UUID):
 
 
 async def edit_lesson(
-    user,
+    user: User,
     schedule_lesson_id: UUID, 
     dto: EditLessonInScheduleDTO
 ):  
@@ -64,6 +76,16 @@ async def edit_lesson(
             detail="Lesson not found"
         )
     
+    check_teacher = schedule_repository.is_teacher_of_lesson(
+        user.user_id, schedule_lesson_id
+    )
+    
+    if user.role == Role.TEACHER and not await check_teacher:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Lesson not found"
+        )
+
     dto_dict = dto.model_dump(exclude_none=True)
     await schedule_repository.update_lesson_by_id(schedule_lesson_id, dto_dict)
     return Response(status_code=status.HTTP_200_OK)
