@@ -3,7 +3,8 @@ from src.domain.extensions.check_role import (
     CurrentTeacher, CurrentAdmin, CurrentUser
 )
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter
+from datetime import date
 from pydantic import UUID4
 
 
@@ -13,21 +14,21 @@ router = APIRouter()
 @router.get("/", description="Show all lessons")
 async def get_my_lessons(
     teacher: CurrentTeacher, 
-    start_date: str = Query(None, alias="start_date"),
-    end_date: str = Query(None, alias="end_date"),
-    filter = Query(None, alias="filter")
+    start_date: date,
+    end_date: date,
 ):
-    return "Lessons are shown"
+    return await lesson_service.get_all(teacher.user_id, start_date, end_date)
+    
 
 
 @router.get("/{teacher_id}", description="Show teacher lessons (for admins)")
 async def get_lessons_of_teacher(
     admin: CurrentAdmin, 
-    start_date: str = Query(None, alias="start_date"),
-    end_date: str = Query(None, alias="end_date"),
-    filter = Query(None, alias="filter")
+    teacher_id: UUID4,
+    start_date: date,
+    end_date: date,
 ):
-    return "lesso are shown"
+    return await lesson_service.get_all(teacher_id, start_date, end_date)
 
 
 @router.get("/{lesson_id}", description="Show lesson data if this lesson is active")

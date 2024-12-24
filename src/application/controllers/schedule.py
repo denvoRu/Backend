@@ -1,6 +1,6 @@
 from src.infrastructure.enums.week import Week
 from src.domain.services import schedule_service
-from src.domain.extensions.check_role import CurrentTeacher, CurrentAdmin
+from src.domain.extensions.check_role import CurrentTeacher, CurrentAdmin, CurrentUser
 from src.application.dto.schedule import (
     AddLessonInScheduleDTO, EditLessonInScheduleDTO
 )
@@ -47,47 +47,14 @@ async def add_lesson_in_schedule_of_teacher(
 
 
 @router.patch("/{schedule_lesson_id}", description="Edit lesson in my schedule")
-async def edit_lesson_in_my_schedule(
-    teacher: CurrentTeacher, 
+async def edit_lesson_in_schedule(
+    user: CurrentUser, 
     schedule_lesson_id: UUID4, 
     dto: EditLessonInScheduleDTO
 ):
-    return await schedule_service.edit_lesson(
-        teacher.user_id, 
-        schedule_lesson_id, 
-        dto
-    )
-
-
-@router.patch("/{teacher_id}/{schedule_lesson_id}", description="Edit lesson in teacher schedule (for admins)")
-async def edit_lesson_in_schedule_of_teacher(
-    admin: CurrentAdmin, 
-    teacher_id: UUID4, 
-    schedule_lesson_id: UUID4, 
-    dto: EditLessonInScheduleDTO = Body(...)
-):
-    return await schedule_service.edit_lesson(
-        teacher_id, 
-        schedule_lesson_id, 
-        dto
-    )
+    return await schedule_service.edit_lesson(user, schedule_lesson_id, dto)
 
 
 @router.delete("/{schedule_lesson_id}", description="Delete lesson from my schedule")
-async def delete_lesson_from_my_schedule(teacher: CurrentTeacher, schedule_lesson_id: UUID4):
-    return await schedule_service.delete_lesson(
-        teacher.user_id, 
-        schedule_lesson_id
-    )
-
-
-@router.delete("/{teacher_id}/{schedule_lesson_id}", description="Delete lesson from teacher schedule (for admins)")
-async def delete_lesson_from_schedule_of_teacher(
-    admin: CurrentAdmin, 
-    teacher_id: UUID4, 
-    schedule_lesson_id: UUID4
-):
-    return await schedule_service.delete_lesson(
-        teacher_id, 
-        schedule_lesson_id
-    )
+async def delete_lesson_from_schedule(user: CurrentUser, schedule_lesson_id: UUID4):
+    return await schedule_service.delete_lesson(user, schedule_lesson_id)

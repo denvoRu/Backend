@@ -1,6 +1,6 @@
 import uuid
-from sqlmodel import SQLModel, Field, ForeignKey, Time
-from datetime import time
+from sqlmodel import SQLModel, Field, ForeignKey, Time, Date
+from datetime import time, date as DateType
 
 
 class Lesson(SQLModel, table=True):
@@ -10,6 +10,7 @@ class Lesson(SQLModel, table=True):
     study_group_id: uuid.UUID = Field(ForeignKey("study_group.id"))
     lesson_name: str = Field(nullable=False)
     speaker_name: str = Field(nullable=False)
+    date: DateType = Date()
     start_time: time = Time()
     end_time: time = Time()
     rating: float = Field(nullable=False, default=0.0)

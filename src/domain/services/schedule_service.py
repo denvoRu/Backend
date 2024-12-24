@@ -33,7 +33,7 @@ async def add_lesson(teacher_id: UUID, dto: AddLessonInScheduleDTO):
     
     if not await schedule_repository.has_by_id(teacher_id):
         week = get_last_monday()
-        schedule_repository.add(teacher_id, week)
+        await schedule_repository.add(teacher_id, week)
 
     dto_dict = dto.model_dump(exclude_none=True)
     schedule_id = await schedule_repository.get_by_id(teacher_id)
@@ -42,19 +42,7 @@ async def add_lesson(teacher_id: UUID, dto: AddLessonInScheduleDTO):
     return Response(status_code=status.HTTP_201_CREATED)
     
 
-async def delete_lesson(teacher_id: UUID, schedule_lesson_id: UUID):
-    if not await teacher_repository.has_by_id(teacher_id):
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Teacher not found"
-        )
-    
-    if not await schedule_repository.has_by_id(teacher_id):
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Schedule not found"
-        )
-
+async def delete_lesson(user, schedule_lesson_id: UUID):
     if not await schedule_repository.has_lesson(schedule_lesson_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -66,22 +54,10 @@ async def delete_lesson(teacher_id: UUID, schedule_lesson_id: UUID):
 
 
 async def edit_lesson(
-    teacher_id: UUID, 
+    user,
     schedule_lesson_id: UUID, 
     dto: EditLessonInScheduleDTO
-): 
-    if not await teacher_repository.has_by_id(teacher_id):
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Teacher not found"
-        )
-    
-    if not await schedule_repository.has_by_id(teacher_id):
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Schedule not found"
-        )
-    
+):  
     if not await schedule_repository.has_lesson(schedule_lesson_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

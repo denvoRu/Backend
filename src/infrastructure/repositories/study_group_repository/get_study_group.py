@@ -13,6 +13,9 @@ async def get_by_id(subject_id, page, limit, columns, sort, search, desc):
         sort, 
         search, 
         desc, 
+        None,
+        None,
+        None,
         [Teacher.id.in_(stmt)]
     )
     
