@@ -55,7 +55,7 @@ async def get_all_with_subjects(
         if desc == 1:
             sorted_columns = map(order_desc, sorted_columns)
 
-        module_stmt.order_by(sorted_columns)
+        module_stmt.order_by(*sorted_columns)
 
     if rating_start is not None and rating_start != -1:
         module_filters.append(Module.rating >= rating_start)
