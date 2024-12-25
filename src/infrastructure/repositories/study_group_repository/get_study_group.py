@@ -4,7 +4,7 @@ from sqlmodel import select
 from uuid import UUID
 
 
-async def get_by_lesson(lesson_id: UUID):
+async def get_by_lesson(lesson_id: UUID) -> StudyGroup:
     lessons = select(Lesson.study_group_id).where(Lesson.id == lesson_id)
     study_group = select(StudyGroup).where(StudyGroup.id.in_(lessons))
 

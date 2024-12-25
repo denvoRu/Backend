@@ -3,7 +3,7 @@ from src.application.dto.lesson import EditLessonDTO
 from src.domain.extensions.check_role.user import User
 from src.infrastructure.repositories import (
     lesson_repository, schedule_repository,
-    study_group_repository
+    study_group_repository, feedback_repository
 )
 
 from fastapi import HTTPException, Response, status
@@ -64,7 +64,7 @@ async def get_members(user: User, lesson_id: UUID):
             detail="Lesson not found"
         )
 
-    return None
+    return await feedback_repository.get_members(lesson_id)
 
 
 async def get_statistics(user: User, lesson_id: UUID):
@@ -82,7 +82,7 @@ async def get_statistics(user: User, lesson_id: UUID):
             detail="Lesson not found"
         )
     
-    return None
+    return await feedback_repository.get_statistics(lesson_id)
 
 
 async def edit_lesson(user: User, lesson_id: UUID, dto: EditLessonDTO):

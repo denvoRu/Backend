@@ -1,11 +1,25 @@
 from src.infrastructure.database import Lesson, ScheduleLesson, has_instance
 
 from uuid import UUID
-from datetime import date
+from datetime import date, datetime
 
 
 async def has_by_id(lesson_id: UUID):
     return await has_instance(Lesson, Lesson.id == lesson_id)
+
+
+async def has_active_by_id(lesson_id: UUID):
+    now = datetime.now()
+    
+    return await has_instance(
+        Lesson, 
+        (
+            Lesson.id == lesson_id,
+            Lesson.date >= now.date(),
+            Lesson.start_time <= now.time(),
+            Lesson.end_time >= now.time()
+        )
+    )
 
 
 async def has_by_schedule(
