@@ -15,11 +15,14 @@ async def get_all_modules(
     page: int = 1,
     limit: int = 10,
     desc: int = 0,
+    institute_id: UUID4 = Query(None, alias="institute_id"),
     columns: str = Query(None, alias="columns"),
     sort: str = Query(None, alias="sort"),
     search: str = Query(None, alias="search"),    
 ):
-    return await module_service.get_all(page, limit, columns, sort, search, desc)
+    return await module_service.get_all(
+        page, limit, columns, sort, search, desc, institute_id
+    )
 
 
 @router.get("/subjects", description="Get all existing modules and their subjects")

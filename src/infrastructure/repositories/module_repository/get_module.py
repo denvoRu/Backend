@@ -112,7 +112,10 @@ async def get_all_with_subjects(
         content=module_with_subjects.to_dict()
     )
 
-async def get_all(page, limit, columns, sort, search, desc):
+async def get_all(page, limit, columns, sort, search, desc, institute_id):
+    filters = []
+    if institute_id is not None:
+        filters.append(Module.institute_id == institute_id)
     return await get.get_all(
         Module, 
         page, 
@@ -120,7 +123,8 @@ async def get_all(page, limit, columns, sort, search, desc):
         columns, 
         sort, 
         search, 
-        desc
+        desc,
+        filters
     )
 
 

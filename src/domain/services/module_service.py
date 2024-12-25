@@ -41,13 +41,13 @@ async def get_all_with_subjects(
         )
 
 
-async def get_all(page, limit, columns, sort, search, desc): 
+async def get_all(page, limit, columns, sort, search, desc, institute_id): 
     if search is not None and search != "":
         search = "name*{0}".format(search)
-        
+
     try:
         return await module_repository.get_all(
-            page, limit, columns, sort, search, desc
+            page, limit, columns, sort, search, desc, institute_id
         )
     except Exception:
         raise HTTPException(
