@@ -81,13 +81,8 @@ async def get_all_with_subjects(
             )
         )
 
-    module_stmt = module_stmt.where(
-        *module_filters
-    )
-
-    subject_stmt = select(Subject).where(
-        *subject_filters
-    )
+    module_stmt = module_stmt.where(*module_filters)
+    subject_stmt = select(Subject).where(*subject_filters)
     
     # count query
     count_query = select(func.count(1)).select_from(module_stmt)

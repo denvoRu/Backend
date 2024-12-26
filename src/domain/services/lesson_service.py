@@ -7,7 +7,7 @@ from src.infrastructure.repositories import (
 )
 
 from fastapi import HTTPException, Response, status
-from datetime import date
+from datetime import date, datetime
 from uuid import UUID
 
 
@@ -100,8 +100,14 @@ async def edit_lesson(user: User, lesson_id: UUID, dto: EditLessonDTO):
             detail="Lesson not found"
         )
     
-    lesson_end_time = await lesson_repository.get_end_time_by_id(lesson_id)
+    lesson_end_time, date = await lesson_repository.get_end_time_by_id(lesson_id)
 
+    if date != datetime.now().date():    
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="you cannot change lessons for dates other than today"
+        )
+    
     if dto.end_time is not None and lesson_end_time <= dto.end_time:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
