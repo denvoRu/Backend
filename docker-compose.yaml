@@ -12,27 +12,36 @@ services:
     ports:
       - "6379:6379"
       - "8001:8001"
+    environment:
+      - REDIS_USERNAME: "default"
+      - REDIS_PASSWORD: "123"
+      - REDIS_DISABLE_DEFAULT_USER: "true"
   fastapi:
     build: .
     ports:
       - "5000:5000"
     environment: 
-      MAIL_FROM: ""
-      MAIL_SERVER: ""
-      MAIL_PORT: ""
-      MAIL_USERNAME: ""
-      MAIL_PASSWORD: ""
+      - MAIL_FROM: ""
+      - MAIL_SERVER: ""
+      - MAIL_PORT: ""
+      - MAIL_USERNAME: ""
+      - MAIL_PASSWORD: ""
 
-      DATABASE_DRIVER_NAME: "postgresql+asyncpg"
-      DATABASE_HOST: postgresql
-      DATABASE_PORT: 5432
-      DATABASE_USERNAME: "root"
-      DATABASE_PASSWORD: "123"
-      DATABASE: "database"
+      - REDIS_HOST: redis
+      - REDIS_PORT: 6379
+      - REDIS_USERNAME: "default"
+      - REDIS_PASSWORD: "123"
 
-      PROJECT_NAME: "Student Voice"
-      JWT_SECRET_KEY: ""
-      RESTORE_PASSWORD_LINK: "student-voice-beta.irit-rtf.ru/restore_password/"
+      - DATABASE_DRIVER_NAME: "postgresql+asyncpg"
+      - DATABASE_HOST: postgresql
+      - DATABASE_PORT: 5432
+      - DATABASE_USERNAME: "root"
+      - DATABASE_PASSWORD: "123"
+      - DATABASE: "database"
+
+      - PROJECT_NAME: "Student Voice"
+      - JWT_SECRET_KEY: ""
+      - RESTORE_PASSWORD_LINK: "student-voice-beta.irit-rtf.ru/restore_password/"
     depends_on:
       - postgresql
       - redis
