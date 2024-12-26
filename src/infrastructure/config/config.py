@@ -32,7 +32,8 @@ REDIS_CONFIG = {
     "username": config("REDIS_USERNAME"),
     "password": config("REDIS_PASSWORD"),
 }
-REDIS_DATABASE_CONN = get_redis_connection(**REDIS_CONFIG)
+url = f'redis://{REDIS_CONFIG["username"]}:{REDIS_CONFIG["password"]}@{REDIS_CONFIG["host"]}:{REDIS_CONFIG["port"]}/'
+REDIS_DATABASE_CONN = get_redis_connection(url=url)
 
 MAIL_FROM = config("MAIL_FROM")
 MAIL_SERVER = config("MAIL_SERVER")
