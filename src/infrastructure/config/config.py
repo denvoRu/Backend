@@ -1,6 +1,5 @@
 from decouple import config
 from sqlalchemy import URL
-from redis_om import get_redis_connection
 
 
 PROJECT_NAME = config("PROJECT_NAME")
@@ -25,15 +24,6 @@ DATABASE_CONFIG = {
     "database": config("DATABASE"),
 }
 DATABASE_URL = URL.create(**DATABASE_CONFIG)
-
-REDIS_CONFIG = {
-    "host": config("REDIS_HOST"),
-    "port": config("REDIS_PORT"),
-    "username": config("REDIS_USERNAME"),
-    "password": config("REDIS_PASSWORD"),
-}
-url = f'redis://{REDIS_CONFIG["username"]}:{REDIS_CONFIG["password"]}@{REDIS_CONFIG["host"]}:{REDIS_CONFIG["port"]}/'
-REDIS_DATABASE_CONN = get_redis_connection(url=url)
 
 MAIL_FROM = config("MAIL_FROM")
 MAIL_SERVER = config("MAIL_SERVER")
