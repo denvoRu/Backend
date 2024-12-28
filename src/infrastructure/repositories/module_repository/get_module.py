@@ -50,12 +50,6 @@ async def get_all_with_subjects(
             )
         )
     
-    if sort is not None and sort != "":
-        sorted_columns = map(text, sort.split(","))
-        if desc == 1:
-            sorted_columns = map(order_desc, sorted_columns)
-
-        module_stmt.order_by(*sorted_columns)
 
     if rating_start is not None and rating_start != -1:
         module_filters.append(Module.rating >= rating_start)
@@ -83,6 +77,13 @@ async def get_all_with_subjects(
 
     module_stmt = module_stmt.where(*module_filters)
     subject_stmt = select(Subject).where(*subject_filters)
+
+    if sort is not None and sort != "":
+        sorted_columns = map(text, sort.split(","))
+        if desc == 1:
+            sorted_columns = map(order_desc, sorted_columns)
+
+        module_stmt = module_stmt.order_by(*sorted_columns)
     
     # count query
     count_query = select(func.count(1)).select_from(module_stmt)
