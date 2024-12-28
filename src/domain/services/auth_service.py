@@ -1,7 +1,9 @@
 from src.domain.extensions.get_hex_uuid import get_hex_uuid
 from src.infrastructure.enums.role import Role
-from src.infrastructure.repositories.institute_repository import has_by_id
-from src.infrastructure.repositories.auth_repository import update_password
+from src.infrastructure.repositories import (
+    institute_repository, study_group_repository, subject_repository,
+    auth_repository
+)
 from src.domain.extensions.email.email_sender import EmailSender
 from src.domain.extensions.token import create_token
 from src.application.dto.auth import (
@@ -32,7 +34,15 @@ async def register(dto: RegisterDTO) -> str:
             detail="Institute id is required"
         )
     
-    is_has = await has_by_id(dto.institute_id)
+    has_subjects = len(dto.subjects) > 0 and dto.role == Role.TEACHER
+
+    if has_subjects and not await subject_repository.has_many(dto.subjects):
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="One or more subjects not found"
+            )
+    
+    is_has = await institute_repository.has_by_id(dto.institute_id)
     if dto.role == Role.TEACHER and not(is_has):
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
@@ -42,9 +52,10 @@ async def register(dto: RegisterDTO) -> str:
     salt = gensalt()
     hashed_password = hashpw(dto.password.encode(), salt).decode()
 
-    await add_in_teacher_or_admin(dto, hashed_password)
+    user = await add_in_teacher_or_admin(dto, hashed_password)
     # await EmailSender.send_registered(dto.email, dto.password)
-
+    if has_subjects:
+        await study_group_repository.add_many(user.id, dto.subjects)
     return Response(status_code=status.HTTP_201_CREATED)
 
 
@@ -107,5 +118,5 @@ async def update_password_from_token(dto: UpdatePasswordDTO):
             detail="Restore token is expired"
         ) 
     
-    await update_password(rp.email, rp.role, dto.password) 
+    await auth_repository.update_password(rp.email, rp.role, dto.password) 
     return Response(status_code=status.HTTP_200_OK)
