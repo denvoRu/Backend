@@ -19,7 +19,8 @@ app = FastAPI(
     version=config.VERSION,
     title=config.PROJECT_NAME,
     summary=config.SUMMARY,
-    lifespan=shutdown
+    lifespan=shutdown,
+    root_path=config.ROOT_PATH
 )
 
 app.add_middleware(
