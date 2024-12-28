@@ -17,6 +17,8 @@ async def get_all(
     subject_ids,
     filters = []
     ):
+    filters = []
+    
     if rating_start is not None and rating_start != -1:
         filters.append(Teacher.rating >= rating_start)
 
