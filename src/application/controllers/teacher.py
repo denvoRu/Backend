@@ -1,9 +1,10 @@
 from src.infrastructure.enums.privilege import Privilege
 from src.application.dto.shared import EditUserDTO
-from src.domain.services import teacher_service
+from src.domain.services import teacher_service, study_group_service
 from src.domain.extensions.check_role import CurrentTeacher, CurrentAdmin
 
 from fastapi import APIRouter, Body, Query
+from typing import List
 from pydantic import UUID4
 
 router = APIRouter()
@@ -74,3 +75,12 @@ async def delete_teacher_privilege(
     admin: CurrentAdmin, teacher_id: UUID4, privilege: Privilege
 ):
     return await teacher_service.delete_privilege(teacher_id, privilege)
+
+
+@router.delete("/{teacher_id}/subjects/", description="Delete teacher subjects (for admins)")
+async def delete_teacher_subjects(
+    admin: CurrentAdmin, 
+    teacher_id: UUID4, 
+    subject_ids: List[UUID4] = Body(...)
+):
+    return await study_group_service.delete_many(teacher_id, subject_ids)

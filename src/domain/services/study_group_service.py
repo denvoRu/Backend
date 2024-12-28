@@ -4,6 +4,7 @@ from src.infrastructure.repositories import (
 )
 
 from fastapi import HTTPException, Response, status
+from typing import List
 from uuid import UUID
 
 
@@ -71,3 +72,25 @@ async def delete_teacher(subject_id: UUID, teacher_id: UUID):
     )
     return Response(status_code=status.HTTP_200_OK)
     
+
+async def delete_many(teacher_id: UUID, subject_ids: List[UUID]):
+    if len(subject_ids) == 0:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Subject ids are required"
+        )
+    
+    if not await subject_repository.has_many(subject_ids):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="One or more subjects not found"
+        )
+    
+    if not await teacher_repository.has_by_id(teacher_id):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Teacher not found"
+        )
+    
+    await study_group_repository.delete_many(teacher_id, subject_ids)
+    return Response(status_code=status.HTTP_200_OK)
