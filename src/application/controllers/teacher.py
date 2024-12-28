@@ -77,7 +77,7 @@ async def delete_teacher_privilege(
     return await teacher_service.delete_privilege(teacher_id, privilege)
 
 
-@router.delete("/{teacher_id}/subjects/", description="Delete teacher subjects (for admins)")
+@router.delete("/{teacher_id}/subjects/", description="Delete teacher subjects by id (for admins)")
 async def delete_teacher_subjects(
     admin: CurrentAdmin, 
     teacher_id: UUID4, 
