@@ -11,4 +11,33 @@ services:
     image: redis/redis-stack
     ports:
       - "6379:6379"
-      - "8001:8001"
+    environment:
+      REDIS_USERNAME: "default"
+      REDIS_PASSWORD: "123"
+      REDIS_DISABLE_DEFAULT_USER: "true"
+  fastapi:
+    build: .
+    ports:
+      - "5000:5000"
+    environment: 
+      MAIL_FROM: ""
+      MAIL_SERVER: ""
+      MAIL_PORT: ""
+      MAIL_USERNAME: ""
+      MAIL_PASSWORD: ""
+
+      REDIS_OM_URL: "redis://default:123@redis:6379/0"
+
+      DATABASE_DRIVER_NAME: "postgresql+asyncpg"
+      DATABASE_HOST: postgresql
+      DATABASE_PORT: 5432
+      DATABASE_USERNAME: "root"
+      DATABASE_PASSWORD: "123"
+      DATABASE: "database"
+
+      PROJECT_NAME: "Student Voice"
+      JWT_SECRET_KEY: ""
+      RESTORE_PASSWORD_LINK: "student-voice-beta.irit-rtf.ru/restore_password/"
+    depends_on:
+      - postgresql
+      - redis
