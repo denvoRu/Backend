@@ -1,7 +1,7 @@
 from math import ceil
 from typing import List, TypeVar
 from src.infrastructure.models.page_response import PageResponse
-from src.infrastructure.database import db, commit_rollback
+from src.infrastructure.database import db
 from sqlalchemy import func, or_, select, text, desc as order_desc
 
 
@@ -105,7 +105,7 @@ async def get_all(
             content=result
         )
     except Exception as e:
-        await commit_rollback()
+        await db.commit_rollback()
         raise Exception(str(e))
         
 
@@ -136,5 +136,5 @@ async def get_by_id(instance: TableInstance, instance_id: str, attr_name: str = 
         data: TableInstance = s.first()[0]
         return data
     except Exception as e:
-        await commit_rollback()
+        await db.commit_rollback()
         raise Exception(str(e))

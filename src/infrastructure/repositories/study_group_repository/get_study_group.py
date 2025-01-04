@@ -1,4 +1,4 @@
-from src.infrastructure.database import StudyGroup, Lesson, commit_rollback, db
+from src.infrastructure.database import StudyGroup, Lesson, db
 
 from sqlmodel import select
 from uuid import UUID
@@ -29,7 +29,7 @@ async def get_by_ids(teacher_id : UUID, subject_id: UUID) -> UUID:
 
         return executed.one()[0]
     except Exception as e:
-        await commit_rollback()
+        await db.commit_rollback()
         raise Exception(str(e))
 
 

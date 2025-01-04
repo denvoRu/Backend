@@ -1,6 +1,6 @@
 from src.infrastructure.repositories import (
     study_group_repository, subject_repository,
-    teacher_repository
+    teacher_repository, lesson_repository
 )
 
 from fastapi import HTTPException, Response, status
@@ -127,3 +127,14 @@ async def delete_many(teacher_id: UUID, subject_ids: List[UUID]):
     
     await study_group_repository.delete_many(teacher_id, subject_ids)
     return Response(status_code=status.HTTP_200_OK)
+
+
+async def get_active(study_group_id: UUID):
+    try:
+        return await lesson_repository.get_active_by_study_group_id(study_group_id)
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Lesson not found"
+        )
+    

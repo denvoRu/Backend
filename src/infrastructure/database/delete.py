@@ -1,4 +1,4 @@
-from src.infrastructure.database import db, commit_rollback
+from src.infrastructure.database import db
 
 from sqlalchemy import delete, update
 
@@ -12,7 +12,7 @@ async def delete_from_instance_by_id(instance, instance_id: int):
     
     stmt = delete(instance).where(instance.id == instance_id)
     await db.execute(stmt)
-    await commit_rollback()
+    await db.commit_rollback()
 
 async def save_delete_from_instance_by_id(instance, instance_id: int):
     stmt = update(instance)\
@@ -20,4 +20,4 @@ async def save_delete_from_instance_by_id(instance, instance_id: int):
         .values(is_disabled=True)
     
     await db.execute(stmt)
-    await commit_rollback()
+    await db.commit_rollback()

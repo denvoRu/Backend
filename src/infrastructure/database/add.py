@@ -1,8 +1,8 @@
-from src.infrastructure.database import db, commit_rollback
+from src.infrastructure.database import db
 
 
 async def add_instance(*instance):
     for item in instance:
         db.add(item)
-    await commit_rollback()
+    await db.commit_rollback()
     

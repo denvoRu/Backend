@@ -1,5 +1,5 @@
 from src.infrastructure.database import (
-    Administrator, Teacher, commit_rollback, db
+    Administrator, Teacher, db
 )
 from typing import TypeVar
 from sqlalchemy import select
@@ -41,6 +41,6 @@ async def get_admin_password_by_email(email: str):
 
 async def add_user(user: T):
     db.add(user)
-    await commit_rollback()
+    await db.commit_rollback()
 
     return user

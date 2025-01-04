@@ -1,7 +1,4 @@
-from src.infrastructure.database import (
-    Privilege, commit_rollback, 
-    has_instance, add_instance, db
-)
+from src.infrastructure.database import Privilege, has_instance, add_instance, db
 
 from sqlalchemy import delete, select
 from uuid import UUID
@@ -34,4 +31,4 @@ async def delete_by_name(teacher_id: UUID, name: str):
                    Privilege.name == name))
     
     await db.execute(stmt)
-    await commit_rollback()
+    await db.commit_rollback()

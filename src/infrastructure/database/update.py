@@ -1,4 +1,4 @@
-from src.infrastructure.database import db, commit_rollback
+from src.infrastructure.database import db
 from sqlalchemy import update
 
 
@@ -10,4 +10,4 @@ async def update_instance(instance, instance_id: int, data: dict):
 
     stmt = update(instance).where(*where_args).values(**data)
     await db.execute(stmt)
-    await commit_rollback()
+    await db.commit_rollback()

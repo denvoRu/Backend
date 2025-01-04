@@ -1,9 +1,7 @@
 from src.infrastructure.models.page_response import PageResponse
+from src.infrastructure.database import Module, Subject, StudyGroup, get, db
 from src.infrastructure.models.module_with_subject_response import (
     ModuleWithSubjectResponse
-)
-from src.infrastructure.database import (
-    Module, Subject, StudyGroup, get, db, commit_rollback
 )
 
 from sqlalchemy import select, desc as order_desc, text, func, or_
@@ -112,7 +110,7 @@ async def get_all_with_subjects(
             content=module_with_subjects.to_dict()
         )
     except Exception as e:
-        await commit_rollback()
+        await db.commit_rollback()
         raise Exception(str(e))
 
 
@@ -121,7 +119,7 @@ async def get_all(page, limit, columns, sort, search, desc, institute_id):
 
     if institute_id is not None:
         filters.append(Module.institute_id == institute_id)
-        
+
     return await get.get_all(
         Module, 
         page, 

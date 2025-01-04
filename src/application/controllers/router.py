@@ -3,7 +3,7 @@ from src.application.controllers import (
     administrator, teacher, auth,
     schedule, module, institute, 
     subject, lesson, feedback,
-    university
+    study_group, university
 )
 
 
@@ -18,5 +18,6 @@ api_router.include_router(institute.router, prefix="/institute", tags=["institut
 api_router.include_router(module.router, prefix="/module", tags=["module"])
 api_router.include_router(subject.router, prefix="/subject", tags=["subject"])
 api_router.include_router(schedule.router, prefix="/schedule", tags=["schedule"])
+api_router.include_router(study_group.router, prefix="/study_group", tags=["study_group"])
 api_router.include_router(lesson.router, prefix="/lesson", tags=["lesson"])
 api_router.include_router(feedback.router, prefix="/lesson", tags=["lesson"])

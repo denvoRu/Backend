@@ -19,11 +19,6 @@ async def get_all(
 ):
     if subject_ids is not None:
         subject_ids = subject_ids.split(",")
-
-    if search is not None and search != "":
-        search = "first_name*{0},second_name*{0},third_name*{0}".format(
-            search
-        )
         
     try:
         return await teacher_repository.get_all(

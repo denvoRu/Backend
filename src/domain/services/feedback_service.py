@@ -8,7 +8,7 @@ from uuid import UUID
 
 
 async def get_by_id(lesson_id: UUID): 
-    if await lesson_repository.has_by_id(lesson_id):
+    if not await lesson_repository.has_by_id(lesson_id):
         HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Lesson not found"
@@ -18,13 +18,13 @@ async def get_by_id(lesson_id: UUID):
 
 
 async def get_xlsx_by_id(lesson_id: UUID): 
-    if await lesson_repository.has_by_id(lesson_id):
+    if not await lesson_repository.has_by_id(lesson_id):
         HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Lesson not found"
         )
 
-    return feedback_repository.get_all(lesson_id)
+    return ""
 
 
 async def add(lesson_id: UUID, dto: AddFeedbackDTO):

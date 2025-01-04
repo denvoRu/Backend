@@ -1,5 +1,5 @@
 from src.infrastructure.database import (
-    ExtraField, ExtraFieldSetting, Feedback, add_instance, commit_rollback, db
+    ExtraField, ExtraFieldSetting, Feedback, add_instance, db
 )
 
 from sqlalchemy import select
@@ -33,4 +33,4 @@ async def add_extra_fields(
         )
         db.add(extra_field)
 
-    await commit_rollback()
+    await db.commit_rollback()

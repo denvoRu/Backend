@@ -1,4 +1,4 @@
-from src.infrastructure.database import StudyGroup, commit_rollback, db
+from src.infrastructure.database import StudyGroup, db
 from sqlalchemy import update
 
 
@@ -10,7 +10,7 @@ async def delete_from_subject(subject_id, teacher_id):
     ).values(is_disabled=True)
 
     await db.execute(stmt)
-    await commit_rollback()
+    await db.commit_rollback()
 
 
 async def delete_many(teacher_id, subject_ids):
@@ -21,4 +21,4 @@ async def delete_many(teacher_id, subject_ids):
     ).values(is_disabled=True)
 
     await db.execute(stmt)
-    await commit_rollback()
+    await db.commit_rollback()

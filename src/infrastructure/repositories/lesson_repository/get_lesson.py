@@ -1,6 +1,6 @@
 from src.infrastructure.database.extensions import LESSON_SAVE_FIELDS
 from src.infrastructure.database import (
-    Lesson, StudyGroup, ScheduleLesson, get_by_id, commit_rollback, db
+    Lesson, StudyGroup, ScheduleLesson, get_by_id, db
 )
 
 from sqlalchemy import select
@@ -38,17 +38,11 @@ async def get_end_time_by_id(lesson_id: UUID) -> Tuple[time, date]:
 
 
 async def get_active_by_id(lesson_id: UUID):
-    now = datetime.now()
-    stmt = select(Lesson).where(
-        Lesson.id == lesson_id,
-        Lesson.date >= now.date(),
-        Lesson.start_time <= now.time(),
-        Lesson.end_time >= now.time(),
-        Lesson.is_disabled == False
-    )
+    return await get_active_by_condition(Lesson.id == lesson_id)
 
-    lesson = (await db.execute(stmt)).scalars().one()
-    return get_formatted_lesson(lesson)
+
+async def get_active_by_study_group_id(study_group_id: UUID):
+    return await get_active_by_condition(Lesson.study_group_id == study_group_id)
 
 
 async def get_by_schedule(
@@ -69,8 +63,22 @@ async def get_by_schedule(
 
         return executed.one()[0]
     except Exception as e:
-        await commit_rollback()
+        await db.commit_rollback()
         raise Exception(str(e))
 
 def get_formatted_lesson(lesson):
     return {j[0]: j[1] for j in zip(LESSON_SAVE_FIELDS, lesson)}
+
+
+async def get_active_by_condition(condition):
+    now = datetime.now()
+    stmt = select(Lesson).where(
+        condition,
+        Lesson.date >= now.date(),
+        Lesson.start_time <= now.time(),
+        Lesson.end_time >= now.time(),
+        Lesson.is_disabled == False
+    )
+
+    lesson = (await db.execute(stmt)).scalars().one()
+    return get_formatted_lesson(lesson)
