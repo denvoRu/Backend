@@ -15,7 +15,7 @@ router = APIRouter()
 
 @router.get("/", description="Show my schedule")
 async def get_my_schedule(teacher: CurrentTeacher, week: Week = 0):
-    return await schedule_service.get_by_teacher_id(teacher.user_id, week)
+    return await schedule_service.get_by_teacher_id(teacher.id, week)
 
 
 @router.get("/{teacher_id}", description="Show teacher schedule (for admins)")
@@ -24,10 +24,8 @@ async def get_schedule_of_teacher(admin: CurrentAdmin, teacher_id: UUID4, week: 
 
 
 @router.post('/import_from_modeus', description="Add lessons to my schedule from Modeus", status_code=201)
-async def import_lessons_from_modeus(
-    teacher: CurrentTeacher
-):
-    return await schedule_service.import_from_modeus(teacher.user_id)
+async def import_lessons_from_modeus(teacher: CurrentTeacher):
+    return await schedule_service.import_from_modeus(teacher.id)
 
 
 @router.post("/", description="Add lesson to my schedule", status_code=201)
@@ -35,7 +33,7 @@ async def add_lesson_in_my_schedule(
     teacher: CurrentTeacher, 
     dto: AddLessonInScheduleDTO = Body(...)
 ):
-    return await schedule_service.add_lesson(teacher.user_id, dto)
+    return await schedule_service.add_lesson(teacher.id, dto)
 
 
 @router.post("/{schedule_lesson_id}/lesson", description="Add a lesson from the schedule to the scheduled ones")
@@ -45,7 +43,7 @@ async def get_lesson_id_of_shedule_lesson(
     date: date
 ) -> UUID4:
     return await schedule_service.add_lesson_scheduled(
-        teacher.user_id, 
+        teacher.id, 
         schedule_lesson_id, 
         date
     )

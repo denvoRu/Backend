@@ -18,7 +18,7 @@ async def get_my_lessons(
     start_date: date,
     end_date: date,
 ):
-    return await lesson_service.get_all(teacher.user_id, start_date, end_date)
+    return await lesson_service.get_all(teacher.id, start_date, end_date)
     
 
 @router.get("/{teacher_id}", description="Show teacher lessons (for admins)")

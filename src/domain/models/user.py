@@ -4,5 +4,5 @@ from uuid import UUID
 
 @dataclass
 class User:
-    user_id: UUID
+    id: UUID
     password: str

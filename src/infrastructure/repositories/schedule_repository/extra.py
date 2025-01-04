@@ -10,7 +10,7 @@ async def is_teacher_of_lesson(teacher_id: UUID, schedule_lesson_id: UUID):
 
     return await has_instance(
         ScheduleLesson, 
-        ScheduleLesson.schedule_id == schedule_id,
-        ScheduleLesson.id == schedule_lesson_id
+        (ScheduleLesson.schedule_id == schedule_id,
+        ScheduleLesson.id == schedule_lesson_id)
     )
     

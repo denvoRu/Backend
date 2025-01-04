@@ -5,7 +5,7 @@ from uuid import UUID
 
 
 class Users(JsonModel):
-    user_id: UUID
+    id: UUID
     access_token: str = Field(index=True, full_text_search=True)
     refresh_token: str = Field(primary_key=True)
     role: Role

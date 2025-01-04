@@ -54,7 +54,7 @@ async def delete_lesson(user: User, schedule_lesson_id: UUID):
         )
     
     check_teacher = schedule_repository.is_teacher_of_lesson(
-        user.user_id, schedule_lesson_id
+        user.id, schedule_lesson_id
     )
     
     if user.role == Role.TEACHER and not await check_teacher:
@@ -79,7 +79,7 @@ async def edit_lesson(
         )
     
     check_teacher = schedule_repository.is_teacher_of_lesson(
-        user.user_id, schedule_lesson_id
+        user.id, schedule_lesson_id
     )
     
     if user.role == Role.TEACHER and not await check_teacher:

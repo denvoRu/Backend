@@ -11,7 +11,7 @@ router = APIRouter()
 
 @router.get("/me", description="Show data about current user")
 async def get_me(admin: CurrentAdmin):
-    return await administrator_service.get_by_id(admin.user_id)
+    return await administrator_service.get_by_id(admin.id)
 
 
 @router.get("/", description="Show all admins")

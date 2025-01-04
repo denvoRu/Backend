@@ -1,4 +1,6 @@
 from src.application.dto.feedback import AddFeedbackDTO
+from src.infrastructure.enums.role import Role
+from src.domain.extensions.check_role.user import User
 from src.infrastructure.repositories import (
     feedback_repository, lesson_repository
 )
@@ -7,14 +9,37 @@ from fastapi import HTTPException, Response, status
 from uuid import UUID 
 
 
-async def get_by_id(lesson_id: UUID): 
+async def get_by_id(
+    user: User,
+    lesson_id: UUID,
+    page, 
+    limit, 
+    sort, 
+    search, 
+    desc
+): 
     if not await lesson_repository.has_by_id(lesson_id):
         HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Lesson not found"
         )
+
+    check_teacher = lesson_repository.is_teacher_of_lesson(user.id, lesson_id)
+
+    if user.role == Role.TEACHER and user.id and not await check_teacher:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Lesson not found"
+        )
     
-    return feedback_repository.get_all(lesson_id)
+    return feedback_repository.get_all(    
+        lesson_id,
+        page, 
+        limit, 
+        sort, 
+        search, 
+        desc
+    )
 
 
 async def get_xlsx_by_id(lesson_id: UUID): 

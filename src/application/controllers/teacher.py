@@ -38,7 +38,7 @@ async def get_all_teachers(
 
 @router.get("/me", description="Show me")
 async def get_me(teacher: CurrentTeacher):
-    return await teacher_service.get_by_id(teacher.user_id)
+    return await teacher_service.get_by_id(teacher.id)
 
 
 @router.get("/{teacher_id}", description="Show teacher data (for admins)")

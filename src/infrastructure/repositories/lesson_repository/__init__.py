@@ -7,3 +7,4 @@ from .get_lesson import (
     get_active_by_id, get_active_by_study_group_id,
     get_by_schedule, get_end_time_by_id, 
 )
+from .extra import is_teacher_of_lesson

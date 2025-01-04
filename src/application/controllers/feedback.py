@@ -2,7 +2,7 @@ from src.domain.extensions.check_role import CurrentUser
 from src.domain.services import feedback_service
 from src.application.dto.feedback import AddFeedbackDTO
 
-from fastapi import APIRouter, Body
+from fastapi import APIRouter, Body, Query
 from pydantic import UUID4
 
 
@@ -10,8 +10,24 @@ router = APIRouter()
 
 
 @router.get("/{lesson_id}/feedback", description="Show all feedbacks")
-async def get_feedbacks_of_lesson(user: CurrentUser, lesson_id: UUID4):
-    return await feedback_service.get_by_id(user, lesson_id)
+async def get_feedbacks_of_lesson(
+    user: CurrentUser, 
+    lesson_id: UUID4, 
+    page: int = 1,
+    limit: int = 10,
+    desc: int = 0,
+    sort: str = Query(None, alias="sort"),
+    search: str = Query(None, alias="search"),
+):
+    return await feedback_service.get_by_id(
+        user, 
+        lesson_id, 
+        page, 
+        limit, 
+        sort, 
+        search, 
+        desc
+    )
 
 
 @router.get("/{lesson_id}/feedback/xlsx", description="Show .xlsx file with reviews")

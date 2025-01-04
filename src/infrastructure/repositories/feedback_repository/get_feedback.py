@@ -13,12 +13,12 @@ from uuid import UUID
 
 
 async def get_all(  
+    lesson_id: UUID,
     page, 
     limit, 
     sort, 
     search, 
-    desc, 
-    lesson_id: UUID
+    desc
 ):
     try:
         feedback_stmt = select(

@@ -6,7 +6,7 @@ from dataclasses import dataclass
 
 @dataclass
 class User:
-    user_id: UUID
+    id: UUID
     username: str
     password: str
     role: Role
