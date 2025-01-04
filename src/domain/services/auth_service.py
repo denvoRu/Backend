@@ -117,6 +117,7 @@ async def update_password_from_token(dto: UpdatePasswordDTO):
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="Restore token is expired"
         ) 
-    
+    salt = gensalt()
+    dto.password = hashpw(dto.password.encode(), salt).decode()
     await auth_repository.update_password(rp.email, rp.role, dto.password) 
     return Response(status_code=status.HTTP_200_OK)

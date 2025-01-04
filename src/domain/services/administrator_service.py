@@ -2,6 +2,7 @@ from src.application.dto.shared import EditUserDTO
 from src.infrastructure.repositories import administrator_repository
 
 from fastapi import HTTPException, Response, status
+from bcrypt import gensalt, hashpw
 from uuid import UUID
 
 
@@ -34,6 +35,8 @@ async def edit(admin_id: UUID, dto: EditUserDTO):
             detail="Administrator not found"
         )
 
+    salt = gensalt()
+    dto.password = hashpw(dto.password.encode(), salt).decode()
     dto_dict = dto.model_dump(exclude_none=True)
 
     await administrator_repository.update_by_id(admin_id, dto_dict)
