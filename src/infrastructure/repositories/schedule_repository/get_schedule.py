@@ -35,7 +35,10 @@ async def get_by_week(teacher_id: UUID, week: int, filters = []):
 async def get_in_interval(teacher_id: UUID, start: date, end: date):
     week_start = await db.execute(
         select(Schedule.week_start)
-        .where(Schedule.teacher_id == teacher_id)
+        .where(
+            Schedule.teacher_id == teacher_id,
+            Schedule.is_disabled == False
+        )
     )
     week_start = week_start.scalars().one()
 

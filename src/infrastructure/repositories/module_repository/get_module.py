@@ -76,6 +76,9 @@ async def get_all_with_subjects(
                 )
             )
 
+        module_filters.append(Module.is_disabled == False)
+        subject_filters.append(Subject.is_disabled == False)
+
         module_stmt = module_stmt.where(*module_filters)
         subject_stmt = select(Subject).where(*subject_filters)
 
@@ -115,8 +118,10 @@ async def get_all_with_subjects(
 
 async def get_all(page, limit, columns, sort, search, desc, institute_id):
     filters = []
+
     if institute_id is not None:
         filters.append(Module.institute_id == institute_id)
+        
     return await get.get_all(
         Module, 
         page, 

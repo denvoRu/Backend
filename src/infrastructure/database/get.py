@@ -19,6 +19,8 @@ async def get_all(
     filters: list = None
 ) -> List[TableInstance]:
     try:
+        filters = filters if filters is not None else []
+
         if columns is not None and columns != "all": 
             columns = columns.split(',')
             columns = delete_unsafe_data_from_array(columns)
@@ -56,9 +58,10 @@ async def get_all(
 
             query = query.filter(or_(*criteria_list))
 
-        if filters is not None:
-            query = query.where(*filters)
-            
+        if hasattr(instance, "is_disabled"):
+            filters.append(instance.is_disabled == False)
+
+        query = query.where(*filters)
 
         if has_sort:
             stmt = list(map(text, sort))
@@ -119,12 +122,19 @@ def delete_unsafe_data_from_array(data: List[str]):
 
 
 async def get_by_id(instance: TableInstance, instance_id: str, attr_name: str = None, id_name = 'id') -> TableInstance:
-    getted_instance =  getattr(instance, attr_name) if attr_name else instance
+    try:
+        where_args = [getattr(instance, id_name) == instance_id]
+        getted_instance =  getattr(instance, attr_name) if attr_name else instance
 
-    s = await db.execute(
-        select(getted_instance)
-        .where(getattr(instance, id_name) == instance_id)
-    )
-    
-    data: TableInstance = s.first()[0]
-    return data
+        if hasattr(instance, "is_disabled"):
+            where_args.append(instance.is_disabled == False)
+        s = await db.execute(
+            select(getted_instance)
+            .where(*where_args)
+        )
+        
+        data: TableInstance = s.first()[0]
+        return data
+    except Exception as e:
+        await commit_rollback()
+        raise Exception(str(e))

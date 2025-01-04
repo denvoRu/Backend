@@ -42,7 +42,11 @@ async def get_all(
 
 
 async def get_by_study_group(subject_id, page, limit, columns, sort, search, desc):
-    stmt = select(StudyGroup.teacher_id).where(StudyGroup.subject_id == subject_id)
+    stmt = select(StudyGroup.teacher_id).where(
+        StudyGroup.subject_id == subject_id,
+        StudyGroup.is_disabled == False
+    )
+    
     return await get_all(
         page, 
         limit, 

@@ -3,14 +3,20 @@ from sqlalchemy import select, ColumnExpressionArgument
 from typing import Union
 
 
-async def has_instance(instance, where: Union[tuple, ColumnExpressionArgument]):
-    where_is_tuple = isinstance(where, tuple)
+async def has_instance(instance, where_args: Union[tuple, ColumnExpressionArgument]):
+    where_is_tuple = isinstance(where_args, tuple)
     stmt = select(instance)
     
     if where_is_tuple:
-        stmt = stmt.where(*where)
+        where_args = where_args
     else: 
-        stmt = stmt.where(where)
+        where_args = (where_args)
+    
+    if hasattr(instance, "is_disabled"):
+        where_args = where_args & (instance.is_disabled == False)
+
+    stmt = stmt.where(*where_args)
+
 
     s = await db.execute(stmt)
     return len(s.all()) > 0

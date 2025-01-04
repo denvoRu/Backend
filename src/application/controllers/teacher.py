@@ -77,8 +77,17 @@ async def delete_teacher_privilege(
     return await teacher_service.delete_privilege(teacher_id, privilege)
 
 
+@router.post("/{teacher_id}/subjects/", description="Add subjects to teacher (for admins)")
+async def add_subjects_to_teacher(
+    admin: CurrentAdmin, 
+    teacher_id: UUID4, 
+    subject_ids: List[UUID4] = Body(...)
+):
+    return await study_group_service.add_by_subject_ids(teacher_id, subject_ids)
+
+
 @router.delete("/{teacher_id}/subjects/", description="Delete teacher subjects by id (for admins)")
-async def delete_teacher_subjects(
+async def delete_subjects_from_teacher(
     admin: CurrentAdmin, 
     teacher_id: UUID4, 
     subject_ids: List[UUID4] = Body(...)

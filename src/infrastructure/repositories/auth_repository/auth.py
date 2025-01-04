@@ -9,14 +9,24 @@ T = TypeVar("T")
 
 
 async def __get_hashed_password_by_email(table: T, email: str) -> T:
-    s = select(table.id, table.password).where(table.email == email)
+    where_args = [table.email == email]
+
+    if hasattr(table, "is_disabled"):
+        where_args.append(table.is_disabled == False)
+
+    s = select(table.id, table.password).where(*where_args)
 
     scalar = await db.execute(s)
     return scalar.one()
 
 
 async def is_in_table(table: T, email: str) -> bool:
-    s = select(table.email).where(table.email == email)
+    where_args = [table.email == email]
+
+    if hasattr(table, "is_disabled"):
+        where_args.append(table.is_disabled == False)
+
+    s = select(table.email).where(*where_args)
     executed = await db.execute(s)
     return len(executed.all()) > 0
 

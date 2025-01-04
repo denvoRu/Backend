@@ -36,8 +36,41 @@ async def get_teachers(
         desc
     )
 
+async def add_by_teacher_ids(subject_id: UUID, teacher_ids: List[UUID]):
+    if not await subject_repository.has_by_id(subject_id):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Subject not found"
+        )
     
-async def add_teacher(subject_id: UUID, teacher_id: UUID):
+    if not await teacher_repository.has_many(teacher_ids):
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="One or more teachers not found"
+        )
+    
+    await study_group_repository.add_many(teacher_ids, subject_id)
+    return Response(status_code=status.HTTP_201_CREATED)
+
+
+async def add_by_subject_ids(teacher_id: UUID, subject_ids: List[UUID]):
+    if not await teacher_repository.has_by_id(teacher_id):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Teacher not found"
+        )
+    
+    if not await subject_repository.has_many(subject_ids):
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="One or more subjects not found"
+        )
+    
+    await study_group_repository.add_many(teacher_id, subject_ids)
+    return Response(status_code=status.HTTP_201_CREATED)
+    
+
+async def add_by_teacher_id(subject_id: UUID, teacher_id: UUID):
     if not await subject_repository.has_by_id(subject_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

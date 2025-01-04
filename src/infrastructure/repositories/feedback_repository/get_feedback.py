@@ -9,7 +9,8 @@ async def get_all(lesson_id: UUID): ...
 
 async def get_statistics(lesson_id: UUID):
     stmt = select(Feedback.mark ,func.count(Feedback.mark)).select_from(Feedback).where(
-        Feedback.lesson_id == lesson_id
+        Feedback.lesson_id == lesson_id,
+        Feedback.is_disabled == False
     ).group_by(Feedback.mark)
 
     executed = await db.execute(stmt)
@@ -20,7 +21,8 @@ async def get_statistics(lesson_id: UUID):
 async def get_members(lesson_id: UUID):
     stmt = distinct(select(Feedback.student_name).where(
         Feedback.lesson_id == lesson_id,
-        Feedback.student_name != ""
+        Feedback.student_name != "",
+        Feedback.is_disabled == False
     ))
 
     names = await db.execute(stmt)

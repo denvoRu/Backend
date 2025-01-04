@@ -3,7 +3,9 @@ from src.domain.services import subject_service, study_group_service
 from src.domain.extensions.check_role import CurrentAdmin
 
 from fastapi import APIRouter, Body, Query
+from typing import List
 from pydantic import UUID4
+
 
 router = APIRouter()
 
@@ -69,9 +71,14 @@ async def get_teachers_by_subject(
     )
 
 
+@router.post("/{subject_id}/teachers/", description="Add teachers to subject (for admins)", status_code=201)
+async def add_teachers_to_subject(admin: CurrentAdmin, subject_id: UUID4, teacher_ids: List[UUID4]):
+    return await study_group_service.add_by_teacher_ids(subject_id, teacher_ids)
+
+
 @router.post("/{subject_id}/teachers/{teacher_id}", description="Add teacher to subject (for admins)", status_code=201)
 async def add_teacher_to_subject(admin: CurrentAdmin, subject_id: UUID4, teacher_id: UUID4):
-    return await study_group_service.add_teacher(subject_id, teacher_id)
+    return await study_group_service.add_by_teacher_id(subject_id, teacher_id)
 
 
 @router.delete("/{subject_id}/teachers/{teacher_id}", description="Delete teacher from subject (for admins)")

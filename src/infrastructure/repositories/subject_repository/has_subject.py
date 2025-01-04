@@ -14,8 +14,10 @@ async def has_by_name(name: int):
 
 
 async def has_many(subject_ids: List[UUID]):
-    stmt = select(func.count(Subject.id) == len(subject_ids))\
-        .where(Subject.id.in_(subject_ids))
+    stmt = select(func.count(Subject.id) == len(subject_ids)).where(
+        Subject.id.in_(subject_ids), 
+        Subject.is_disabled == False
+    )
     
     result = await db.execute(stmt)
     

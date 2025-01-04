@@ -23,8 +23,8 @@ async def add(teacher_id: UUID, name: str):
 async def has_by_name(teacher_id: UUID, name: str):
     return await has_instance(
         Privilege, 
-        (Privilege.teacher_id == teacher_id,
-        Privilege.name == name)
+        (Privilege.teacher_id == teacher_id, 
+         Privilege.name == name)
     )
     
 

@@ -1,6 +1,6 @@
 from src.infrastructure.database.extensions import LESSON_SAVE_FIELDS
 from src.infrastructure.database import (
-    Lesson, StudyGroup, ScheduleLesson, get_by_id, db
+    Lesson, StudyGroup, ScheduleLesson, get_by_id, commit_rollback, db
 )
 
 from sqlalchemy import select
@@ -17,6 +17,8 @@ async def get_all(teacher_id: UUID, start_date: date, end_date: date):
         ).where(
             Lesson.date >= start_date,
             Lesson.date <= end_date,
+            Lesson.is_disabled == False,
+            StudyGroup.is_disabled == False,
             StudyGroup.teacher_id == teacher_id
         )
     executed = await db.execute(stmt)
@@ -41,7 +43,8 @@ async def get_active_by_id(lesson_id: UUID):
         Lesson.id == lesson_id,
         Lesson.date >= now.date(),
         Lesson.start_time <= now.time(),
-        Lesson.end_time >= now.time()
+        Lesson.end_time >= now.time(),
+        Lesson.is_disabled == False
     )
 
     lesson = (await db.execute(stmt)).scalars().one()
@@ -53,17 +56,21 @@ async def get_by_schedule(
         schedule_lesson: ScheduleLesson, 
         date: date
 ):
-    stmt = select(Lesson.id).where(
-        Lesson.study_group_id == study_group_id,
-        Lesson.date == date,
-        Lesson.start_time == schedule_lesson.start_time,
-        Lesson.end_time == schedule_lesson.end_time
-    )
+    try:
+        stmt = select(Lesson.id).where(
+            Lesson.study_group_id == study_group_id,
+            Lesson.date == date,
+            Lesson.start_time == schedule_lesson.start_time,
+            Lesson.end_time == schedule_lesson.end_time,
+            Lesson.is_disabled == False
+        )
 
-    executed = await db.execute(stmt)
+        executed = await db.execute(stmt)
 
-    return executed.one()[0]
-
+        return executed.one()[0]
+    except Exception as e:
+        await commit_rollback()
+        raise Exception(str(e))
 
 def get_formatted_lesson(lesson):
     return {j[0]: j[1] for j in zip(LESSON_SAVE_FIELDS, lesson)}
