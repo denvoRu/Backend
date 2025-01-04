@@ -5,7 +5,7 @@ class FeedbackWithExtraFieldsResponse:
 
 
     def __union_answers(self):
-        return list(i + self.__get_extra_fields(i["id"]) for i in self.feedbacks)
+        return list(i + self.__get_extra_fields(i["feedback_id"]) for i in self.feedbacks)
 
 
     def __get_extra_fields(self, feedback_id):

@@ -8,6 +8,7 @@ from src.infrastructure.database import (
 )
 
 from sqlalchemy import select, distinct, text, desc as order_desc, func
+from typing import Tuple, List
 from math import ceil
 from uuid import UUID
 
@@ -26,7 +27,8 @@ async def get_all(
             Feedback.student_name,
             Feedback.mark,
             Feedback.chosen_markers,
-            Feedback.comment
+            Feedback.comment,
+            Feedback.created_at
         ).where(
             Feedback.lesson_id == lesson_id,
             Feedback.is_disabled == False
@@ -53,6 +55,7 @@ async def get_all(
         feedbacks_id = [feedback["id"] for feedback in feedbacks]
 
         extra_fields_stmt = select(
+            ExtraField.feedback_id,
             ExtraField.value.alias("answer"), 
             ExtraFieldSetting.extra_field_name.alias("question")
         ).join(
@@ -76,6 +79,47 @@ async def get_all(
             total_pages=total_page,
             content=feddbacks_with_fields.to_dict(),
         )
+    except Exception as e:
+        await db.commit_rollback()
+        raise Exception(str(e))
+
+
+async def get_all_for_excel(lesson_id: UUID) -> Tuple[List[dict], List[dict]]:
+    try:
+        feedback_stmt = select(
+            Feedback.id, 
+            Feedback.student_name,
+            Feedback.mark,
+            Feedback.chosen_markers,
+            Feedback.comment,
+            Feedback.created_at
+        ).where(
+            Feedback.lesson_id == lesson_id,
+            Feedback.is_disabled == False
+        )
+
+
+        feedbacks = await db.execute(feedback_stmt)
+        feedbacks = list(row_to_dict(i) for i in feedbacks.all())
+
+        feedbacks_id = [feedback["id"] for feedback in feedbacks]
+
+        extra_fields_stmt = select(
+            ExtraField.feedback_id,
+            ExtraField.value.alias("answer"), 
+            ExtraFieldSetting.extra_field_name.alias("question")
+        ).join(
+            ExtraFieldSetting, 
+            ExtraFieldSetting.id == ExtraField.extra_field_setting_id
+        ).where(
+            ExtraField.feedback_id.in_(feedbacks_id),
+        )
+
+        extra_fields = await db.execute(extra_fields_stmt)
+        extra_fields = list(row_to_dict(i) for i in extra_fields.all())
+
+        return (feedbacks, extra_fields)
+
     except Exception as e:
         await db.commit_rollback()
         raise Exception(str(e))
