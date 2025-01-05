@@ -26,23 +26,22 @@ INITIAL_SQL = [
             source_rating_column, source_table, source_key_column
         )
         INTO avg_rating
-        USING NEW.lesson_id;
+        USING NEW.id;
 
         -- Обновление целевой таблицы
         EXECUTE format(
             'UPDATE %I SET %I = COALESCE($1, 0.0) WHERE %I = $2',
             target_table, target_column, foreign_key_column
         )
-        USING avg_rating, NEW.lesson_id;
+        USING avg_rating, NEW.id;
 
         RETURN NEW;
     END;
     $$ LANGUAGE plpgsql;
-
     """,
     """
     -- триггер для обновления lesson
-    CREATE TRIGGER update_rating_table_trigger
+    CREATE TRIGGER update_lesson_trigger
     AFTER INSERT OR UPDATE ON feedback
     FOR EACH ROW
     EXECUTE FUNCTION update_rating_generic(
@@ -70,7 +69,7 @@ INITIAL_SQL = [
     """,
     """
     -- триггер для обновления teacher
-    CREATE TRIGGER update_study_group_trigger
+    CREATE TRIGGER update_teacher_trigger
     AFTER INSERT OR UPDATE ON study_group
     FOR EACH ROW
     EXECUTE FUNCTION update_rating_generic(
@@ -112,8 +111,8 @@ INITIAL_SQL = [
     """,
     """
     -- триггер для обновления institute
-    CREATE TRIGGER update_module_trigger
-    AFTER INSERT OR UPDATE ON module
+    CREATE TRIGGER update_institute_trigger
+    AFTER UPDATE ON module
     FOR EACH ROW
     EXECUTE FUNCTION update_rating_generic(
         'institute',           
