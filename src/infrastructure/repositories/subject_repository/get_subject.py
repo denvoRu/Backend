@@ -39,3 +39,4 @@ async def get_all(
 
 async def get_by_id(subject_id: UUID) -> Subject:
     return await get.get_by_id(Subject, subject_id)
+

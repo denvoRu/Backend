@@ -16,9 +16,11 @@ async def __get_hashed_password_by_email(table: T, email: str) -> T:
 
     s = select(table.id, table.password).where(*where_args)
 
-    scalar = await db.execute(s)
-    return scalar.one()
-
+    try: 
+        scalar = await db.execute(s)
+        return scalar.one()
+    except Exception: 
+        raise Exception("User not found")
 
 async def is_in_table(table: T, email: str) -> bool:
     where_args = [table.email == email]

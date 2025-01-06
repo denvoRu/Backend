@@ -15,6 +15,7 @@ Jinja2~=3.1.4
 redis-om
 asyncpg
 pandas
+selenium
 xlsxwriter
 sqlmodel~=0.0.22
 aiosmtplib~=3.0.2

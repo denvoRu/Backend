@@ -60,9 +60,15 @@ async def register(dto: RegisterDTO) -> str:
 
 
 async def login(form_data: OAuth2PasswordRequestForm, role: Role) -> str:
-    user = await get_user_password_and_id_by_email_and_role(
-        form_data.username, role
-    )
+    try:
+        user = await get_user_password_and_id_by_email_and_role(
+            form_data.username, role
+        )
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, 
+            detail="Incorrect username or password"
+        )
 
     if checkpw(form_data.password.encode(), user.password.encode()):
         token = create_token(user.id, role)

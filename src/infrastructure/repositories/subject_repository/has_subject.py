@@ -1,6 +1,7 @@
 from src.infrastructure.database import Subject, has_instance, db
 
 from uuid import UUID
+from aiomodeus.student_voice import Subject as SubjectModeus
 from sqlalchemy import select, func
 from typing import List
 
@@ -22,3 +23,22 @@ async def has_many(subject_ids: List[UUID]):
     result = await db.execute(stmt)
     
     return result.one()[0]
+
+
+async def not_has_from_modeus(subjects: List[SubjectModeus]) -> List[SubjectModeus]:
+    result = []
+
+    for subject in subjects:
+        item = await subject.find_in_orm(
+            db, 
+            Subject, 
+            whereclause=(
+                Subject.name == subject.name,
+                Subject.is_disabled == False
+            ),
+            columns=["id"]
+            )
+        if len(item) == 0:
+            result.append(subject)
+
+    return result

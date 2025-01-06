@@ -1,16 +1,19 @@
 from src.infrastructure.enums.week import Week
 from src.infrastructure.enums.role import Role
 from src.domain.extensions.check_role.user import User
+from src.domain.extensions import selenium
 from src.domain.helpers.schedule import get_last_monday
 from src.infrastructure.repositories import (
     schedule_repository, teacher_repository,
-    lesson_repository, study_group_repository
+    lesson_repository, study_group_repository,
+    subject_repository, module_repository
 )
 from src.application.dto.schedule import (
     AddLessonInScheduleDTO, EditLessonInScheduleDTO
 )
 
 from fastapi import HTTPException, Response, status
+from aiomodeus import AioModeus
 from datetime import date
 from uuid import UUID
 
@@ -93,17 +96,74 @@ async def edit_lesson(
     return Response(status_code=status.HTTP_200_OK)
 
 
-async def import_from_modeus(teacher_id: UUID): 
+async def import_from_modeus(teacher_id: UUID, week_count: int): 
     if not await teacher_repository.has_by_id(teacher_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Teacher not found"
         )
     
+    if week_count != 1 and week_count != 2:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Week count must be 1 or 2"
+        )
+    
     if not await schedule_repository.has_by_id(teacher_id):
-        schedule_repository.add(teacher_id)
+        last_monday = get_last_monday()
+        await schedule_repository.add(teacher_id, last_monday)
 
-    # MODEUS API
+    schedule_id = await schedule_repository.get_by_id(teacher_id)
+    teacher = await teacher_repository.get_by_id(teacher_id)
+    FIO = " ".join([
+        teacher["first_name"], 
+        teacher["second_name"], 
+        teacher["third_name"]
+    ])
+    print(FIO)
+    institute_id = teacher["institute_id"]
+
+    token = selenium.auth()
+    aim = AioModeus(token)  
+
+    try: 
+        if week_count == 1:
+            schedule = await aim.get_schedule_for_week_by_teacher_name(FIO)
+            schedules = [schedule]
+        else: 
+            schedules = await aim.get_schedule_for_two_week_by_teacher_name(FIO)
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Teacher not found"
+        ) 
+
+    for schedule in schedules:
+        not_founded_modules = await module_repository.not_has_from_modeus(
+            institute_id, 
+            schedule.unique_modules
+        )
+        not_founded_subjects = await subject_repository.not_has_from_modeus(
+            schedule.unique_subjects
+        )
+
+        await module_repository.add_from_list(
+            institute_id, 
+            [x.name for x in not_founded_modules]
+        )
+        await subject_repository.add_from_modeus(
+            institute_id, 
+            not_founded_subjects
+        )
+
+        await schedule_repository.delete_all_lessons(schedule_id)
+
+        if len(schedule.schedule_lessons) > 0:
+            await schedule_repository.add_lesson_from_modeus(
+                schedule_id, 
+                schedule.schedule_lessons.get_in_unique_time()
+            )
+    
     return Response(status_code=status.HTTP_200_OK)
 
 

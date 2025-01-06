@@ -38,6 +38,9 @@ services:
       PROJECT_NAME: "Student Voice"
       JWT_SECRET_KEY: ""
       RESTORE_PASSWORD_LINK: "student-voice-beta.irit-rtf.ru/restore_password/"
+
+      MODEUS_LOGIN: "login"
+      MODEUS_PASSWORD: "password"
     depends_on:
       - postgresql
       - redis
