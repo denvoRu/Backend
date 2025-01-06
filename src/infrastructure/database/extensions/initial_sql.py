@@ -122,5 +122,16 @@ INITIAL_SQL = [
         'rating',        
         'institute_id'
     );
+    """,
+    """
+    INSERT INTO administrator (id, first_name, second_name, third_name, email, password)
+        VALUES (
+        'd216bd55-4f57-40fa-a6d1-8444f43ccacf',
+        'Евгений', 
+        'Смирнов', 
+        'Сергеевич', 
+        'email', 
+        'password_hashed'
+    )
     """
 ]

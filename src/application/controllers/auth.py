@@ -16,7 +16,7 @@ router = APIRouter()
 
 @router.post("/register", description="Register a new user (for admins)", status_code=201)
 async def register(
-    # admin: CurrentAdmin, 
+    admin: CurrentAdmin, 
     dto: RegisterDTO = Body(...)
 ) -> Any:
     return await auth_service.register(dto)

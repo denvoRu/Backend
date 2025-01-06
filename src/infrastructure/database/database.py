@@ -24,13 +24,12 @@ class AsyncDatabaseSession:
         async with self.engine.begin() as conn:
             await conn.run_sync(SQLModel.metadata.create_all)
 
-            try:
-                for query in INITIAL_SQL:
+            for query in INITIAL_SQL:
+                try:   
                     await conn.execute(text(query))
-            except Exception: 
-                pass
-            finally:
-                await self.commit_rollback()
+                except Exception: pass
+                finally:
+                    await self.commit_rollback()
 
 
     async def commit_rollback(self):
