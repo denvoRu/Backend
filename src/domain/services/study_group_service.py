@@ -49,6 +49,13 @@ async def add_by_teacher_ids(subject_id: UUID, teacher_ids: List[UUID]):
             detail="One or more teachers not found"
         )
     
+    for teacher_id in teacher_ids:
+        if await study_group_repository.has_by_id(subject_id, teacher_id):
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Teacher already exists in subject"
+            )
+    
     await study_group_repository.add_many(teacher_ids, subject_id)
     return Response(status_code=status.HTTP_201_CREATED)
 
@@ -66,6 +73,13 @@ async def add_by_subject_ids(teacher_id: UUID, subject_ids: List[UUID]):
             detail="One or more subjects not found"
         )
     
+    for subject_id in subject_ids:
+        if await study_group_repository.has_by_id(subject_id, teacher_id):
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Teacher already exists in subject"
+            )
+        
     await study_group_repository.add_many(teacher_id, subject_ids)
     return Response(status_code=status.HTTP_201_CREATED)
     
@@ -124,6 +138,13 @@ async def delete_many(teacher_id: UUID, subject_ids: List[UUID]):
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Teacher not found"
         )
+    
+    for subject_id in subject_ids:
+        if not await study_group_repository.has_by_id(subject_id, teacher_id):
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Teacher not found in subject"
+            )
     
     await study_group_repository.delete_many(teacher_id, subject_ids)
     return Response(status_code=status.HTTP_200_OK)

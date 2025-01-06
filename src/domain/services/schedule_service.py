@@ -116,8 +116,8 @@ async def import_from_modeus(teacher_id: UUID, week_count: int):
     schedule_id = await schedule_repository.get_by_id(teacher_id)
     teacher = await teacher_repository.get_by_id(teacher_id)
     FIO = " ".join([
-        teacher["first_name"], 
         teacher["second_name"], 
+        teacher["first_name"], 
         teacher["third_name"]
     ])
     print(FIO)
