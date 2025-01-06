@@ -1,5 +1,5 @@
 from src.infrastructure.database import (
-    Schedule, ScheduleLesson, Subject, add_instance, db
+    Schedule, ScheduleLesson, Subject, StudyGroup, add_instance, db
 )
 
 from aiomodeus.student_voice import ScheduleLessonList
@@ -23,8 +23,16 @@ async def add_lesson(schedule_id: UUID, dto: dict):
 
 
 async def add_lesson_from_modeus(
+    teacher_id: UUID,
     schedule_id: UUID, 
     schedule: ScheduleLessonList
 ):
-    await schedule.add_in_orm(schedule_id, db, ScheduleLesson, Subject)
+    await schedule.add_in_orm(
+        teacher_id,
+        schedule_id, 
+        db, 
+        ScheduleLesson, 
+        Subject,
+        StudyGroup
+    )
     await db.commit_rollback()

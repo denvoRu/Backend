@@ -8,7 +8,7 @@ class Feedback(SQLModel, table=True):
 
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True, index=True)
     lesson_id: uuid.UUID = Field(ForeignKey("lesson.id"), index=True)
-    student_name: str = Field()
+    # student_name: str = Field()
     mark: int = Field(nullable=False)
     chosen_markers: str = Field(nullable=False)
     comment: str = Field()

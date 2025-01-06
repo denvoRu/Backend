@@ -16,7 +16,8 @@ async def get_all(
         desc: int = 0,
         rating_start: int = -1,
         rating_end: int = -1,
-        subject_ids: str = None
+        subject_ids: str = None,
+        not_in_subject_by_id: UUID = None
 ):
     if subject_ids is not None:
         subject_ids = subject_ids.split(",")
@@ -31,9 +32,11 @@ async def get_all(
             desc,
             rating_start, 
             rating_end, 
-            subject_ids
+            subject_ids,
+            not_in_subject_by_id=not_in_subject_by_id
         )
-    except Exception:
+    except Exception as e:
+        print(e)
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="One or more parameters are invalid"

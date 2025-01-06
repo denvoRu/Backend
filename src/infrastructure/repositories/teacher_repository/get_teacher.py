@@ -1,7 +1,8 @@
 from src.infrastructure.database.extensions import user_to_save_dict
+from src.infrastructure.repositories import study_group_repository
 from src.infrastructure.database import Teacher, StudyGroup, get
 
-from sqlalchemy import select, or_, func
+from sqlalchemy import select, not_, or_, func
 from uuid import UUID
 
 
@@ -15,8 +16,10 @@ async def get_all(
     rating_start, 
     rating_end, 
     subject_ids,
-    filters = None
-    ):
+    filters = None,
+    *,
+    not_in_subject_by_id: UUID = None
+):
     filters = filters if filters is not None else []
 
     if rating_start is not None and rating_start != -1:
@@ -27,6 +30,17 @@ async def get_all(
 
     if subject_ids is not None and len(subject_ids) > 0:
         filters.append(Teacher.id.in_(subject_ids))
+
+    if not_in_subject_by_id is not None:
+        filters.append(
+                not_(Teacher.id.in_(
+                    study_group_repository.stmt_get_by_id(
+                        Teacher.id,
+                        not_in_subject_by_id
+                    )
+                )
+            )
+        )
 
     if search is not None: 
         name_split = search.lower().split()

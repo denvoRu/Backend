@@ -120,23 +120,19 @@ async def import_from_modeus(teacher_id: UUID, week_count: int):
         teacher["first_name"], 
         teacher["third_name"]
     ])
-    print(FIO)
+
     institute_id = teacher["institute_id"]
 
-    token = selenium.auth()
+    token = "eyJ4NXQiOiJORGhpTkROalpHTmpORFl6WXpJMVpUQmhZakUxTUdOaE1EQTJOelk0TTJKa1pEQTVaREptTXciLCJraWQiOiJkMGVjNTE0YTMyYjZmODhjMGFiZDEyYTI4NDA2OTliZGQzZGViYTlkIiwiYWxnIjoiUlMyNTYifQ.eyJhdF9oYXNoIjoiV3o0Y0duZUxBMzNNUUN4cU1VbU9MQSIsInN1YiI6ImRhZjJhNGQwLWQ4OTctNDY0OC05NDQxLTdkZjI0YTliMzM5ZCIsImF1ZCI6WyIzQ3VGM0ZzTnlSTGlGVmowSWwyZkl1amZ0dzBhIl0sImF6cCI6IjNDdUYzRnNOeVJMaUZWajBJbDJmSXVqZnR3MGEiLCJFeHRlcm5hbFBlcnNvbklkIjoiYzRjODYxZmYtZDgyOS00M2IyLWJkNmYtOTU1ZDU1MDVkOTdkIiwiaXNzIjoiaHR0cHM6XC9cL3VyZnUtYXV0aC5tb2RldXMub3JnXC9vYXV0aDJcL3Rva2VuIiwicHJlZmVycmVkX3VzZXJuYW1lIjoi0KHQvNC40YDQvdC-0LIg0JXQstCz0LXQvdC40Lkg0KHQtdGA0LPQtdC10LLQuNGHIiwiZXhwIjoxNzM2MjU1NjU3LCJub25jZSI6Ik0zTjVaVVpaZVRWcFFUWk1VWE5WTWpOblpVWmZiRWhoYldSUldHUjJUelpmTUZNeVJVWnZhVzFVWVVadyIsImlhdCI6MTczNjE2OTI1NywicGVyc29uX2lkIjoiYmIyNDc4ZTgtMDVhYi00OGQyLTkxYjYtZjQwZDU1MzI3YWRkIn0.pmfrHMsUxGTr7k9YoJRVM8r6LyiVQ-aM6dpIV-mB3-w3Ya3roDJGqtlvZMzOi78tMAn8_1oE4OYT-mWTbFGMFUCc7gLfziIQLkTJ7JCzHFdaxNraYIHj5wWNIOFYniyfXWlOpMlACA2Hfds_hsKTOz3QsRnyhEoi6jwewOU0svcMNRsRIQXPo5S7r9G7knADWP3gTTo15IEvzjxi6eL5dJUaKGIS86opBMPh2pkAmSdwvN-PPve1z4SUWYDz3Fkk2_zUtcTRDKhdzHTFN5h6qtFtou1Uw5ER0nMzlyI8NkuU2zwtcoWoEZZSgAE1IO_fNTr08ANGMoSoBojd8V5M3w" # selenium.auth()
     aim = AioModeus(token)  
+ 
+    if week_count == 1:
+        schedule = await aim.get_schedule_for_week_by_teacher_name(FIO)
+        schedules = [schedule]
+    else: 
+        schedules = await aim.get_schedule_for_two_week_by_teacher_name(FIO)
 
-    try: 
-        if week_count == 1:
-            schedule = await aim.get_schedule_for_week_by_teacher_name(FIO)
-            schedules = [schedule]
-        else: 
-            schedules = await aim.get_schedule_for_two_week_by_teacher_name(FIO)
-    except Exception:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Teacher not found"
-        ) 
+    
 
     for schedule in schedules:
         not_founded_modules = await module_repository.not_has_from_modeus(
@@ -160,6 +156,7 @@ async def import_from_modeus(teacher_id: UUID, week_count: int):
 
         if len(schedule.schedule_lessons) > 0:
             await schedule_repository.add_lesson_from_modeus(
+                teacher_id,
                 schedule_id, 
                 schedule.schedule_lessons.get_in_unique_time()
             )

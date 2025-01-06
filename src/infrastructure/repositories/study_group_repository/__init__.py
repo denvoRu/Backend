@@ -6,3 +6,4 @@ from .get_study_group import (
     get_subject_ids_by_teacher_statement,
     get_by_lesson
 )
+from .stmts import stmt_get_by_id

@@ -8,7 +8,15 @@ from uuid import UUID
 
 
 async def get_all(
-    page, limit, columns, sort, search, desc, teacher_ids, module_id
+    page, 
+    limit, 
+    columns, 
+    sort, 
+    search, 
+    desc, 
+    teacher_ids, 
+    module_id, 
+    not_in_module_by_id
 ):
     if teacher_ids is not None:
         teacher_ids = teacher_ids.split(",")
@@ -18,7 +26,15 @@ async def get_all(
         
     try:
         return await subject_repository.get_all(
-            page, limit, columns, sort, search, desc, teacher_ids, module_id
+            page, 
+            limit, 
+            columns, 
+            sort, 
+            search, 
+            desc, 
+            teacher_ids, 
+            module_id,
+            not_in_module_by_id
         )
     except Exception:
         raise HTTPException(

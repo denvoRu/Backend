@@ -21,7 +21,8 @@ async def get_all_teachers(
     search: str = Query(None, alias="search"),
     rating_start: int = Query(-1, alias="rating_start"),
     rating_end: int = Query(-1, alias="rating_end"),
-    subject_ids: str = Query(None, alias="subject_ids")
+    subject_ids: str = Query(None, alias="subject_ids"),
+    not_in_subject_by_id: UUID4 = Query(None, alias="not_in_subject_by_id"),
 ):
     return await teacher_service.get_all(
         page, 
@@ -32,7 +33,8 @@ async def get_all_teachers(
         desc, 
         rating_start, 
         rating_end, 
-        subject_ids
+        subject_ids,
+        not_in_subject_by_id
     )
 
 

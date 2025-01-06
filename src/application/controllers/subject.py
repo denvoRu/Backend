@@ -21,9 +21,18 @@ async def get_all_subject(
     search: str = Query(None, alias="search"),
     teacher_ids: str = Query(None, alias="teacher_ids"),
     module_id: UUID4 = Query(None, alias="module_id"),
+    not_in_module_by_id: UUID4 = None
 ):
     return await subject_service.get_all(
-        page, limit, columns, sort, search, desc, teacher_ids, module_id
+        page, 
+        limit, 
+        columns, 
+        sort, 
+        search, 
+        desc, 
+        teacher_ids, 
+        module_id,
+        not_in_module_by_id
     )
 
 
