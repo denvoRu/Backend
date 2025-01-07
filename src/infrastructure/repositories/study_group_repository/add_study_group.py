@@ -25,6 +25,9 @@ async def add_many(teacher_id: UUID, subject_ids: List[UUID]):
 
 
 async def many_teachers(subject_id: UUID, teacher_ids: List[UUID]):
+    """
+    Creates study groups for one subject and some teachers
+    """
     study_groups = [
         StudyGroup(
             subject_id=subject_id,

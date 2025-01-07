@@ -5,6 +5,9 @@ from uuid import UUID
 
 
 def add_token_in_redis(id: UUID, role: Role, access_token: str, refresh_token: str) -> str:
+    """
+    Refreshes token in Redis
+    """
     u = Users(
         id=id,
         role=role,

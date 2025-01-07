@@ -8,6 +8,11 @@ async def get_excel_file_with_feedbacks(
     feedback_data: List[dict], 
     extra_fields_data: List[dict]
 ):
+    """
+    Gets needed data with feedbacks and creates a xlsx file with pandas
+    :param feedback_data: data of feedbacks
+    :param extra_fields_data: data of extra fields that chosen for feedback form
+    """
     feedback_df = pd.DataFrame(feedback_data)
     extra_fields_df = pd.DataFrame(extra_fields_data)
 

@@ -10,6 +10,12 @@ from uuid import UUID
 
 
 async def get_all(teacher_id: UUID, start_date: date, end_date: date):
+    """
+    Gets all lessons of teacher
+    :param teacher_id: id
+    :param start_date: start date of search
+    :param end_date: end date of search
+    """
     stmt = select(*[getattr(Lesson, f) for f in LESSON_SAVE_FIELDS])\
         .select_from(Lesson).join(
             StudyGroup, 

@@ -21,7 +21,7 @@ app = FastAPI(
     summary=config.SUMMARY,
     lifespan=shutdown,
     root_path=config.ROOT_PATH
-)
+)  # main app creation logic with config information
 
 app.add_middleware(
     CORSMiddleware,
@@ -30,6 +30,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
     max_age=1728000
-)
+)  # add a cors middleware from FastAPI to an app
 
-app.include_router(api_router)
+app.include_router(api_router)  # add a main router to an app that includes all routers from /controllers

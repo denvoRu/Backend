@@ -17,6 +17,12 @@ from uuid import UUID
 
 
 async def get_all(teacher_id: UUID, start_date: date, end_date: date):
+    """
+    Gets all lessons of teacher depending on dates
+    :param teacher_id: id of teacher
+    :param start_date: start date of search
+    :param end_date: end date of search
+    """
     if not await schedule_repository.has_by_id(teacher_id):
         return []
     
@@ -83,6 +89,9 @@ async def get_excel_with_members(user: User, lesson_id: UUID):
 
 
 async def get_statistics(user: User, lesson_id: UUID):
+    """
+    Get statistics of lesson (feedbacks statistics)
+    """
     if not await lesson_repository.has_by_id(lesson_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

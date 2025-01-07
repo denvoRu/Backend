@@ -10,6 +10,12 @@ from datetime import datetime, timedelta, timezone
 
 
 def encode_user(data: dict, expires_delta: Union[timedelta, None] = None):
+    """
+    Takes a user and creates a JWT-data for it
+    :param data: the data to be encoded
+    :param expires_delta: the timedelta to expire the token
+    :return: the JWT data
+    """
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.now(timezone.utc) + expires_delta
@@ -21,11 +27,20 @@ def encode_user(data: dict, expires_delta: Union[timedelta, None] = None):
 
 
 def decode_user(token):
+    """
+    Takes a JWT token and decodes the user
+    """
     decoded_data = jwt.decode(token, key=JWT_SECRET_KEY, algorithms=ALGORITHM)
     return decoded_data
 
 
 def create_token(user_id: str, role: Role) -> Token:
+    """
+    Creates a JWT token with the given role and user id
+    :param user_id: the user id
+    :param role: the role of the user
+    :return: the JWT token
+    """
     access_token_expires = timedelta(hours=8)
     access_token = encode_user(
         data={"sub": str(user_id), "role": role}, 

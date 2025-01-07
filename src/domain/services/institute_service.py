@@ -6,6 +6,15 @@ from uuid import UUID
 
 
 async def get_all(page, limit, columns, sort, search, desc):
+    """
+    Gets all institutes with needed filters
+    :param page: page number
+    :param limit: count of results to return
+    :param columns: fields to return
+    :param sort: field to sort by
+    :param search: search string
+    :param desc: sort direction
+    """
     if search is not None and search != "":
         search = "name*{0},short_name*{0}".format(search)
         

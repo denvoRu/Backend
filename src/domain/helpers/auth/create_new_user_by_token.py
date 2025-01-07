@@ -3,6 +3,9 @@ from src.infrastructure.redis import Users
 
 
 def create_new_user_by_token(refresh_token: str) -> str:
+    """
+    Creates new tokens for a user
+    """
     c = Users.get(refresh_token)
     new_token = create_token(c.id, c.role)
     new_user = Users(

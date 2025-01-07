@@ -5,6 +5,7 @@ from pydantic import BaseModel, Field, EmailStr, UUID4
 
 
 class RegisterDTO(BaseModel):
+    # register data transfer info with examples
     first_name: str = Field(examples=["Евгений", "Иван"])
     second_name: str = Field(examples=["Смирнов", "Иванов"])
     third_name: str = Field(examples=["Сергеевич", "Иванович"])

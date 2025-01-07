@@ -3,6 +3,10 @@ from src.infrastructure.database import Lesson, ScheduleLesson, has_instance
 from uuid import UUID
 from datetime import date, datetime
 
+"""
+Methods that check lesson existence by some parameters
+"""
+
 
 async def has_by_id(lesson_id: UUID):
     return await has_instance(Lesson, Lesson.id == lesson_id)
@@ -10,9 +14,9 @@ async def has_by_id(lesson_id: UUID):
 
 async def has_active_by_id(lesson_id: UUID):
     now = datetime.now()
-    
+
     return await has_instance(
-        Lesson, 
+        Lesson,
         (
             Lesson.id == lesson_id,
             Lesson.date >= now.date(),
@@ -23,9 +27,9 @@ async def has_active_by_id(lesson_id: UUID):
 
 
 async def has_by_schedule(
-    study_group_id: UUID, 
-    schedule_lesson: ScheduleLesson, 
-    date: date
+        study_group_id: UUID,
+        schedule_lesson: ScheduleLesson,
+        date: date
 ):
     return await has_instance(
         Lesson,

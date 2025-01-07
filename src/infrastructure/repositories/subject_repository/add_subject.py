@@ -15,6 +15,9 @@ async def add(module_id: UUID, name: str):
 
 
 async def add_from_modeus(institute_id: UUID, subjects: List[SubjectModeus]):
+    """
+    Import subjects from modeus to institute
+    """
     for subject in subjects:
         module_id = await subject.find_in_orm(
             db, 

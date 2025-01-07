@@ -22,7 +22,10 @@ async def get_by_id(
     sort, 
     search, 
     desc
-): 
+):
+    """
+    Gets a feedback by id depending on params if user is allowed to
+    """
     if not await lesson_repository.has_by_id(lesson_id):
         HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -58,7 +61,10 @@ async def get_by_id(
     )
 
 
-async def get_xlsx_by_id(user: User, lesson_id: UUID): 
+async def get_xlsx_by_id(user: User, lesson_id: UUID):
+    """
+    Create a xlsx file with feedbacks is user is allowed to
+    """
     if not await lesson_repository.has_by_id(lesson_id):
         HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -93,6 +99,11 @@ async def get_xlsx_by_id(user: User, lesson_id: UUID):
 
 
 async def add(lesson_id: UUID, dto: AddFeedbackDTO):
+    """
+    Add a feedback
+    :param lesson_id: id of lesson
+    :param dto: feedback data as dto with extra fields if exist
+    """
     if not await lesson_repository.has_active_by_id(lesson_id):
         HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

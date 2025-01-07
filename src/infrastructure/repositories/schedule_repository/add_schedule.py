@@ -15,6 +15,11 @@ async def add(teacher_id: UUID, week_start):
 
 
 async def add_lesson(schedule_id: UUID, dto: dict):
+    """
+    Adds a lesson to schedule
+    :param schedule_id: id
+    :param dto: data of lesson
+    """
     schedule_lesson = ScheduleLesson(
         schedule_id=schedule_id,
         **dto
@@ -27,6 +32,9 @@ async def add_lesson_from_modeus(
     schedule_id: UUID, 
     schedule: ScheduleLessonList
 ):
+    """
+    Adds a lesson to schedule from modeus
+    """
     await schedule.add_in_orm(
         teacher_id,
         schedule_id, 

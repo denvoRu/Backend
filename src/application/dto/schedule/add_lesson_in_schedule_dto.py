@@ -6,6 +6,7 @@ from datetime import time
 
 
 class AddLessonInScheduleDTO(BaseModel):
+    # lesson data transfer add fields
     subject_id: UUID4 = Field(description="id of subject", examples=['d216bd55-4f57-40fa-a6d1-8444f43ccacf'])
     lesson_name: str = Field(min_length=10, max_length=100, examples=["Разработка на Python (FastAPI)", "Javascript (React)"])
     speaker_name: str = Field(min_length=10, max_length=100, examples=["Смирнов Евгений Сергеевич", "Иванов Иван Иванович"])

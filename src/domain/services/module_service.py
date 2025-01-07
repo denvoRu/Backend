@@ -15,7 +15,19 @@ async def get_all_with_subjects(
         rating_end, 
         institute_ids,
         teacher_ids
-): 
+):
+    """
+    Returns all modules with subjects
+    :param page: current page
+    :param limit: number of modules to return
+    :param sort: sort order
+    :param search: search string
+    :param desc: sort direction
+    :param rating_start: start of rating range
+    :param rating_end: end of rating range
+    :param institute_ids: institute ids to find
+    :param teacher_ids: teacher ids to find
+    """
     if institute_ids is not None:
         institute_ids = institute_ids.split(",")
         
@@ -41,7 +53,17 @@ async def get_all_with_subjects(
         )
 
 
-async def get_all(page, limit, columns, sort, search, desc, institute_id): 
+async def get_all(page, limit, columns, sort, search, desc, institute_id):
+    """
+    Returns all modules
+    :param page: current page
+    :param limit: number of modules to return
+    :param columns: fields to show
+    :param sort: sort order
+    :param search: search string
+    :param desc: sort direction
+    :param institute_id: institute id to find
+    """
     if search is not None and search != "":
         search = "name*{0}".format(search)
 

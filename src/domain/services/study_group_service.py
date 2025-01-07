@@ -17,6 +17,16 @@ async def get_teachers(
         search: str = None, 
         desc: int = 0
 ):
+    """
+    Get all teachers from study group
+    :param subject_id: id of subject
+    :param page: page number
+    :param limit: count of teachers to show
+    :param columns: fields to show
+    :param sort: sort order
+    :param search: search string
+    :param desc: descending order
+    """
     if not await subject_repository.has_by_id(subject_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -37,6 +47,9 @@ async def get_teachers(
     )
 
 async def add_by_teacher_ids(subject_id: UUID, teacher_ids: List[UUID]):
+    """
+    Add teachers to study group
+    """
     if not await subject_repository.has_by_id(subject_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -61,6 +74,9 @@ async def add_by_teacher_ids(subject_id: UUID, teacher_ids: List[UUID]):
 
 
 async def add_by_subject_ids(teacher_id: UUID, subject_ids: List[UUID]):
+    """
+    Add subjects to study group
+    """
     if not await teacher_repository.has_by_id(teacher_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -85,6 +101,9 @@ async def add_by_subject_ids(teacher_id: UUID, subject_ids: List[UUID]):
     
 
 async def add_by_teacher_id(subject_id: UUID, teacher_id: UUID):
+    """
+    Add a study group by teacher and subject ids
+    """
     if not await subject_repository.has_by_id(subject_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

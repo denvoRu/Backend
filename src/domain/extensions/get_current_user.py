@@ -12,6 +12,11 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 async def get_current_user(
         access_token: Annotated[str, Depends(oauth2_scheme)]
 ) -> Users:
+    """
+    Gets current user
+    :param access_token: token that we decode to recognize the user
+    :return: current user if token is valid
+    """
     try:
         decode_user(access_token)
         return Users.find(Users.access_token == access_token).first()

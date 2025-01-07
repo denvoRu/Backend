@@ -5,6 +5,7 @@ from typing import List, Optional
 
 
 class AddFeedbackDTO(BaseModel):
+    # feedback data transfer fields with examples
     mark: int = Field(gt=0, lt=6, default=1)
     # student_name: str = Field(default=None, min_length=2, max_length=100, examples=["Смирнов Евгений Сергеевич", "Иванов Иван Иванович"])
     chosen_markers: List[str] = Field(examples=[["понятная", "полезная"]])

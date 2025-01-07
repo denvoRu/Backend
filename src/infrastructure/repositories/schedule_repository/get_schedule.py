@@ -9,6 +9,9 @@ from uuid import UUID
 
 
 async def get_by_week(teacher_id: UUID, week: int, filters = []):
+    """
+    Gets a schedule by needed week with filters
+    """
     schedule_id = await get_by_id(teacher_id)
     columns = [
         "schedule_lesson.day",
@@ -33,6 +36,9 @@ async def get_by_week(teacher_id: UUID, week: int, filters = []):
 
 
 async def get_in_interval(teacher_id: UUID, start: date, end: date):
+    """
+    Gets a schedule of teacher in the needed interval with start and end dates
+    """
     week_start = await db.execute(
         select(Schedule.week_start)
         .where(

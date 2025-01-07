@@ -6,11 +6,16 @@ from fastapi import APIRouter, Body, Query
 from pydantic import UUID4
 
 
-router = APIRouter()
+router = APIRouter()  # creating an administrator's router
 
 
 @router.get("/me", description="Show data about current user")
 async def get_me(admin: CurrentAdmin):
+    """
+    Returns current administrator
+    :param admin: user with admin role
+    :return: current administrator
+    """
     return await administrator_service.get_by_id(admin.id)
 
 
@@ -24,6 +29,17 @@ async def get_all_admins(
     sort: str = Query(None, alias="sort"),
     search: str = Query(None, alias="search"),
 ):
+    """
+    Returns all administrators
+    :param admin: user with admin role
+    :param page: current page number
+    :param limit: limit of admins on the page
+    :param desc: descending/ascending
+    :param columns: params to show
+    :param sort: params to sort
+    :param search: search string
+    :return: all administrators
+    """
     return await administrator_service.get_all(
         page, limit, columns, sort, search, desc
     )
@@ -33,7 +49,7 @@ async def get_all_admins(
 async def edit_admin(
     admin: CurrentAdmin, admin_id: UUID4, dto: EditUserDTO = Body(...)
 ):
-    return await administrator_service.edit(admin_id, dto)
+    return await administrator_service.edit(admin_id, dto)  # edits admin with needed params
     
 
 @router.delete("/{admin_id}", description="Delete an existing user")

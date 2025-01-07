@@ -6,6 +6,12 @@ async def add(
     institute_short_name: str,
     institute_address: str
 ):
+    """
+    Adds an institute to the database.
+    :param institute_name: name of the institute
+    :param institute_short_name: short name of the institute
+    :param institute_address: address of the institute
+    """
     institute = Institute(
         name=institute_name,
         short_name=institute_short_name,

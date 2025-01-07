@@ -23,6 +23,9 @@ async def __get_hashed_password_by_email(table: T, email: str) -> T:
         raise Exception("User not found")
 
 async def is_in_table(table: T, email: str) -> bool:
+    """
+    Checks if some user is in the table (by email)
+    """
     where_args = [table.email == email]
 
     if hasattr(table, "is_disabled"):
@@ -42,6 +45,9 @@ async def get_admin_password_by_email(email: str):
 
 
 async def add_user(user: T):
+    """
+    Adds a user to the database
+    """
     db.add(user)
     await db.commit_rollback()
 

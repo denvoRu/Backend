@@ -19,6 +19,19 @@ async def get_all(
         subject_ids: str = None,
         not_in_subject_by_id: UUID = None
 ):
+    """
+    Gets all teachers
+    :param page: page number
+    :param limit: count of teachers
+    :param columns: fields to show
+    :param sort: field to sort by
+    :param search: search string
+    :param desc: sort desc
+    :param rating_start: start rating of teacher
+    :param rating_end: end rating of teacher
+    :param subject_ids: subject ids
+    :param not_in_subject_by_id: is teacher in subject
+    """
     if subject_ids is not None:
         subject_ids = subject_ids.split(",")
         
@@ -79,7 +92,10 @@ async def delete(teacher_id: UUID):
     return Response(status_code=status.HTTP_200_OK)
 
 
-async def get_privileges(teacher_id: UUID):    
+async def get_privileges(teacher_id: UUID):
+    """
+    Gets teacher's privileges (is teacher allowed to see some statistics)
+    """
     if not await teacher_repository.has_by_id(teacher_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

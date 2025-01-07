@@ -21,6 +21,15 @@ async def get_all(
     search, 
     desc
 ):
+    """
+    Gets all feedbacks
+    :param lesson_id: lesson of feedback
+    :param page: current page
+    :param limit: number of feedbacks
+    :param sort: sort order
+    :param search: search string
+    :param desc: descending/ascending sort
+    """
     try:
         feedback_stmt = select(
             Feedback.id, 
@@ -85,6 +94,10 @@ async def get_all(
 
 
 async def get_all_for_excel(lesson_id: UUID) -> Tuple[List[dict], List[dict]]:
+    """
+    Gets all feedbacks for xlsx file
+    :param lesson_id: lesson of feedback
+    """
     try:
         feedback_stmt = select(
             Feedback.id, 
@@ -126,6 +139,10 @@ async def get_all_for_excel(lesson_id: UUID) -> Tuple[List[dict], List[dict]]:
 
 
 async def get_statistics(lesson_id: UUID):
+    """
+    Gets statistics for all feedbacks
+    :param lesson_id: lesson of feedbacks
+    """
     stmt = select(Feedback.mark ,func.count(Feedback.mark)).select_from(Feedback).where(
         Feedback.lesson_id == lesson_id,
         Feedback.is_disabled == False
@@ -137,6 +154,10 @@ async def get_statistics(lesson_id: UUID):
 
 
 async def get_members(lesson_id: UUID):
+    """
+    Gets all members that related to lesson feedbacks
+    :param lesson_id: lesson
+    """
     stmt = distinct(select(Feedback.student_name).where(
         Feedback.lesson_id == lesson_id,
         Feedback.student_name != "",

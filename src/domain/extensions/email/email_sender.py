@@ -14,6 +14,9 @@ update_password = Template(UPDATE_PASSWORD_HTML, enable_async=True)
 
 
 class EmailSender:
+    """
+    Class that is responsible for sending emails with smtp lib.
+    """
     client = SMTP(
         hostname=MAIL_SERVER, 
         port=MAIL_PORT, 
@@ -25,6 +28,11 @@ class EmailSender:
 
     @staticmethod  
     async def send_registered(email: str, password: str) -> None:
+        """
+        Create a message with registration
+        :param email: email address
+        :param password: password
+        """
         registered_html = await registered.render_async(password=password)
 
         await EmailSender.__send(
@@ -33,6 +41,11 @@ class EmailSender:
 
     @staticmethod
     async def send_update_password(email: str, password_link: str) -> None:
+        """
+        Create a message for a password update and send it
+        :param email: email address
+        :param password_link: link to password
+        """
         update_password_html = await update_password.render_async(
             link=password_link
         )
@@ -43,6 +56,12 @@ class EmailSender:
     
     @staticmethod
     async def __send(email: str, subject: str, html_template) -> None:
+        """
+        Creates a message with template and sends it to email.
+        :param email: Email address
+        :param subject: Subject
+        :param html_template: HTML template for a message
+        """
         msg = MIMEText(html_template, "html")
         msg['Subject'] = subject
         msg['From'] = f'Sportacus <{MAIL_FROM}>'

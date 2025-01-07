@@ -14,6 +14,12 @@ async def add_lesson_by_schedule(
     schedule_lesson: ScheduleLesson, 
     date: date
 ):
+    """
+    Adds a lesson from schedule
+    :param study_group_id: id of the study group
+    :param schedule_lesson: lesson from schedule
+    :param date: date of the lesson
+    """
     lesson = Lesson(
         study_group_id=study_group_id,
         lesson_name=schedule_lesson.lesson_name,

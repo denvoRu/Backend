@@ -3,6 +3,7 @@ from pydantic import BaseModel, EmailStr, Field
 
 
 class EditUserDTO(BaseModel):
+    # user data transfer fields for edit
     first_name: Optional[str] = Field(default=None, examples=["Евгений", "Иван"])
     second_name: Optional[str] = Field(default=None, examples=["Смирнов", "Иванов"])
     third_name: Optional[str] = Field(default=None, examples=["Сергеевич", "Иванович"])

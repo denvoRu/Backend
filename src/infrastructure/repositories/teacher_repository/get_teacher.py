@@ -20,6 +20,19 @@ async def get_all(
     *,
     not_in_subject_by_id: UUID = None
 ):
+    """
+    Gets all teachers
+    :param page: current page
+    :param limit: number of teachers to show
+    :param columns: columns to show
+    :param sort: field to sort by
+    :param search: search string
+    :param desc: sort direction
+    :param rating_start: start rating for filter
+    :param rating_end: end rating for filter
+    :param subject_ids: subject ids
+    :param filters: filters
+    """
     filters = filters if filters is not None else []
 
     if rating_start is not None and rating_start != -1:
@@ -67,6 +80,16 @@ async def get_all(
 
 
 async def get_by_study_group(subject_id, page, limit, columns, sort, search, desc):
+    """
+    Gets teachers by study group id
+    :param subject_id: subject id
+    :param page: current page
+    :param limit: number of teachers to show
+    :param columns: columns to show
+    :param sort: field to sort by
+    :param search: search string
+    :param desc: sort direction
+    """
     stmt = select(StudyGroup.teacher_id).where(
         StudyGroup.subject_id == subject_id,
         StudyGroup.is_disabled == False

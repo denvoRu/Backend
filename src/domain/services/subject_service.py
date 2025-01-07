@@ -18,6 +18,18 @@ async def get_all(
     module_id, 
     not_in_module_by_id
 ):
+    """
+    Gets all subjects
+    :param page: page number
+    :param limit: count of subjects
+    :param columns: fields to return
+    :param sort: field to sort
+    :param search: search string
+    :param desc: sort direction
+    :param teacher_ids: teacher ids
+    :param module_id: module id
+    :param not_in_module_by_id: is subject in module
+    """
     if teacher_ids is not None:
         teacher_ids = teacher_ids.split(",")
 

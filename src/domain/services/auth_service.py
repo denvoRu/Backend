@@ -22,6 +22,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 
 
 async def register(dto: RegisterDTO) -> str:
+    # some checks if something's wrong with current register try
     if await is_in_teacher_or_admin(dto.email, dto.role):
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
@@ -48,7 +49,8 @@ async def register(dto: RegisterDTO) -> str:
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="Institute not found"
         )
-    
+
+    # creating hashed password, user and his subjects if needed
     salt = gensalt()
     hashed_password = hashpw(dto.password.encode(), salt).decode()
 
@@ -96,7 +98,8 @@ async def token(refresh_token: str) -> str:
             status_code=status.HTTP_401_UNAUTHORIZED, 
             detail="Invalid refresh_token"
         )
-    
+
+    # creates new token for user
     token = create_new_user_by_token(refresh_token)
     return token
 
@@ -107,7 +110,8 @@ async def restore_password(dto: RestorePasswordDTO):
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="User not found"
         )
-    
+
+    # get token, add this data in Redis and create a restore link
     restore_token = get_hex_uuid()
     add_restore_data_in_redis(dto.email, dto.role, restore_token)
     restore_password_link = get_restore_password_link(restore_token)
@@ -122,7 +126,9 @@ async def update_password_from_token(dto: UpdatePasswordDTO):
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="Restore token is expired"
-        ) 
+        )
+
+    # hashes a new password if check is passed and updates it
     salt = gensalt()
     dto.password = hashpw(dto.password.encode(), salt).decode()
     await auth_repository.update_password(rp.email, rp.role, dto.password) 

@@ -8,6 +8,11 @@ from typing import List
 
 
 async def add(lesson_id: UUID, dto: dict):
+    """
+    Add a feedback
+    :param lesson_id: lesson to add feedback to
+    :param dto: feedback details
+    """
     feedback = Feedback(
         lesson_id=lesson_id, 
         **dto
@@ -21,6 +26,11 @@ async def add_extra_fields(
     feedback_id: UUID, 
     dto_list: List[dict]
 ):
+    """
+    Add extra fields to a feedback
+    :param lesson_id: lesson
+    :param feedback_id: feedback to add extra fields to
+    """
     for i in dto_list: 
         extra_field_id = select(ExtraFieldSetting.id).where(
             ExtraFieldSetting.lesson_id == lesson_id, 

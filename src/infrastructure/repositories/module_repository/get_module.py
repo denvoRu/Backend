@@ -20,6 +20,18 @@ async def get_all_with_subjects(
     institute_ids,
     teacher_ids
 ):
+    """
+    Gets all modules with subjects
+    :param page: current page
+    :param limit: limit of modules
+    :param sort: field to sort
+    :param search: search string
+    :param desc: sort order
+    :param rating_start: start of rating range
+    :param rating_end: end of rating range
+    :param institute_ids: institute ids
+    :param teacher_ids: teacher ids
+    """
     try:
         module_stmt = select(Module)
         module_filters = []
@@ -115,6 +127,16 @@ async def get_all_with_subjects(
 
 
 async def get_all(page, limit, columns, sort, search, desc, institute_id):
+    """
+    Gets all modules
+    :param page: current page
+    :param limit: limit of modules
+    :param columns: columns to show
+    :param sort: field to sort
+    :param search: search string
+    :param desc: sort order
+    :param institute_id: institute id
+    """
     filters = []
 
     if institute_id is not None:

@@ -19,6 +19,18 @@ async def get_all(
     module_id = None,
     not_in_module_by_id: UUID = None
 ):
+    """
+    Gets all subjects
+    :param page: current page
+    :param limit: limit of subjects to show
+    :param columns: fields to show
+    :param sort: field sort
+    :param search: search string
+    :param desc: sort order
+    :param teacher_ids: teacher ids
+    :param module_id: module id
+    :param not_in_module_by_id: is subject in module
+    """
     filters = []
     
     if module_id is not None:
