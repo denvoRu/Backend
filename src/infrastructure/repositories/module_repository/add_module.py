@@ -12,14 +12,17 @@ async def add(institute_id: UUID, name: str):
     )
     await add_instance(module)
 
+
 async def add_from_list(institute_id: UUID, names: List[str]):
+    modules = []
     for name in names:
-        module = Module(
-            institute_id=institute_id,
-            name=name,
-            rating=0            
+        modules.append(
+                Module(
+                institute_id=institute_id,
+                name=name,
+                rating=0            
+            )
         )
-        db.add(module)
     
-    await db.commit_rollback()
+    await add_instance(*modules)
     

@@ -16,7 +16,8 @@ async def get_all(
     desc, 
     teacher_ids, 
     module_id, 
-    not_in_module_by_id
+    not_in_module_by_id,
+    subject_without_teacher_by_id
 ):
     """
     Gets all subjects
@@ -29,6 +30,7 @@ async def get_all(
     :param teacher_ids: teacher ids
     :param module_id: module id
     :param not_in_module_by_id: is subject in module
+    :param subject_without_teacher_by_id: subject without teacher
     """
     if teacher_ids is not None:
         teacher_ids = teacher_ids.split(",")
@@ -46,7 +48,8 @@ async def get_all(
             desc, 
             teacher_ids, 
             module_id,
-            not_in_module_by_id
+            not_in_module_by_id,
+            subject_without_teacher_by_id
         )
     except Exception:
         raise HTTPException(

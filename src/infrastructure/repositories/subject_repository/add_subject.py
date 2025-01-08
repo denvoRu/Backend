@@ -28,7 +28,7 @@ async def add_from_modeus(institute_id: UUID, subjects: List[SubjectModeus]):
             ),
             columns=["id"]
         )
-        print(module_id[0][0])
+        
         subject = Subject(
             module_id=module_id[0][0],
             name=subject.name,

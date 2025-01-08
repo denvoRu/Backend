@@ -17,7 +17,8 @@ async def get_all(
     desc, 
     teacher_ids = [],
     module_id = None,
-    not_in_module_by_id: UUID = None
+    not_in_module_by_id: UUID = None,
+    subject_without_teacher_by_id: UUID = None
 ):
     """
     Gets all subjects
@@ -29,7 +30,8 @@ async def get_all(
     :param desc: sort order
     :param teacher_ids: teacher ids
     :param module_id: module id
-    :param not_in_module_by_id: is subject in module
+    :param not_in_module_by_id: is subject NOT in module
+    :param subject_without_teacher_by_id: subject without teacher
     """
     filters = []
     
@@ -44,6 +46,14 @@ async def get_all(
         filters.append(
                 not_(Subject.id.in_(
                     stmt_get_by_module_id(not_in_module_by_id)
+                )
+            )
+        )
+
+    if subject_without_teacher_by_id is not None:
+        filters.append(
+                not_(Subject.id.in_(
+                    get_subject_ids_by_teacher_statement([subject_without_teacher_by_id])
                 )
             )
         )

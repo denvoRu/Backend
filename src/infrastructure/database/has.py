@@ -8,12 +8,12 @@ async def has_instance(instance, where_args: Union[tuple, ColumnExpressionArgume
     stmt = select(instance)
     
     if where_is_tuple:
-        where_args = where_args
+        where_args = list(where_args)
     else: 
-        where_args = (where_args)
+        where_args = [where_args]
     
     if hasattr(instance, "is_disabled"):
-        where_args = where_args & (instance.is_disabled == False)
+        where_args.append(instance.is_disabled == False)
 
     stmt = stmt.where(*where_args)
 

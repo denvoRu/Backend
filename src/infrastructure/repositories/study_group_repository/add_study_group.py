@@ -21,10 +21,10 @@ async def add_many(teacher_id: UUID, subject_ids: List[UUID]):
         for subject_id in subject_ids
     ]
 
-    await add_instance(study_groups)
+    await add_instance(*study_groups)
 
 
-async def many_teachers(subject_id: UUID, teacher_ids: List[UUID]):
+async def add_many_teachers(subject_id: UUID, teacher_ids: List[UUID]):
     """
     Creates study groups for one subject and some teachers
     """
@@ -36,4 +36,4 @@ async def many_teachers(subject_id: UUID, teacher_ids: List[UUID]):
         for teacher_id in teacher_ids
     ]
 
-    await add_instance(study_groups)
+    await add_instance(*study_groups)

@@ -69,7 +69,7 @@ async def add_by_teacher_ids(subject_id: UUID, teacher_ids: List[UUID]):
                 detail="Teacher already exists in subject"
             )
     
-    await study_group_repository.add_many(teacher_ids, subject_id)
+    await study_group_repository.add_many_teachers(subject_id, teacher_ids)
     return Response(status_code=status.HTTP_201_CREATED)
 
 

@@ -21,7 +21,8 @@ async def get_all_subject(
     search: str = Query(None, alias="search"),
     teacher_ids: str = Query(None, alias="teacher_ids"),
     module_id: UUID4 = Query(None, alias="module_id"),
-    not_in_module_by_id: UUID4 = None
+    not_in_module_by_id: UUID4 = None,
+    subject_without_teacher_by_id: UUID4 = None
 ):
     return await subject_service.get_all(
         page, 
@@ -32,7 +33,8 @@ async def get_all_subject(
         desc, 
         teacher_ids, 
         module_id,
-        not_in_module_by_id
+        not_in_module_by_id,
+        subject_without_teacher_by_id
     )
 
 
@@ -80,8 +82,8 @@ async def get_teachers_by_subject(
     )
 
 
-@router.post("/{subject_id}/teachers/", description="Add teachers to subject (for admins)", status_code=201)
-async def add_teachers_to_subject(admin: CurrentAdmin, subject_id: UUID4, teacher_ids: List[UUID4]):
+@router.post("/{subject_id}/teachers", description="Add teachers to subject (for admins)", status_code=201)
+async def add_teachers_to_subject(admin: CurrentAdmin, subject_id: UUID4, teacher_ids: List[UUID4] = Body(...)):
     return await study_group_service.add_by_teacher_ids(subject_id, teacher_ids)
 
 

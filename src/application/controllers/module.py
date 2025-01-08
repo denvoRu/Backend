@@ -3,13 +3,14 @@ from src.domain.services import module_service
 from src.domain.extensions.check_role import CurrentAdmin
 
 from fastapi import APIRouter, Body, Query
+from typing import List
 from pydantic import UUID4
 
 
 router = APIRouter()
 
 
-@router.get('/', description="Get all existing modules")
+@router.get('/', description="Get all existing modules (for admins)")
 async def get_all_modules(
     current_user: CurrentAdmin,
     page: int = 1,
@@ -25,7 +26,7 @@ async def get_all_modules(
     )
 
 
-@router.get("/subjects", description="Get all existing modules and their subjects")
+@router.get("/subjects", description="Get all existing modules and their subjects (for admins)")
 async def get_all_modules_with_subjects(
     current_user: CurrentAdmin,
     page: int = 1,
@@ -51,7 +52,7 @@ async def get_all_modules_with_subjects(
     )
 
 
-@router.get("/{module_id}", description="Get an existing module with id")
+@router.get("/{module_id}", description="Get an existing module with id (for admins)")
 async def get_current_module(current_user: CurrentAdmin, module_id: UUID4):
     return await module_service.get_by_id(module_id)
 
@@ -63,6 +64,6 @@ async def create_module(
     return await module_service.create(dto)
 
 
-@router.delete("/{module_id}", description="Delete an existing module")
+@router.delete("/{module_id}", description="Delete an existing module (for admins)")
 async def delete_module(current_user: CurrentAdmin, module_id: UUID4):
     return await module_service.delete(module_id)
