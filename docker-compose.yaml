@@ -1,46 +1,40 @@
 services:
   postgresql:
+    env_file: .env
     image: postgres:latest
     environment: 
-      POSTGRES_USER: "root"
-      POSTGRES_PASSWORD: "123"
-      POSTGRES_DB: "database"
+      POSTGRES_USER: ${DATABASE_USERNAME}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE}
     ports:
-      - "5432:5432"
+      - "${DATABASE_PORT}:5432"
   redis:
-    image: redis/redis-stack
+    env_file: .env
+    container_name: "redis"
+    build:
+      context: ./redis
     ports:
       - "6379:6379"
     environment:
-      REDIS_USERNAME: "default"
-      REDIS_PASSWORD: "123"
+      REDIS_USERNAME: ${REDIS_USERNAME}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
       REDIS_DISABLE_DEFAULT_USER: "true"
+  selenium:
+    env_file: .env
+    image: selenium/standalone-chrome
+    ports:
+      - "4444:4444"
+    environment:
+      
   fastapi:
+    env_file: .env
     build: .
     ports:
-      - "5000:5000"
+      - "${APP_PORT}:${APP_PORT}"
     environment: 
-      MAIL_FROM: ""
-      MAIL_SERVER: ""
-      MAIL_PORT: ""
-      MAIL_USERNAME: ""
-      MAIL_PASSWORD: ""
-
-      REDIS_OM_URL: "redis://default:123@redis:6379/0"
-
       DATABASE_DRIVER_NAME: "postgresql+asyncpg"
       DATABASE_HOST: postgresql
-      DATABASE_PORT: 5432
-      DATABASE_USERNAME: "root"
-      DATABASE_PASSWORD: "123"
-      DATABASE: "database"
-
-      PROJECT_NAME: "Student Voice"
-      JWT_SECRET_KEY: ""
-      RESTORE_PASSWORD_LINK: "student-voice-beta.irit-rtf.ru/restore_password/"
-
-      MODEUS_LOGIN: "login"
-      MODEUS_PASSWORD: "password"
+      REDIS_OM_URL: "redis://${REDIS_USERNAME}:${REDIS_PASSWORD}@redis:6379/0"
     depends_on:
       - postgresql
       - redis

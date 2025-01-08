@@ -3,11 +3,12 @@ from sqlalchemy import URL
 
 
 PROJECT_NAME = config("PROJECT_NAME")
+APP_PORT = config("APP_PORT", cast=int)
 VERSION = "1.0.0"
 SUMMARY = "Web applications for collecting statistics on the work of teachers at the institute for future analysis"
 
 RESTORE_PASSWORD_TOKEN_EXPIRE_SECONDS = 60 * 60 * 2
-RESTORE_PASSWORD_LINK = config("RESTORE_PASSWORD_LINK")
+RESTORE_PASSWORD_LINK: str = config("RESTORE_PASSWORD_LINK")
 
 REGISTERED_HTML = '' 
 UPDATE_PASSWORD_HTML = ''
