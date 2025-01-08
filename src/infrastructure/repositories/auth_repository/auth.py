@@ -20,6 +20,7 @@ async def __get_hashed_password_by_email(table: T, email: str) -> T:
         scalar = await db.execute(s)
         return scalar.one()
     except Exception: 
+        await db.commit_rollback()
         raise Exception("User not found")
 
 async def is_in_table(table: T, email: str) -> bool:
