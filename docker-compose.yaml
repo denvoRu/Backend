@@ -9,16 +9,13 @@ services:
     ports:
       - "${DATABASE_PORT}:5432"
   redis:
+    image: redis/redis-stack-server
     env_file: .env
     container_name: "redis"
-    build:
-      context: ./redis
     ports:
       - "6379:6379"
     environment:
-      REDIS_USERNAME: ${REDIS_USERNAME}
-      REDIS_PASSWORD: ${REDIS_PASSWORD}
-      REDIS_DISABLE_DEFAULT_USER: "true"
+      REDIS_ARGS: "--requirepass ${REDIS_PASSWORD} --user ${REDIS_USERNAME} on >${REDIS_PASSWORD} ~* allcommands --user default off nopass nocommands"
   selenium:
     env_file: .env
     image: selenium/standalone-chrome
