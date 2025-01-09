@@ -1,6 +1,9 @@
 from decouple import config
 from sqlalchemy import URL
+from redis_om import get_redis_connection
 
+
+REDIS_CONN = get_redis_connection(url=config("REDIS_OM_URL"))
 
 PROJECT_NAME = config("PROJECT_NAME")
 APP_PORT = config("APP_PORT", cast=int)
