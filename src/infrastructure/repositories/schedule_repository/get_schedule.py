@@ -46,7 +46,8 @@ async def get_in_interval(teacher_id: UUID, start: date, end: date):
             Schedule.is_disabled == False
         )
     )
-    week_start = week_start.scalars().one()
+    week_start = week_start.one()[0]
+    print(week_start)
 
     if ((start - week_start).days // 7) % 2 == 1:
         current_week = 1

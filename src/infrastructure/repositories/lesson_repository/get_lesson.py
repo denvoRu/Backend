@@ -16,20 +16,27 @@ async def get_all(teacher_id: UUID, start_date: date, end_date: date):
     :param start_date: start date of search
     :param end_date: end date of search
     """
-    stmt = select(*[getattr(Lesson, f) for f in LESSON_SAVE_FIELDS])\
-        .select_from(Lesson).join(
-            StudyGroup, 
-            StudyGroup.id == Lesson.study_group_id
-        ).where(
-            Lesson.date >= start_date,
-            Lesson.date <= end_date,
-            Lesson.is_disabled == False,
-            StudyGroup.is_disabled == False,
-            StudyGroup.teacher_id == teacher_id
-        )
+    stmt = select(
+        StudyGroup.id,
+        Lesson.speaker_name, 
+        Lesson.lesson_name,
+        Lesson.start_time,
+        Lesson.end_time,
+        Lesson.date
+    ).select_from(Lesson).join(
+        StudyGroup, 
+        StudyGroup.id == Lesson.study_group_id
+    ).where(
+        Lesson.date >= start_date,
+        Lesson.date <= end_date,
+        Lesson.is_disabled == False,
+        StudyGroup.is_disabled == False,
+        StudyGroup.teacher_id == teacher_id
+    )
     executed = await db.execute(stmt)
 
-    lessons = executed.scalars().all()
+    lessons = executed.all()
+    print(lessons)
 
     return list(get_formatted_lesson(i) for i in lessons)
 
@@ -86,5 +93,9 @@ async def get_active_by_condition(condition):
         Lesson.is_disabled == False
     )
 
-    lesson = (await db.execute(stmt)).scalars().one()
-    return get_formatted_lesson(lesson)
+    try:
+        lesson = (await db.execute(stmt)).one()
+        return get_formatted_lesson(lesson)
+    except Exception:
+        db.commit_rollback()
+        raise Exception("Lesson not found")
