@@ -21,8 +21,8 @@ async def get_all_subject(
     search: str = Query(None, alias="search"),
     teacher_ids: str = Query(None, alias="teacher_ids"),
     module_id: UUID4 = Query(None, alias="module_id"),
-    not_in_module_by_id: UUID4 = None,
-    subject_without_teacher_by_id: UUID4 = None
+    not_in_module_by_id: UUID4 = Query(None, alias="not_in_module_by_id"),
+    subject_without_teacher_by_id: UUID4 = Query(None, alias="subject_without_teacher_by_id")
 ):
     return await subject_service.get_all(
         page, 

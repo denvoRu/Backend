@@ -92,6 +92,6 @@ async def add_subjects_to_teacher(
 async def delete_subjects_from_teacher(
     admin: CurrentAdmin, 
     teacher_id: UUID4, 
-    subject_ids: List[UUID4] = Body(...)
+    subject_ids: List[UUID4]
 ):
     return await study_group_service.delete_many(teacher_id, subject_ids)
