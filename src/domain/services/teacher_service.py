@@ -48,8 +48,7 @@ async def get_all(
             subject_ids,
             not_in_subject_by_id=not_in_subject_by_id
         )
-    except Exception as e:
-        print(e)
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="One or more parameters are invalid"

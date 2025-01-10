@@ -36,7 +36,6 @@ async def get_all(teacher_id: UUID, start_date: date, end_date: date):
     executed = await db.execute(stmt)
 
     lessons = executed.all()
-    print(lessons)
 
     return list(get_formatted_lesson(i) for i in lessons)
 

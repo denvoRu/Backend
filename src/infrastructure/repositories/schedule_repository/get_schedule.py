@@ -1,6 +1,6 @@
 from src.infrastructure.database.extensions import LESSON_SAVE_FIELDS
 from src.infrastructure.database import (
-    Schedule, Subject, ScheduleLesson, get, db
+    Schedule, Subject, ScheduleLesson, get, has_instance, db
 )
 
 from sqlalchemy import select, text
@@ -39,17 +39,20 @@ async def get_in_interval(teacher_id: UUID, start: date, end: date):
     """
     Gets a schedule of teacher in the needed interval with start and end dates
     """
-    week_start = await db.execute(
-        select(Schedule.week_start)
+    schedule = await db.execute(
+        select(Schedule)
         .where(
             Schedule.teacher_id == teacher_id,
             Schedule.is_disabled == False
         )
     )
-    week_start = week_start.one()[0]
-    print(week_start)
+    has_second_week = await has_instance(ScheduleLesson, (
+        ScheduleLesson.week == 1,
+        ScheduleLesson.schedule_id == schedule.one().id
+    ))
+    week_start = schedule.one().week_start
 
-    if ((start - week_start).days // 7) % 2 == 1:
+    if has_second_week and (((start - week_start).days // 7) % 2 == 1):
         current_week = 1
     else:
         current_week = 0
