@@ -32,7 +32,7 @@ async def get_all(teacher_id: UUID, start_date: date, end_date: date):
             detail="Start date must be before end date"
         )
     
-    if (end_date.day - start_date.day) > 6:
+    if (end_date - start_date).days > 6:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Interval must be less than 7 days"
