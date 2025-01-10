@@ -59,9 +59,12 @@ async def get_all(
         name_split = search.lower().split()
         filters.append(
             or_(
-                func.lower(Teacher.first_name).in_(name_split), 
-                func.lower(Teacher.second_name).in_(name_split), 
-                func.lower(Teacher.third_name).in_(name_split)
+                *[func.lower(j).like(f"%{i}%") for i in name_split
+                for j in (
+                    Teacher.first_name, 
+                    Teacher.second_name, 
+                    Teacher.third_name
+                )]
             )
         )
         search = None
