@@ -106,12 +106,12 @@ async def get_all_with_subjects(
         module_stmt = module_stmt.offset((page - 1) * limit).limit(limit)
 
         modules = await db.execute(module_stmt)
-        modules = modules.all()
+        modules = modules.scalars().all()
 
         subjects = await db.execute(subject_stmt)
-        subjects = subjects.all()
+        subjects = subjects.scalars().all()
 
-        module_with_subjects = ModuleWithSubjectResponse(modules, subjects) 
+        module_with_subjects = ModuleWithSubjectResponse(modules, subjects)
         total_page = ceil(total_record / limit)
 
         return PageResponse(

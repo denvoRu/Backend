@@ -46,7 +46,7 @@ async def get_all_with_subjects(
             institute_ids,
             teacher_ids
         )
-    except Exception:
+    except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="One or more parameters are invalid"
