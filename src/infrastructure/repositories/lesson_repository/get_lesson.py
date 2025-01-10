@@ -9,6 +9,9 @@ from datetime import date, datetime, time
 from uuid import UUID
 
 
+APPENDED = tuple(["subject_name"])
+
+
 async def get_all(teacher_id: UUID, start_date: date, end_date: date):
     """
     Gets all lessons of teacher
@@ -40,7 +43,7 @@ async def get_all(teacher_id: UUID, start_date: date, end_date: date):
     executed = await db.execute(stmt)
     lessons = executed.all()
 
-    return list(get_formatted_lesson(i, ["subject_name"]) for i in lessons)
+    return list(get_formatted_lesson(i, APPENDED) for i in lessons)
 
 
 async def get_by_id(lesson_id: UUID) -> Lesson:
@@ -81,7 +84,7 @@ async def get_by_schedule(
         await db.commit_rollback()
         raise Exception(str(e))
 
-def get_formatted_lesson(lesson, appended = []):
+def get_formatted_lesson(lesson, appended: tuple = ()):
     return {j[0]: j[1] for j in zip(LESSON_SAVE_FIELDS + appended, lesson)}
 
 
