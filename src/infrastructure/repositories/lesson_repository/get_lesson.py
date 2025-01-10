@@ -1,6 +1,6 @@
 from src.infrastructure.database.extensions import LESSON_SAVE_FIELDS
 from src.infrastructure.database import (
-    Lesson, StudyGroup, ScheduleLesson, get_by_id, db
+    Lesson, StudyGroup, ScheduleLesson, Subject, get_by_id, db
 )
 
 from sqlalchemy import select
@@ -17,15 +17,19 @@ async def get_all(teacher_id: UUID, start_date: date, end_date: date):
     :param end_date: end date of search
     """
     stmt = select(
-        StudyGroup.id,
+        Lesson.id,
         Lesson.speaker_name, 
         Lesson.lesson_name,
         Lesson.start_time,
         Lesson.end_time,
-        Lesson.date
+        Lesson.date,
+        Subject.name.label("subject_name")
     ).select_from(Lesson).join(
         StudyGroup, 
         StudyGroup.id == Lesson.study_group_id
+    ).join(
+        Subject,
+        StudyGroup.subject_id == Subject.id
     ).where(
         Lesson.date >= start_date,
         Lesson.date <= end_date,
@@ -34,10 +38,9 @@ async def get_all(teacher_id: UUID, start_date: date, end_date: date):
         StudyGroup.teacher_id == teacher_id
     )
     executed = await db.execute(stmt)
-
     lessons = executed.all()
 
-    return list(get_formatted_lesson(i) for i in lessons)
+    return list(get_formatted_lesson(i, ["subject_name"]) for i in lessons)
 
 
 async def get_by_id(lesson_id: UUID) -> Lesson:
@@ -78,8 +81,8 @@ async def get_by_schedule(
         await db.commit_rollback()
         raise Exception(str(e))
 
-def get_formatted_lesson(lesson):
-    return {j[0]: j[1] for j in zip(LESSON_SAVE_FIELDS, lesson)}
+def get_formatted_lesson(lesson, appended = []):
+    return {j[0]: j[1] for j in zip(LESSON_SAVE_FIELDS + appended, lesson)}
 
 
 async def get_active_by_condition(condition):

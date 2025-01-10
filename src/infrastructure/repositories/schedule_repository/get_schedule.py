@@ -15,11 +15,12 @@ async def get_by_week(teacher_id: UUID, week: int, filters = []):
     schedule_id = await get_by_id(teacher_id)
     columns = [
         "schedule_lesson.day",
+        "subject.name",
         *["schedule_lesson." + f for f in LESSON_SAVE_FIELDS if f != 'date']
     ]
 
     stmt = select(*[text(column) for column in columns]).select_from(
-        ScheduleLesson
+        ScheduleLesson,
     ).where(
         ScheduleLesson.schedule_id == schedule_id,
         ScheduleLesson.week == week,
@@ -40,17 +41,19 @@ async def get_in_interval(teacher_id: UUID, start: date, end: date):
     Gets a schedule of teacher in the needed interval with start and end dates
     """
     schedule = await db.execute(
-        select(Schedule)
+        select(Schedule.id, Schedule.week_start)
         .where(
             Schedule.teacher_id == teacher_id,
             Schedule.is_disabled == False
         )
     )
+    schedule = schedule.one()
+
     has_second_week = await has_instance(ScheduleLesson, (
         ScheduleLesson.week == 1,
-        ScheduleLesson.schedule_id == schedule.one().id
+        ScheduleLesson.schedule_id == schedule.id
     ))
-    week_start = schedule.one().week_start
+    week_start = schedule.week_start
 
     if has_second_week and (((start - week_start).days // 7) % 2 == 1):
         current_week = 1
