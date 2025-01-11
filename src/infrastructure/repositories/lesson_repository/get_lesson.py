@@ -104,3 +104,8 @@ async def get_active_by_condition(condition):
     except Exception:
         db.commit_rollback()
         raise Exception("Lesson not found")
+
+
+async def get_rating(lesson_id: UUID):
+    stmt = select(Lesson.rating).where(Lesson.id == lesson_id)
+    return (await db.execute(stmt)).one()[0]

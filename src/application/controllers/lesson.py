@@ -46,16 +46,11 @@ async def edit_lesson(
     return await lesson_service.edit_lesson(user, lesson_id, dto)
 
 
-@router.get("/{lesson_id}/members", description="Show members of lesson")
-async def get_members_of_lesson(user: CurrentUser, lesson_id: UUID4):
-    return await lesson_service.get_members(user, lesson_id)
-
-
-@router.get("/{lesson_id}/members/xlsx", description="Show members of lesson", response_class=StreamingResponse)
-async def get_excel_file_with_members_of_lesson(user: CurrentUser, lesson_id: UUID4):
-    return await lesson_service.get_excel_with_members(user, lesson_id)
-
-
 @router.get("/{lesson_id}/statistics", description="Show statistics of lesson")
 async def get_statistics_of_lesson(user: CurrentUser, lesson_id: UUID4):
     return await lesson_service.get_statistics(user, lesson_id)
+
+
+@router.get("/{lesson_id}/rating", description="Show statistics of lesson")
+async def get_statistics_of_lesson(user: CurrentUser, lesson_id: UUID4):
+    return await lesson_service.get_rating(user, lesson_id)

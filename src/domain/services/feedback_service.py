@@ -11,6 +11,7 @@ from src.infrastructure.repositories import (
 
 from fastapi import HTTPException, Response, status
 from fastapi.responses import StreamingResponse
+from datetime import datetime
 from uuid import UUID 
 
 
@@ -32,7 +33,10 @@ async def get_by_id(
             detail="Lesson not found"
         )
 
-    check_teacher = lesson_repository.is_teacher_of_lesson(user.id, lesson_id)
+    check_teacher = await lesson_repository.is_teacher_of_lesson(
+        user.id, 
+        lesson_id
+    )
 
     if user.role == Role.TEACHER and user.id and not await check_teacher:
         raise HTTPException(
@@ -40,7 +44,7 @@ async def get_by_id(
             detail="Lesson not found"
         )
 
-    check_privelege = teacher_repository.privelege.has_by_name(
+    check_privelege = await teacher_repository.privelege.has_by_name(
         user.id, 
         Privilege.SEE_COMMENTS
     )
@@ -51,7 +55,8 @@ async def get_by_id(
             detail="You don't have enough privileges"
         )
     
-    return feedback_repository.get_all(    
+
+    return await feedback_repository.get_all(    
         lesson_id,
         page, 
         limit, 
@@ -59,6 +64,7 @@ async def get_by_id(
         search, 
         desc
     )
+    
 
 
 async def get_xlsx_by_id(user: User, lesson_id: UUID):
@@ -71,7 +77,10 @@ async def get_xlsx_by_id(user: User, lesson_id: UUID):
             detail="Lesson not found"
         )
     
-    check_teacher = lesson_repository.is_teacher_of_lesson(user.id, lesson_id)
+    check_teacher = await lesson_repository.is_teacher_of_lesson(
+        user.id, 
+        lesson_id
+    )
 
     if user.role == Role.TEACHER and user.id and not await check_teacher:
         raise HTTPException(
@@ -79,7 +88,7 @@ async def get_xlsx_by_id(user: User, lesson_id: UUID):
             detail="Lesson not found"
         )
 
-    check_privelege = teacher_repository.privelege.has_by_name(
+    check_privelege = await teacher_repository.privelege.has_by_name(
         user.id, 
         Privilege.SEE_COMMENTS
     )
@@ -90,9 +99,23 @@ async def get_xlsx_by_id(user: User, lesson_id: UUID):
             detail="You don't have enough privileges"
         )
     
-    feedbacks, extra_fields = await feedback_repository.get_all_for_excel(lesson_id)
-    stream = get_excel_file_with_feedbacks(feedbacks, extra_fields)
+    try:
+        feedbacks, extra_fields = await feedback_repository.get_all_for_excel(
+            lesson_id
+        )
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Feedbacks not found"
+        )
 
+    if len(feedbacks) == 0:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Feedbacks not found"
+        )
+    
+    stream = get_excel_file_with_feedbacks(feedbacks, extra_fields)
     response = StreamingResponse(stream, media_type=XLSX_MEDIA_TYPE)
     response.headers["Content-Disposition"] = "attachment; filename=feedbacks.xlsx"
     return response
@@ -104,19 +127,43 @@ async def add(lesson_id: UUID, dto: AddFeedbackDTO):
     :param lesson_id: id of lesson
     :param dto: feedback data as dto with extra fields if exist
     """
-    if not await lesson_repository.has_active_by_id(lesson_id):
-        HTTPException(
+    now = datetime.now()
+    if dto.created_at > now or (now - dto.created_at).seconds > 10:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Created at must be in the future or more than 10 seconds in the past"
+        )
+    
+    if not await lesson_repository.has_active_by_id(lesson_id, dto.created_at):
+        raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Lesson not found"
         )
-
+    
     feedback_dto_dict = dto.model_dump(exclude_none=True, exclude=["extra_fields"])
-    extra_field_dto_dict = [
-        i.model_dump(exclude_none=True) for i in dto.extra_fields
-    ]
+
+    if await feedback_repository.has_feedback_by_created_at(dto):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Feedback already exists"
+        )
 
     feedback_id = await feedback_repository.add(lesson_id, feedback_dto_dict)
-    await feedback_repository.add_extra_fields(
-        lesson_id, feedback_id, extra_field_dto_dict
-    )
+
+    if dto.extra_fields and len(dto.extra_fields) > 0:
+        extra_field_dto_dict = [
+            i.model_dump(exclude_none=True) for i in dto.extra_fields
+        ]
+        try: 
+            await feedback_repository.add_extra_fields(
+                lesson_id, 
+                feedback_id, 
+                extra_field_dto_dict
+            )
+        except Exception:
+            await feedback_repository.delete_by_id(feedback_id)
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Extra field not found"
+            )
     return Response(status_code=status.HTTP_200_OK)    

@@ -10,7 +10,7 @@ class Feedback(SQLModel, table=True):
     lesson_id: uuid.UUID = Field(ForeignKey("lesson.id"), index=True)
     # student_name: str = Field()
     mark: int = Field(nullable=False)
-    chosen_markers: str = Field(nullable=False)
+    tags: str = Field(nullable=False)
     comment: str = Field()
     created_at: time = Time()
     is_disabled: bool = Field(nullable=False, default=False)

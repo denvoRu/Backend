@@ -36,6 +36,12 @@ async def add_extra_fields(
             ExtraFieldSetting.lesson_id == lesson_id, 
             ExtraFieldSetting.extra_field_name == i["question"]
         )
+        extra_field_id = await db.execute(extra_field_id)
+        extra_field_id = extra_field_id.scalar()
+        
+        if not extra_field_id:
+            raise Exception("Extra field not found")
+
         extra_field = ExtraField(
             feedback_id=feedback_id,
             extra_field_setting_id=extra_field_id,

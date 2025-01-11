@@ -10,6 +10,6 @@ async def has_feedback_by_created_at(dto: dict):
         Feedback, 
         (Feedback.comment == dto["comment"],
         Feedback.created_at == dto["created_at"],
-        Feedback.chosen_markers == dto["chosen_markers"],
+        Feedback.tags == dto["tags"],
         Feedback.mark == dto["mark"])
     )

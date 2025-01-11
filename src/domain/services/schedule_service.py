@@ -14,7 +14,7 @@ from src.application.dto.schedule import (
 
 from fastapi import HTTPException, Response, status
 from aiomodeus import AioModeus
-from datetime import date
+from datetime import date, datetime
 from uuid import UUID
 
 
@@ -38,7 +38,7 @@ async def add_lesson(teacher_id: UUID, dto: AddLessonInScheduleDTO):
             detail="Teacher not found"
         )
     
-    if not await study_group_repository.has_by_id(teacher_id, dto.subject_id):
+    if not await study_group_repository.has_by_id(dto.subject_id, teacher_id):
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="Teacher not found in subject"

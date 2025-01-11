@@ -7,7 +7,7 @@ from src.infrastructure.database import (
     Feedback, ExtraField, ExtraFieldSetting, db
 )
 
-from sqlalchemy import select, distinct, text, desc as order_desc, func
+from sqlalchemy import select, text, desc as order_desc, func
 from typing import Tuple, List
 from math import ceil
 from uuid import UUID
@@ -30,67 +30,65 @@ async def get_all(
     :param search: search string
     :param desc: descending/ascending sort
     """
-    try:
-        feedback_stmt = select(
-            Feedback.id, 
-            Feedback.student_name,
-            Feedback.mark,
-            Feedback.chosen_markers,
-            Feedback.comment,
-            Feedback.created_at
-        ).where(
-            Feedback.lesson_id == lesson_id,
-            Feedback.is_disabled == False
-        )
+    feedback_stmt = select(
+        Feedback.id, 
+        Feedback.mark,
+        Feedback.tags,
+        Feedback.comment,
+        Feedback.created_at
+    ).where(
+        Feedback.lesson_id == lesson_id,
+        Feedback.is_disabled == False
+    )
 
-        if sort is not None and sort != "":
-            sorted_columns = map(text, sort.split(","))
-            if desc == 1:
-                sorted_columns = map(order_desc, sorted_columns)
+    if sort is not None and sort != "":
+        sorted_columns = map(text, sort.split(","))
+        if desc == 1:
+            sorted_columns = map(order_desc, sorted_columns)
 
-            feedback_stmt = feedback_stmt.order_by(*sorted_columns)
+        feedback_stmt = feedback_stmt.order_by(*sorted_columns)
 
-        # count query
-        count_query = select(func.count(1)).select_from(feedback_stmt)
-        total_record = (await db.execute(count_query)).scalar() or 0
+    # count query
+    count_query = select(func.count(1)).select_from(feedback_stmt)
+    total_record = (await db.execute(count_query)).scalar() or 0
 
-        feedback_stmt = feedback_stmt.offset((page - 1) * limit).limit(limit)
+    feedback_stmt = feedback_stmt.offset((page - 1) * limit).limit(limit)
 
 
-        feedbacks = await db.execute(feedback_stmt)
-        feedbacks = list(row_to_dict(i) for i in feedbacks.all())
+    feedbacks = await db.execute(feedback_stmt)
+    feedbacks = list(row_to_dict(i) for i in feedbacks.all())
 
 
-        feedbacks_id = [feedback["id"] for feedback in feedbacks]
+    feedbacks_id = [feedback["id"] for feedback in feedbacks]
 
-        extra_fields_stmt = select(
-            ExtraField.feedback_id,
-            ExtraField.value.alias("answer"), 
-            ExtraFieldSetting.extra_field_name.alias("question")
-        ).join(
-            ExtraFieldSetting, 
-            ExtraFieldSetting.id == ExtraField.extra_field_setting_id
-        ).where(
-            ExtraField.feedback_id.in_(feedbacks_id),
-        )
+    extra_fields_stmt = select(
+        ExtraField.feedback_id,
+        ExtraField.value.label("answer"), 
+        ExtraFieldSetting.extra_field_name.label("question")
+    ).select_from(ExtraField).join(
+        ExtraFieldSetting, 
+        ExtraFieldSetting.id == ExtraField.extra_field_setting_id
+    ).where(
+        ExtraField.feedback_id.in_(feedbacks_id),
+    )
 
-        extra_fields = await db.execute(extra_fields_stmt)
-        extra_fields = list(row_to_dict(i) for i in extra_fields.all())
+    extra_fields = await db.execute(extra_fields_stmt)
+    extra_fields = list(row_to_dict(i) for i in extra_fields.all())
 
-        feddbacks_with_fields = FeedbackWithExtraFieldsResponse(feedbacks)
+    feddbacks_with_fields = FeedbackWithExtraFieldsResponse(
+        feedbacks, 
+        extra_fields
+    )
 
-        total_page = ceil(total_record / limit)
+    total_page = ceil(total_record / limit)
 
-        return PageResponse(
-            page_number=page,
-            page_size=limit,
-            total_record=total_record,
-            total_pages=total_page,
-            content=feddbacks_with_fields.to_dict(),
-        )
-    except Exception as e:
-        await db.commit_rollback()
-        raise Exception(str(e))
+    return PageResponse(
+        page_number=page,
+        page_size=limit,
+        total_record=total_record,
+        total_pages=total_page,
+        content=feddbacks_with_fields.to_dict(),
+    )
 
 
 async def get_all_for_excel(lesson_id: UUID) -> Tuple[List[dict], List[dict]]:
@@ -101,9 +99,8 @@ async def get_all_for_excel(lesson_id: UUID) -> Tuple[List[dict], List[dict]]:
     try:
         feedback_stmt = select(
             Feedback.id, 
-            Feedback.student_name,
             Feedback.mark,
-            Feedback.chosen_markers,
+            Feedback.tags,
             Feedback.comment,
             Feedback.created_at
         ).where(
@@ -119,8 +116,8 @@ async def get_all_for_excel(lesson_id: UUID) -> Tuple[List[dict], List[dict]]:
 
         extra_fields_stmt = select(
             ExtraField.feedback_id,
-            ExtraField.value.alias("answer"), 
-            ExtraFieldSetting.extra_field_name.alias("question")
+            ExtraField.value.label("answer"), 
+            ExtraFieldSetting.extra_field_name.label("question")
         ).join(
             ExtraFieldSetting, 
             ExtraFieldSetting.id == ExtraField.extra_field_setting_id
@@ -143,26 +140,28 @@ async def get_statistics(lesson_id: UUID):
     Gets statistics for all feedbacks
     :param lesson_id: lesson of feedbacks
     """
-    stmt = select(Feedback.mark ,func.count(Feedback.mark)).select_from(Feedback).where(
+    marks = select(Feedback.mark ,func.count(Feedback.mark).label("count")).select_from(Feedback).where(
         Feedback.lesson_id == lesson_id,
         Feedback.is_disabled == False
     ).group_by(Feedback.mark)
 
-    executed = await db.execute(stmt)
-
-    return { str(i): j for i, j in executed.all() }
-
-
-async def get_members(lesson_id: UUID):
-    """
-    Gets all members that related to lesson feedbacks
-    :param lesson_id: lesson
-    """
-    stmt = distinct(select(Feedback.student_name).where(
+    most_popular_tags = select(
+        text("unnest(string_to_array(tags, ', ')) AS tag_name"),
+        text("array_length(string_to_array(tags, ', '), 1) AS tag_count")
+    ).select_from(Feedback).where(
         Feedback.lesson_id == lesson_id,
-        Feedback.student_name != "",
         Feedback.is_disabled == False
-    ))
+    )
+    
+    marks = await db.execute(marks)
+    most_popular_tags = await db.execute(most_popular_tags)
 
-    names = await db.execute(stmt)
-    return list([i[0] for i in names.all()])
+    marks_dict = { str(i): j for i, j in marks.all() }
+    most_popular_tags_dict = { str(i): j for i, j in most_popular_tags.all() }
+
+    return {
+        "marks": marks_dict,
+        "tags_with_count": most_popular_tags_dict
+    }
+
+

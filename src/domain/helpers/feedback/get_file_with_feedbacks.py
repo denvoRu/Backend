@@ -13,24 +13,30 @@ async def get_excel_file_with_feedbacks(
     :param feedback_data: data of feedbacks
     :param extra_fields_data: data of extra fields that chosen for feedback form
     """
-    feedback_df = pd.DataFrame(feedback_data)
-    extra_fields_df = pd.DataFrame(extra_fields_data)
+    result_df = pd.DataFrame(feedback_data)
 
-    extra_fields_pivot = (
-        extra_fields_df
-        .pivot(
-            values="answer",  # Столбец с ответами
-            index="feedback_id",  # Столбец для связи
-            columns="question"  # Столбец с вопросами
+    if extra_fields_data and len(extra_fields_data) > 0:
+        extra_fields_df = pd.DataFrame(extra_fields_data)
+
+        extra_fields_pivot = (
+            extra_fields_df
+            .pivot(
+                values="answer",  # Столбец с ответами
+                index="id",  # Столбец для связи
+                columns="question"  # Столбец с вопросами
+            )
+            .rename({"feedback_id": "id"})  # Переименовываем для связи
         )
-        .rename({"feedback_id": "id"})  # Переименовываем для связи
-    )
 
-    result_df = feedback_df.join(extra_fields_pivot, on="id", how="left")
+        result_df = result_df.join(extra_fields_pivot, on="id", how="left")
+    
     output = BytesIO()
 
     with pd.ExcelWriter(output, engine="xlsxwriter") as writer:
-        result_df.to_excel(writer, sheet_name="Отзывы")
+        result_df.to_excel(writer, sheet_name="Отзывы", index=False)
+        worksheet = writer.sheets["Отзывы"]  # pull worksheet object
+        for idx, _ in enumerate(result_df):  # loop through all columns
+            worksheet.set_column(idx, idx, 50)  # set column width
 
     output.seek(0)
 
