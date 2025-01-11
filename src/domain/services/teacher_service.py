@@ -16,6 +16,7 @@ async def get_all(
         desc: int = 0,
         rating_start: int = -1,
         rating_end: int = -1,
+        institute_ids: str = None,
         subject_ids: str = None,
         not_in_subject_by_id: UUID = None
 ):
@@ -34,6 +35,9 @@ async def get_all(
     """
     if subject_ids is not None:
         subject_ids = subject_ids.split(",")
+    
+    if institute_ids is not None:
+        institute_ids = institute_ids.split(",")
         
     try:
         return await teacher_repository.get_all(
@@ -46,7 +50,8 @@ async def get_all(
             rating_start, 
             rating_end, 
             subject_ids,
-            not_in_subject_by_id=not_in_subject_by_id
+            institute_ids=institute_ids,
+            not_in_subject_by_id=not_in_subject_by_id,
         )
     except Exception:
         raise HTTPException(

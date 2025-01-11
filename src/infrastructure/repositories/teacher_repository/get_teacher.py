@@ -18,6 +18,7 @@ async def get_all(
     subject_ids,
     filters = None,
     *,
+    institute_ids = None,
     not_in_subject_by_id: UUID = None
 ):
     """
@@ -43,6 +44,9 @@ async def get_all(
 
     if subject_ids is not None and len(subject_ids) > 0:
         filters.append(Teacher.id.in_(subject_ids))
+
+    if institute_ids is not None and len(institute_ids) > 0:
+        filters.append(Teacher.institute_id.in_(institute_ids))
 
     if not_in_subject_by_id is not None:
         filters.append(
