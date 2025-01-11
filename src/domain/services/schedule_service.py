@@ -38,6 +38,12 @@ async def add_lesson(teacher_id: UUID, dto: AddLessonInScheduleDTO):
             detail="Teacher not found"
         )
     
+    if not await study_group_repository.has_by_id(teacher_id, dto.subject_id):
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Teacher not found in subject"
+        )
+    
     if not await schedule_repository.has_by_id(teacher_id):
         week = get_last_monday()
         await schedule_repository.add(teacher_id, week)
@@ -183,10 +189,16 @@ async def add_lesson_scheduled(
             detail="You cannot create a lesson for this day"
         )
 
-    study_group_id = await study_group_repository.get_by_ids(
-        teacher_id, 
-        schedule_lesson.subject_id
-    )
+    try: 
+        study_group_id = await study_group_repository.get_by_ids(
+            teacher_id, 
+            schedule_lesson.subject_id
+        )
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="You cannot create a lesson for this subject"
+        )
 
     has_lesson = lesson_repository.has_by_schedule(
         study_group_id, schedule_lesson, date

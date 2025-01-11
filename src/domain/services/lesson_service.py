@@ -1,3 +1,4 @@
+from src.domain.extensions.get_unique_lessons import get_unique_lessons
 from src.domain.helpers.lesson import get_excel_file_with_members
 from src.infrastructure.constants.excel import XLSX_MEDIA_TYPE
 from src.infrastructure.enums.role import Role
@@ -47,7 +48,7 @@ async def get_all(teacher_id: UUID, start_date: date, end_date: date):
     )
     lessons.extend(future_lessons)
 
-    return lessons
+    return get_unique_lessons(lessons)
 
 
 async def get_active(lesson_id: UUID):
