@@ -17,12 +17,21 @@ services:
     environment:
       REDIS_ARGS: "--requirepass ${REDIS_PASSWORD} --user ${REDIS_USERNAME} on >${REDIS_PASSWORD} ~* allcommands --user default off nopass nocommands"
   selenium:
-    env_file: .env
     image: selenium/standalone-chrome
+    expose:
+      - "4444"
+  selenium-proxy:
+    build:
+      context: ./selenium-proxy
+      dockerfile: Dockerfile
+      args:
+        SELENIUM_HUB_PASSWORD: $SELENIUM_HUB_PASSWORD
+    depends_on:
+      - selenium
     ports:
-      - "4444:4444"
-    environment:
-      
+      - "4545:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
   fastapi:
     env_file: .env
     build: .
@@ -32,6 +41,8 @@ services:
       DATABASE_DRIVER_NAME: "postgresql+asyncpg"
       DATABASE_HOST: postgresql
       REDIS_OM_URL: "redis://${REDIS_USERNAME}:${REDIS_PASSWORD}@redis:6379/0"
+      SELENIUM_HUB_URL: "http://selenium:${SELENIUM_HUB_PASSWORD}@localhost:4545/wd/hub"
     depends_on:
       - postgresql
       - redis
+      - selenium-proxy
