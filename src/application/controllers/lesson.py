@@ -5,7 +5,6 @@ from src.domain.extensions.check_role import (
 )
 
 from fastapi import APIRouter, Body
-from fastapi.responses import StreamingResponse
 from datetime import date
 from pydantic import UUID4
 
@@ -49,8 +48,3 @@ async def edit_lesson(
 @router.get("/{lesson_id}/statistics", description="Show statistics of lesson")
 async def get_statistics_of_lesson(user: CurrentUser, lesson_id: UUID4):
     return await lesson_service.get_statistics(user, lesson_id)
-
-
-@router.get("/{lesson_id}/rating", description="Show statistics of lesson")
-async def get_statistics_of_lesson(user: CurrentUser, lesson_id: UUID4):
-    return await lesson_service.get_rating(user, lesson_id)

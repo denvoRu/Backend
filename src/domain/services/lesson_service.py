@@ -123,21 +123,3 @@ async def edit_lesson(user: User, lesson_id: UUID, dto: EditLessonDTO):
 
     await lesson_repository.update_by_id(lesson_id, dto_dict)
     return Response(status_code=status.HTTP_200_OK)
-
-
-async def get_rating(user: User, lesson_id: UUID):
-    if not await lesson_repository.has_by_id(lesson_id):
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Lesson not found"
-        )
-    
-    check_teacher = await lesson_repository.is_teacher_of_lesson(user.id, lesson_id)
-
-    if user.role == Role.TEACHER and not await check_teacher:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Lesson not found"
-        )
-    
-    return await lesson_repository.get_rating(lesson_id)
