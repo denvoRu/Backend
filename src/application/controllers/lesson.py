@@ -5,6 +5,7 @@ from src.domain.extensions.check_role import (
 )
 
 from fastapi import APIRouter, Body
+from fastapi.responses import StreamingResponse
 from datetime import date
 from pydantic import UUID4
 
@@ -34,6 +35,16 @@ async def get_lessons_of_teacher(
 @router.get("/active/{lesson_id}", description="Show lesson data if this lesson is active")
 async def get_data_of_active_lesson(lesson_id: UUID4):
     return await lesson_service.get_active(lesson_id)
+
+
+@router.get("/{lesson_id}/members", description="Show members of lesson")
+async def get_members_of_lesson(user: CurrentUser, lesson_id: UUID4):
+    return await lesson_service.get_members(user, lesson_id)
+
+
+@router.get("/{lesson_id}/members/xlsx", description="Show members of lesson", response_class=StreamingResponse)
+async def get_excel_file_with_members_of_lesson(user: CurrentUser, lesson_id: UUID4):
+    return await lesson_service.get_excel_with_members(user, lesson_id)
 
 
 @router.patch('/{lesson_id}', description='Edit an existing lesson')

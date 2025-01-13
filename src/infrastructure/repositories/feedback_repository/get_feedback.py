@@ -7,7 +7,7 @@ from src.infrastructure.database import (
     Feedback, ExtraField, ExtraFieldSetting, db
 )
 
-from sqlalchemy import select, text, desc as order_desc, func
+from sqlalchemy import select, text, distinct, desc as order_desc, func
 from typing import Tuple, List
 from math import ceil
 from uuid import UUID
@@ -98,7 +98,6 @@ async def get_all_for_excel(lesson_id: UUID) -> Tuple[List[dict], List[dict]]:
     """
     try:
         feedback_stmt = select(
-            Feedback.id, 
             Feedback.mark,
             Feedback.tags,
             Feedback.comment,
@@ -165,3 +164,12 @@ async def get_statistics(lesson_id: UUID):
     }
 
 
+async def get_members(lesson_id: UUID):
+    stmt = select(Feedback.student_name).where(
+        Feedback.lesson_id == lesson_id,
+        Feedback.student_name != "",
+        Feedback.is_disabled == False
+    )
+
+    names = await db.execute(stmt)
+    return names.scalars().all()

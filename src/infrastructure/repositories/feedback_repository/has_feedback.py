@@ -9,6 +9,7 @@ async def has_feedback_by_created_at(dto: dict):
     return await has_instance(
         Feedback, 
         (Feedback.comment == dto["comment"],
+         Feedback.student_name == dto["student_name"],
         Feedback.created_at == dto["created_at"],
         Feedback.tags == dto["tags"],
         Feedback.mark == dto["mark"])
