@@ -9,7 +9,7 @@ from datetime import date, datetime, time
 from uuid import UUID
 
 
-APPENDED = tuple(["subject_name"])
+APPENDED = tuple(["rating", "subject_name"])
 
 
 async def get_all(teacher_id: UUID, start_date: date, end_date: date):

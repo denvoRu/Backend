@@ -1,9 +1,8 @@
-from src.application.dto.module import CreateModuleDTO
+from src.application.dto.module import CreateModuleDTO, EditModuleDTO
 from src.domain.services import module_service
 from src.domain.extensions.check_role import CurrentAdmin
 
 from fastapi import APIRouter, Body, Query
-from typing import List
 from pydantic import UUID4
 
 
@@ -62,6 +61,11 @@ async def create_module(
     current_user: CurrentAdmin, dto: CreateModuleDTO = Body(...)
 ):
     return await module_service.create(dto)
+
+
+@router.patch("/{module_id}", description="Edit an existing module (for admins)")
+async def edit_module(current_user: CurrentAdmin, module_id: UUID4, dto: EditModuleDTO = Body(...)):
+    return await module_service.edit(module_id, dto)
 
 
 @router.delete("/{module_id}", description="Delete an existing module (for admins)")

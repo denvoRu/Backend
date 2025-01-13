@@ -87,6 +87,7 @@ async def create(dto: CreateSubjectDTO):
 
 async def edit(subject_id: UUID, dto: EditSubjectDTO):
     try:
+        dto = dto.model_dump(exclude_none=True)
         return await subject_repository.update_by_id(subject_id, dto)
     except:
         raise HTTPException(

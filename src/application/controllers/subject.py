@@ -51,8 +51,8 @@ async def create_subject(
 
 
 @router.patch("/{subject_id}", description="Edit an existing subject (for admins)")
-async def edit_subject(admin: CurrentAdmin, dto: EditSubjectDTO = Body(...)):
-    return await subject_service.edit(dto)
+async def edit_subject(admin: CurrentAdmin, subject_id: UUID4, dto: EditSubjectDTO = Body(...)):
+    return await subject_service.edit(subject_id, dto)
 
 
 @router.delete("/{subject_id}", description="Delete an existing subject (for admins)")

@@ -5,5 +5,4 @@ LESSON_SAVE_FIELDS = (
     "start_time", 
     "end_time", 
     "date",
-    "rating"
 )

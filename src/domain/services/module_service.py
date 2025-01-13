@@ -1,4 +1,4 @@
-from src.application.dto.module import CreateModuleDTO
+from src.application.dto.module import CreateModuleDTO, EditModuleDTO
 from src.infrastructure.repositories import module_repository
 
 from fastapi import HTTPException, Response, status
@@ -98,6 +98,20 @@ async def create(dto: CreateModuleDTO):
     
     await module_repository.add(dto.institute_id, dto.name)
     return Response(status_code=status.HTTP_201_CREATED)
+
+
+async def edit(module_id: UUID, dto: EditModuleDTO):
+    if not await module_repository.has_by_id(module_id):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Module not found"
+        )
+    
+    dto = dto.model_dump(exclude_none=True)
+
+    await module_repository.update_by_id(module_id, dto)
+    return Response(status_code=status.HTTP_200_OK)
+
 
 
 async def delete(module_id: UUID):
