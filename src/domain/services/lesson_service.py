@@ -22,7 +22,7 @@ async def get_all(
         teacher_id: UUID, 
         start_date: date, 
         end_date: date,
-        subject_ids: List[UUID] = None
+        subject_ids: str = None
     ):
     """
     Gets all lessons of teacher depending on dates
@@ -32,6 +32,9 @@ async def get_all(
     """
     if not await schedule_repository.has_by_id(teacher_id):
         return []
+    
+    if subject_ids is not None and len(subject_ids) == 0:
+        subject_ids = subject_ids.split(",")
     
     if start_date > end_date:
         raise HTTPException(
@@ -45,12 +48,18 @@ async def get_all(
             detail="Interval must be less than 7 days"
         )
     
-    lessons = await lesson_repository.get_all(teacher_id, start_date, end_date)
+    lessons = await lesson_repository.get_all(
+        teacher_id, 
+        start_date, 
+        end_date, 
+        subject_ids
+    )
 
     future_lessons = await schedule_repository.get_in_interval(
         teacher_id,
         start_date, 
-        end_date
+        end_date,
+        subject_ids
     )
     lessons.extend(future_lessons)
 

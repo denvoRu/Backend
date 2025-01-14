@@ -18,8 +18,14 @@ async def get_my_lessons(
     teacher: CurrentTeacher, 
     start_date: date,
     end_date: date,
+    subject_ids: str = None
 ):
-    return await lesson_service.get_all(teacher.id, start_date, end_date)
+    return await lesson_service.get_all(
+        teacher.id, 
+        start_date, 
+        end_date, 
+        subject_ids
+    )
     
 
 @router.get("/{teacher_id}", description="Show teacher lessons (for admins)")
@@ -28,8 +34,14 @@ async def get_lessons_of_teacher(
     teacher_id: UUID4,
     start_date: date,
     end_date: date,
+    subject_ids: str = None
 ):
-    return await lesson_service.get_all(teacher_id, start_date, end_date)
+    return await lesson_service.get_all(
+        teacher_id, 
+        start_date, 
+        end_date,
+        subject_ids
+    )
 
 
 @router.get("/active/{lesson_id}", description="Show lesson data if this lesson is active")

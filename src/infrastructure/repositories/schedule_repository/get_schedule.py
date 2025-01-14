@@ -1,3 +1,4 @@
+from typing import List
 from src.infrastructure.database.extensions import LESSON_SAVE_FIELDS
 from src.infrastructure.database import (
     Schedule, Subject, ScheduleLesson, get, has_instance, db
@@ -37,10 +38,20 @@ async def get_by_week(teacher_id: UUID, week: int, filters = []):
     return list(formatted(i) for i in executed.all())
 
 
-async def get_in_interval(teacher_id: UUID, start: date, end: date):
+async def get_in_interval(
+    teacher_id: UUID, 
+    start: date, 
+    end: date,
+    subject_ids: List[UUID] = None
+):
     """
     Gets a schedule of teacher in the needed interval with start and end dates
     """
+    filters = []
+    
+    if subject_ids is not None and len(subject_ids) > 0:
+        filters.append(ScheduleLesson.subject_id.in_(subject_ids))
+
     schedule = await db.execute(
         select(Schedule.id, Schedule.week_start)
         .where(
@@ -63,7 +74,8 @@ async def get_in_interval(teacher_id: UUID, start: date, end: date):
 
     result = await get_by_week(teacher_id, current_week, filters=[
         ScheduleLesson.day >= start.weekday(),
-        ScheduleLesson.day <= end.weekday()
+        ScheduleLesson.day <= end.weekday(),
+        *filters
     ])
 
     result = [replace_day_on_date(i, start) for i in result]

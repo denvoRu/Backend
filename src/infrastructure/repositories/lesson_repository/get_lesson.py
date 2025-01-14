@@ -4,7 +4,7 @@ from src.infrastructure.database import (
 )
 
 from sqlalchemy import select
-from typing import Tuple
+from typing import List, Tuple
 from datetime import date, datetime, time
 from uuid import UUID
 
@@ -12,13 +12,22 @@ from uuid import UUID
 APPENDED = tuple(["rating", "subject_name"])
 
 
-async def get_all(teacher_id: UUID, start_date: date, end_date: date):
+async def get_all(
+    teacher_id: UUID, 
+    start_date: date, 
+    end_date: date,
+    subject_ids: List[UUID] = None
+):
     """
     Gets all lessons of teacher
     :param teacher_id: id
     :param start_date: start date of search
     :param end_date: end date of search
     """
+    filters = []
+
+    if subject_ids is not None and len(subject_ids) > 0:
+        filters.append(StudyGroup.subject_id.in_(subject_ids))
     stmt = select(
         Lesson.id,
         Lesson.speaker_name, 
@@ -39,7 +48,8 @@ async def get_all(teacher_id: UUID, start_date: date, end_date: date):
         Lesson.date <= end_date,
         Lesson.is_disabled == False,
         StudyGroup.is_disabled == False,
-        StudyGroup.teacher_id == teacher_id
+        StudyGroup.teacher_id == teacher_id,
+        *filters
     )
     executed = await db.execute(stmt)
     lessons = executed.all()
