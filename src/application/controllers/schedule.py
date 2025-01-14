@@ -24,8 +24,16 @@ async def get_schedule_of_teacher(admin: CurrentAdmin, teacher_id: UUID4, week: 
 
 
 @router.post('/import_from_modeus', description="Add lessons to my schedule from Modeus", status_code=201)
-async def import_lessons_from_modeus(teacher: CurrentTeacher, week_count: int = 1):
-    return await schedule_service.import_from_modeus(teacher.id, week_count)
+async def import_lessons_from_modeus(
+    teacher: CurrentTeacher, 
+    subject_id: UUID4,
+    week_count: int = 1
+):
+    return await schedule_service.import_from_modeus(
+        teacher.id, 
+        subject_id, 
+        week_count
+    )
 
 
 @router.post("/", description="Add lesson to my schedule", status_code=201)

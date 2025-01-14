@@ -110,32 +110,34 @@ async def edit_lesson(
     return Response(status_code=status.HTTP_200_OK)
 
 
-async def import_from_modeus(teacher_id: UUID, subject_id: UUID, week_count: int): 
-    if not await teacher_repository.has_by_id(teacher_id):
+async def import_from_modeus(
+    teacher_id: UUID, 
+    subject_id: UUID,
+    week_count: int
+):
+    if week_count != 1 and week_count != 2:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Week count must be 1 or 2"
+        ) 
+    
+    if not(await teacher_repository.has_by_id(teacher_id)):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Teacher not found"
         )
     
-    if week_count != 1 and week_count != 2:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Week count must be 1 or 2"
-        )
-    
-    if not await schedule_repository.has_by_id(teacher_id):
-        last_monday = get_last_monday()
-        await schedule_repository.add(teacher_id, last_monday)
-
-    if not await study_group_repository.has_by_id(subject_id, teacher_id):
+    if not(await study_group_repository.has_by_id(subject_id, teacher_id)):
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="Teacher not found in subject"
         )
-
+    
+    if not(await schedule_repository.has_by_id(teacher_id)):
+        last_monday = get_last_monday()
+        await schedule_repository.add(teacher_id, last_monday)
 
     await import_from_modeus_by_id(teacher_id, subject_id, week_count)
-    
     return Response(status_code=status.HTTP_200_OK)
 
 
