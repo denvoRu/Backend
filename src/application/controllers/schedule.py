@@ -83,7 +83,7 @@ async def add_lesson_in_schedule_of_teacher(
     return await schedule_service.add_lesson(teacher_id, dto)
 
 
-@router.patch("/{schedule_lesson_id}", description="Edit lesson in my schedule")
+@router.patch("/{schedule_lesson_id}", description="Edit lesson in my schedule (universal)")
 async def edit_lesson_in_schedule(
     user: CurrentUser, 
     schedule_lesson_id: UUID4, 
@@ -92,6 +92,6 @@ async def edit_lesson_in_schedule(
     return await schedule_service.edit_lesson(user, schedule_lesson_id, dto)
 
 
-@router.delete("/{schedule_lesson_id}", description="Delete lesson from my schedule")
+@router.delete("/{schedule_lesson_id}", description="Delete lesson from my schedule (universal)")
 async def delete_lesson_from_schedule(user: CurrentUser, schedule_lesson_id: UUID4):
     return await schedule_service.delete_lesson(user, schedule_lesson_id)

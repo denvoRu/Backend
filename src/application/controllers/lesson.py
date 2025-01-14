@@ -1,4 +1,4 @@
-from src.application.dto.lesson import EditLessonDTO
+from src.application.dto.lesson import AddLessonDTO, EditLessonDTO
 from src.domain.services import lesson_service
 from src.domain.extensions.check_role import (
     CurrentTeacher, CurrentAdmin, CurrentUser
@@ -59,7 +59,26 @@ async def get_excel_file_with_members_of_lesson(user: CurrentUser, lesson_id: UU
     return await lesson_service.get_excel_with_members(user, lesson_id)
 
 
-@router.patch('/{lesson_id}', description='Edit an existing lesson')
+@router.get("/{lesson_id}/statistics", description="Show statistics of lesson")
+async def get_statistics_of_lesson(user: CurrentUser, lesson_id: UUID4):
+    return await lesson_service.get_statistics(user, lesson_id)
+
+
+@router.post("/", description="Add a new lesson", status_code=201)
+async def add_lesson(teacher: CurrentTeacher, dto: AddLessonDTO = Body(...)):
+    return await lesson_service.add(teacher.id, dto)
+
+
+@router.post("/{teacher_id}", description="Add a new lesson (for admins)", status_code=201)
+async def add_lesson_to_teacher(
+    admin: CurrentAdmin, 
+    teacher_id: UUID4,
+    dto: AddLessonDTO = Body(...)
+):
+    return await lesson_service.add(teacher_id, dto)
+
+
+@router.patch('/{lesson_id}', description='Edit an existing lesson (universal)')
 async def edit_lesson(
     user: CurrentUser, 
     lesson_id: UUID4, 
@@ -68,6 +87,6 @@ async def edit_lesson(
     return await lesson_service.edit_lesson(user, lesson_id, dto)
 
 
-@router.get("/{lesson_id}/statistics", description="Show statistics of lesson")
-async def get_statistics_of_lesson(user: CurrentUser, lesson_id: UUID4):
-    return await lesson_service.get_statistics(user, lesson_id)
+@router.delete("/{lesson_id}", description="Delete a lesson (universal)")
+async def delete_lesson(user: CurrentUser, lesson_id: UUID4):
+    return await lesson_service.delete(user, lesson_id)

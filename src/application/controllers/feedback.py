@@ -10,7 +10,7 @@ from pydantic import UUID4
 router = APIRouter()
 
 
-@router.get("/{lesson_id}/feedback", description="Show all feedbacks")
+@router.get("/{lesson_id}/feedback", description="Show all feedbacks  (universal)")
 async def get_feedbacks_of_lesson(
     user: CurrentUser, 
     lesson_id: UUID4, 
@@ -31,7 +31,7 @@ async def get_feedbacks_of_lesson(
     )
 
 
-@router.get("/{lesson_id}/feedback/xlsx", description="Show .xlsx file with reviews", response_class=StreamingResponse)
+@router.get("/{lesson_id}/feedback/xlsx", description="Show .xlsx file with reviews (universal)", response_class=StreamingResponse)
 async def get_excel_file_with_feedbacks(user: CurrentUser, lesson_id: UUID4):
     return await feedback_service.get_xlsx_by_id(user, lesson_id)
 

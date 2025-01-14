@@ -3,18 +3,17 @@ from src.infrastructure.constants.excel import XLSX_MEDIA_TYPE
 from src.domain.extensions.get_unique_lessons import get_unique_lessons
 from src.infrastructure.enums.role import Role
 from src.infrastructure.enums.privilege import Privilege
-from src.application.dto.lesson import EditLessonDTO
+from src.application.dto.lesson import EditLessonDTO, AddLessonDTO
 from src.domain.extensions.check_role.user import User
 from src.infrastructure.repositories import (
     lesson_repository, schedule_repository,
     study_group_repository, feedback_repository,
-    teacher_repository
+    teacher_repository, subject_repository
 )
 
 from fastapi import HTTPException, Response, status
 from fastapi.responses import StreamingResponse
 from datetime import date, datetime
-from typing import List
 from uuid import UUID
 
 
@@ -30,6 +29,12 @@ async def get_all(
     :param start_date: start date of search
     :param end_date: end date of search
     """
+    if not await teacher_repository.has_by_id(teacher_id):  
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Teacher not found"
+        )
+    
     if not await schedule_repository.has_by_id(teacher_id):
         return []
     
@@ -94,7 +99,6 @@ async def get_statistics(user: User, lesson_id: UUID):
             detail="Lesson not found"
         )
     
-
     if user.role == Role.TEACHER:
         if not await teacher_repository.privelege.has_by_name(
             user.id, 
@@ -133,14 +137,15 @@ async def get_excel_with_members(user: User, lesson_id: UUID):
             detail="Lesson not found"
         )
     
-    if user.role == Role.TEACHER and not await lesson_repository.is_teacher_of_lesson(
-        user.id, 
-        lesson_id
-    ):
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Lesson not found"
-        )
+    if user.role == Role.TEACHER:
+        if not await lesson_repository.is_teacher_of_lesson(
+            user.id, 
+            lesson_id
+        ):
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Lesson not found"
+            )
     
     members = await feedback_repository.get_members(lesson_id)
 
@@ -156,6 +161,52 @@ async def get_excel_with_members(user: User, lesson_id: UUID):
     response.headers["Content-Disposition"] = "attachment; filename=members.xlsx"
     return response
 
+
+async def add(teacher_id: UUID, dto: AddLessonDTO):
+    now = datetime.now()
+
+    if dto.start_time < now.time() or dto.date < now.date():
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Start time and date must be in the future"
+        )
+    
+    if dto.start_time > dto.end_time:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Start time must be before end time"
+        )
+
+    if not await teacher_repository.has_by_id(teacher_id):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Teacher not found"
+        )
+    
+    if not await subject_repository.has_by_id(dto.subject_id):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Subject not found"
+        )
+
+    if not await study_group_repository.has_by_id(dto.subject_id, teacher_id):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Teacher not found in subject"
+        )
+    
+    study_group_id = await study_group_repository.get_by_ids(
+        teacher_id, 
+        dto.subject_id
+    )
+
+    dto = dto.model_dump(
+        exclude_none=True, 
+        exclude={"subject_id"}, 
+    )
+    dto['study_group_id'] = study_group_id
+    return await lesson_repository.add(dto)
+    
 
 async def edit_lesson(user: User, lesson_id: UUID, dto: EditLessonDTO):
     if not await lesson_repository.has_by_id(lesson_id):
@@ -189,4 +240,28 @@ async def edit_lesson(user: User, lesson_id: UUID, dto: EditLessonDTO):
     dto_dict = dto.model_dump(exclude_none=True)
 
     await lesson_repository.update_by_id(lesson_id, dto_dict)
+    return Response(status_code=status.HTTP_200_OK)
+
+
+async def delete(user: User, lesson_id: UUID):
+    if user.role == Role.TEACHER and \
+       not await lesson_repository.is_teacher_of_lesson(user.id, lesson_id):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Lesson not found"
+        )
+    
+    if await feedback_repository.has_feedback_by_lesson(lesson_id):
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="You cannot delete a lesson with feedback"
+        )
+
+    if not await lesson_repository.has_by_id(lesson_id):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Lesson not found"
+        )
+    
+    await lesson_repository.delete_by_id(lesson_id)
     return Response(status_code=status.HTTP_200_OK)

@@ -11,7 +11,7 @@ class Feedback(SQLModel, table=True):
     student_name: str = Field(max_length=100, nullable=False)
     mark: int = Field(nullable=False)
     tags: str = Field(nullable=False)
-    comment: str = Field(max_length=250)
+    comment: str = Field(max_length=300)
     created_at: time = Time()
     is_disabled: bool = Field(nullable=False, default=False)
 

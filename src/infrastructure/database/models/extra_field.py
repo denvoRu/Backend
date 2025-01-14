@@ -9,4 +9,4 @@ class ExtraField(SQLModel, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True, index=True)
     feedback_id: uuid.UUID = Field(ForeignKey("feedback.id"))
     extra_field_setting_id: uuid.UUID = Field(ForeignKey("extra_field_setting.id"))
-    value: str = Field(nullable=False)
+    value: str = Field(nullable=False, max_length=300)

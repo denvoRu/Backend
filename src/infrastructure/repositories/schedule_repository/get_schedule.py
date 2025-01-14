@@ -1,10 +1,11 @@
-from typing import List
+from src.infrastructure.config import config
 from src.infrastructure.database.extensions import LESSON_SAVE_FIELDS
 from src.infrastructure.database import (
     Schedule, Subject, ScheduleLesson, get, has_instance, db
 )
 
 from sqlalchemy import select, text
+from typing import List
 from aiomodeus.student_voice import ScheduleLessonList, ScheduleOfWeek
 from datetime import date, timedelta
 from uuid import UUID
@@ -48,6 +49,8 @@ async def get_in_interval(
     Gets a schedule of teacher in the needed interval with start and end dates
     """
     filters = []
+    if start > config.END_OF_SEMESTR:
+        return []
     
     if subject_ids is not None and len(subject_ids) > 0:
         filters.append(ScheduleLesson.subject_id.in_(subject_ids))

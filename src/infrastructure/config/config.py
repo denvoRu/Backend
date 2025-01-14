@@ -2,6 +2,10 @@ from decouple import config
 from sqlalchemy import URL
 from redis_om import get_redis_connection
 
+from src.infrastructure.helpers.get_semestr_end_date import (
+    get_semester_end_date
+)
+
 
 REDIS_CONN = get_redis_connection(url=config("REDIS_OM_URL"))
 
@@ -41,3 +45,5 @@ MODEUS_LOGIN = config("MODEUS_LOGIN")
 MODEUS_PASSWORD = config("MODEUS_PASSWORD")
 
 SELENIUM_HUB_URL= config("SELENIUM_HUB_URL")
+
+END_OF_SEMESTR = get_semester_end_date()
