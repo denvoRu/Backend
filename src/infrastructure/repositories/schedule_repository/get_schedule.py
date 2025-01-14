@@ -4,6 +4,7 @@ from src.infrastructure.database import (
 )
 
 from sqlalchemy import select, text
+from aiomodeus.student_voice import ScheduleLessonList, ScheduleOfWeek
 from datetime import date, timedelta
 from uuid import UUID
 
@@ -81,6 +82,16 @@ async def get_by_id(teacher_id: UUID):
         attr_name='id',
         id_name='teacher_id'
     )
+
+
+async def get_exists_by_subject_id(
+        schedule: ScheduleOfWeek, 
+        subject_id: UUID
+) -> ScheduleLessonList:
+    return ScheduleLessonList([
+        i for i in schedule.schedule_lessons.get_in_unique_time()
+        if (await i.find_subject_id(db, Subject)) == subject_id
+    ])
 
 
 def get_clean_column_name(column_name: str):

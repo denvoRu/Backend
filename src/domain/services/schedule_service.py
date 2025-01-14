@@ -4,6 +4,7 @@ from src.domain.extensions.check_role.user import User
 from src.infrastructure.repositories import (
     schedule_repository, teacher_repository,
     lesson_repository, study_group_repository,
+    subject_repository
 )
 from src.domain.helpers.schedule import (
     get_last_monday, 
@@ -87,6 +88,12 @@ async def edit_lesson(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Lesson not found"
         )
+
+    if not await subject_repository.has_by_id(dto.subject_id): 
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Subject not found"
+        )
     
     check_teacher = schedule_repository.is_teacher_of_lesson(
         user.id, schedule_lesson_id
@@ -103,7 +110,7 @@ async def edit_lesson(
     return Response(status_code=status.HTTP_200_OK)
 
 
-async def import_from_modeus(teacher_id: UUID, week_count: int): 
+async def import_from_modeus(teacher_id: UUID, subject_id: UUID, week_count: int): 
     if not await teacher_repository.has_by_id(teacher_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -120,8 +127,14 @@ async def import_from_modeus(teacher_id: UUID, week_count: int):
         last_monday = get_last_monday()
         await schedule_repository.add(teacher_id, last_monday)
 
+    if not await study_group_repository.has_by_id(subject_id, teacher_id):
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Teacher not found in subject"
+        )
 
-    await import_from_modeus_by_id(teacher_id, week_count)
+
+    await import_from_modeus_by_id(teacher_id, subject_id, week_count)
     
     return Response(status_code=status.HTTP_200_OK)
 

@@ -14,10 +14,16 @@ from src.infrastructure.repositories import (
 from fastapi import HTTPException, Response, status
 from fastapi.responses import StreamingResponse
 from datetime import date, datetime
+from typing import List
 from uuid import UUID
 
 
-async def get_all(teacher_id: UUID, start_date: date, end_date: date):
+async def get_all(
+        teacher_id: UUID, 
+        start_date: date, 
+        end_date: date,
+        subject_ids: List[UUID] = None
+    ):
     """
     Gets all lessons of teacher depending on dates
     :param teacher_id: id of teacher

@@ -1,5 +1,6 @@
 from typing import Literal
 
+
 GoodTag = Literal[
     "полезно", 
     "понятно", 
@@ -9,6 +10,7 @@ GoodTag = Literal[
     "организация"
 ]
 
+
 BadTag = Literal[
     "непонятно", 
     "неинтересно", 
@@ -17,5 +19,6 @@ BadTag = Literal[
     "нет общения", 
     "организация"
 ]
+
 
 Tag = Literal[GoodTag, BadTag]

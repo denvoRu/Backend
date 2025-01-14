@@ -28,7 +28,6 @@ async def add_lesson(schedule_id: UUID, dto: dict):
 
 
 async def add_lesson_from_modeus(
-    teacher_id: UUID,
     schedule_id: UUID, 
     schedule: ScheduleLessonList
 ):
@@ -36,11 +35,9 @@ async def add_lesson_from_modeus(
     Adds a lesson to schedule from modeus
     """
     await schedule.add_in_orm(
-        teacher_id,
         schedule_id, 
         db, 
         ScheduleLesson, 
         Subject,
-        StudyGroup
     )
     await db.commit_rollback()
