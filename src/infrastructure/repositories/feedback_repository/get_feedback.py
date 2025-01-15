@@ -1,4 +1,5 @@
 from src.infrastructure.database.extensions.row_to_dict import row_to_dict
+from src.infrastructure.models.tag import BadTag, GoodTag
 from src.infrastructure.models.page_response import PageResponse
 from src.infrastructure.models.feedback_with_fields import (
     FeedbackWithExtraFieldsResponse
@@ -8,7 +9,7 @@ from src.infrastructure.database import (
 )
 
 from sqlalchemy import select, text, desc as order_desc, func
-from typing import Tuple, List, Dict
+from typing import Tuple, Union, List, Dict, get_args
 from math import ceil
 from uuid import UUID
 
@@ -146,11 +147,15 @@ async def get_statistics(lesson_id: UUID):
     marks = await db.execute(marks)
 
     marks_dict = { str(i): j for i, j in marks.all() }
-    most_popular_tags_dict = await get_tags(lesson_id)
+    tags = await get_tags(lesson_id)
+
+    bad_tags_with_count = get_tags_by_literal(tags, BadTag)
+    good_tags_with_count = get_tags_by_literal(tags, GoodTag)
 
     return {
         "marks": marks_dict,
-        "tags_with_count": most_popular_tags_dict
+        "bad_tags": bad_tags_with_count,
+        "good_tags": good_tags_with_count
     }
 
 
@@ -176,3 +181,8 @@ async def get_members(lesson_id: UUID):
 
     names = await db.execute(stmt)
     return names.scalars().all()
+
+
+def get_tags_by_literal(tags: Dict[str, int], literal: Union[GoodTag, BadTag]):
+    return [i for i in tags if i in get_args(literal)]
+            
