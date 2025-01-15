@@ -1,8 +1,10 @@
+from src.application.dto.shared import EditUserDTO
+from src.domain.extensions.check_role.user import User
+from src.infrastructure.enums.role import Role
 from src.infrastructure.repositories import subject_repository
 from src.infrastructure.enums.privilege import Privilege
-from src.application.dto.shared import EditUserDTO
 from src.infrastructure.repositories import teacher_repository
-                                             
+                                        
 from fastapi import HTTPException, Response, status
 from bcrypt import gensalt, hashpw
 from uuid import UUID
@@ -61,7 +63,7 @@ async def get_all(
         )
 
 
-async def get_by_id(teacher_id: str):
+async def get_by_id(user: User, teacher_id: str):
     if not await teacher_repository.has_by_id(teacher_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -70,7 +72,8 @@ async def get_by_id(teacher_id: str):
 
     teacher_data = await teacher_repository.get_by_id(teacher_id)
     
-    if not await teacher_repository.privelege.has_by_name(
+    if  User.role == Role.TEACHER and \
+        not await teacher_repository.privelege.has_by_name(
         teacher_id, 
         Privilege.SEE_RATING
     ):
