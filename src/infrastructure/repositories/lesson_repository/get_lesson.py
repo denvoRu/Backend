@@ -1,4 +1,4 @@
-from src.infrastructure.database.extensions import LESSON_SAVE_FIELDS
+from src.infrastructure.database.extensions.row_to_dict import row_to_dict
 from src.infrastructure.database import (
     Lesson, StudyGroup, ScheduleLesson, Subject, get_by_id, db
 )
@@ -54,7 +54,7 @@ async def get_all(
     executed = await db.execute(stmt)
     lessons = executed.all()
 
-    return list(get_formatted_lesson(i, APPENDED) for i in lessons)
+    return list(row_to_dict(i) for i in lessons)
 
 
 async def get_by_id(lesson_id: UUID) -> Lesson:
@@ -94,26 +94,33 @@ async def get_by_schedule(
     except Exception as e:
         await db.commit_rollback()
         raise Exception(str(e))
-
-def get_formatted_lesson(lesson, appended: tuple = ()):
-    return {j[0]: j[1] for j in zip(LESSON_SAVE_FIELDS + appended, lesson)}
-
+    
 
 async def get_active_by_condition(condition):
     now = datetime.now()
-    stmt = select(Lesson).where(
-        condition,
-        Lesson.date >= now.date(),
-        Lesson.start_time <= now.time(),
-        Lesson.end_time >= now.time(),
-        Lesson.is_disabled == False
-    )
+    stmt = select(
+        Lesson.speaker_name, 
+        Lesson.lesson_name,
+        Lesson.start_time,
+        Lesson.end_time,
+        Lesson.date,
+        Subject.name.label("subject_name")
+    ).select_from(
+        Lesson).join(StudyGroup, StudyGroup.id == Lesson.study_group_id).join(
+            Subject, StudyGroup.subject_id == Subject.id
+        ).where(
+            condition,
+            Lesson.date >= now.date(),
+            Lesson.start_time <= now.time(),
+            Lesson.end_time >= now.time(),
+            Lesson.is_disabled == False
+        )
 
     try:
         lesson = (await db.execute(stmt)).one()
-        return get_formatted_lesson(lesson)
+        return row_to_dict(lesson)
     except Exception:
-        db.commit_rollback()
+        await db.commit_rollback()
         raise Exception("Lesson not found")
 
 

@@ -127,12 +127,12 @@ async def add(lesson_id: UUID, dto: AddFeedbackDTO):
     :param lesson_id: id of lesson
     :param dto: feedback data as dto with extra fields if exist
     """
-    now = datetime.now()
-    if dto.created_at > now or (now - dto.created_at).seconds > 10:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Created at must be in the future or more than 10 seconds in the past"
-        )
+    # now = datetime.now()
+    #if dto.created_at > now or (now - dto.created_at).seconds > 10:
+    #    raise HTTPException(
+    #        status_code=status.HTTP_400_BAD_REQUEST,
+    #        detail="Created at must be in the past or now"
+    #    )
     
     if not await lesson_repository.has_active_by_id(lesson_id, dto.created_at):
         raise HTTPException(

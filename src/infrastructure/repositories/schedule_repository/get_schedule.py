@@ -1,5 +1,5 @@
 from src.infrastructure.config import config
-from src.infrastructure.database.extensions import LESSON_SAVE_FIELDS
+from src.infrastructure.database.extensions.row_to_dict import row_to_dict
 from src.infrastructure.database import (
     Schedule, Subject, ScheduleLesson, get, has_instance, db
 )
@@ -16,13 +16,16 @@ async def get_by_week(teacher_id: UUID, week: int, filters = []):
     Gets a schedule by needed week with filters
     """
     schedule_id = await get_by_id(teacher_id)
-    columns = [
-        "schedule_lesson.day",
-        "subject.name",
-        *["schedule_lesson." + f for f in LESSON_SAVE_FIELDS if f != 'date']
-    ]
 
-    stmt = select(*[text(column) for column in columns]).select_from(
+    stmt = select(
+        ScheduleLesson.day.label("day"),
+        Subject.name.label("subject_name"),
+        ScheduleLesson.id.label("schedule_lesson_id"),
+        ScheduleLesson.speaker_name,
+        ScheduleLesson.lesson_name,
+        ScheduleLesson.start_time,
+        ScheduleLesson.end_time
+    ).select_from(
         ScheduleLesson,
     ).where(
         ScheduleLesson.schedule_id == schedule_id,
@@ -31,12 +34,8 @@ async def get_by_week(teacher_id: UUID, week: int, filters = []):
     ).join(Subject, Subject.id == ScheduleLesson.subject_id)
 
     executed = await db.execute(stmt)
-    formatted = lambda i: {
-        get_clean_column_name(j[0]): j[1] 
-        for j in zip(columns, i)
-    }
     
-    return list(formatted(i) for i in executed.all())
+    return list(row_to_dict(i) for i in executed.all())
 
 
 async def get_in_interval(
