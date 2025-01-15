@@ -5,7 +5,7 @@ from src.infrastructure.models.feedback_with_fields import (
     FeedbackWithExtraFieldsResponse
 )
 from src.infrastructure.database import (
-    Feedback, ExtraField, ExtraFieldSetting, db
+    Feedback, Lesson, StudyGroup, Subject, ExtraField, ExtraFieldSetting, db
 )
 
 from sqlalchemy import select, text, desc as order_desc, func
@@ -139,11 +139,19 @@ async def get_statistics(lesson_id: UUID):
     Gets statistics for all feedbacks
     :param lesson_id: lesson of feedbacks
     """
+    subject_name_stmt = select(Subject.name).select_from(Lesson).join(
+        StudyGroup,
+        StudyGroup.id == Lesson.study_group_id
+    ).join(
+        Subject, 
+        StudyGroup.subject_id == Subject.id 
+    ).where(Lesson.id == lesson_id)
     marks = select(Feedback.mark ,func.count(Feedback.mark).label("count")).select_from(Feedback).where(
         Feedback.lesson_id == lesson_id,
         Feedback.is_disabled == False
     ).group_by(Feedback.mark)
     
+    subject_name = await db.execute(subject_name_stmt)
     marks = await db.execute(marks)
 
     marks_dict = { str(i): j for i, j in marks.all() }
@@ -153,6 +161,7 @@ async def get_statistics(lesson_id: UUID):
     good_tags_with_count = get_tags_by_literal(tags, GoodTag)
 
     return {
+        "subject_name": subject_name.scalars().one(),
         "marks": marks_dict,
         "bad_tags": bad_tags_with_count,
         "good_tags": good_tags_with_count
