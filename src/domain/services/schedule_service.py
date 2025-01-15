@@ -64,11 +64,11 @@ async def delete_lesson(user: User, schedule_lesson_id: UUID):
             detail="Lesson not found"
         )
     
-    check_teacher = schedule_repository.is_teacher_of_lesson(
+
+    if user.role == Role.TEACHER and \
+       not await schedule_repository.is_teacher_of_lesson(
         user.id, schedule_lesson_id
-    )
-    
-    if user.role == Role.TEACHER and not await check_teacher:
+    ):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Lesson not found"
@@ -95,11 +95,11 @@ async def edit_lesson(
             detail="Subject not found"
         )
     
-    check_teacher = schedule_repository.is_teacher_of_lesson(
-        user.id, schedule_lesson_id
-    )
     
-    if user.role == Role.TEACHER and not await check_teacher:
+    if user.role == Role.TEACHER and \
+       not await schedule_repository.is_teacher_of_lesson(
+        user.id, schedule_lesson_id
+    ):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Lesson not found"

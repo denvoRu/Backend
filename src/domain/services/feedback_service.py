@@ -33,23 +33,25 @@ async def get_by_id(
             detail="Lesson not found"
         )
 
-    check_teacher = await lesson_repository.is_teacher_of_lesson(
+    
+
+    if user.role == Role.TEACHER and user.id and \
+       not await lesson_repository.is_teacher_of_lesson(
         user.id, 
         lesson_id
-    )
-
-    if user.role == Role.TEACHER and user.id and not await check_teacher:
+    ):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Lesson not found"
         )
 
-    check_privelege = await teacher_repository.privelege.has_by_name(
+  
+
+    if user.role == Role.TEACHER and \
+       not await teacher_repository.privelege.has_by_name(
         user.id, 
         Privilege.SEE_COMMENTS
-    )
-
-    if user.role == Role.TEACHER and not await check_privelege:
+    ):
         raise HTTPException(
             status_code=status.HTTP_405_METHOD_NOT_ALLOWED,
             detail="You don't have enough privileges"
@@ -77,12 +79,12 @@ async def get_xlsx_by_id(user: User, lesson_id: UUID):
             detail="Lesson not found"
         )
     
-    check_teacher = await lesson_repository.is_teacher_of_lesson(
+
+    if user.role == Role.TEACHER and user.id and \
+       not await lesson_repository.is_teacher_of_lesson(
         user.id, 
         lesson_id
-    )
-
-    if user.role == Role.TEACHER and user.id and not await check_teacher:
+    ):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Lesson not found"
