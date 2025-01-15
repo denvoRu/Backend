@@ -58,7 +58,6 @@ async def get_all(
     feedbacks = await db.execute(feedback_stmt)
     feedbacks = list(row_to_dict(i) for i in feedbacks.all())
 
-
     feedbacks_id = [feedback["id"] for feedback in feedbacks]
 
     extra_fields_stmt = select(

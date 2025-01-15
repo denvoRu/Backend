@@ -127,12 +127,12 @@ async def add(lesson_id: UUID, dto: AddFeedbackDTO):
     :param lesson_id: id of lesson
     :param dto: feedback data as dto with extra fields if exist
     """
-    # now = datetime.now()
-    #if dto.created_at > now or (now - dto.created_at).seconds > 10:
-    #    raise HTTPException(
-    #        status_code=status.HTTP_400_BAD_REQUEST,
-    #        detail="Created at must be in the past or now"
-    #    )
+    now = datetime.now()
+    if dto.created_at > now or (now - dto.created_at).seconds > 10:
+       raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Created at must be in the past or now"
+        )
     
     if not await lesson_repository.has_active_by_id(lesson_id, dto.created_at):
         raise HTTPException(
@@ -142,9 +142,9 @@ async def add(lesson_id: UUID, dto: AddFeedbackDTO):
     
     feedback_dto_dict = dto.model_dump(exclude_none=True, exclude=["extra_fields"])
 
-    if await feedback_repository.has_feedback_by_created_at(dto):
+    if await feedback_repository.has_feedback_by_created_at(feedback_dto_dict):
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="Feedback already exists"
         )
 

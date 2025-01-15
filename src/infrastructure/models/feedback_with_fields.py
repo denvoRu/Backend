@@ -14,7 +14,7 @@ class FeedbackWithExtraFieldsResponse:
 
 
     def __serialize_feedback(self, feedback):
-        feedback["tags"] = feedback["tags"].split(", ")
+        feedback["tags"] = [i for i in feedback["tags"].split(", ") if i != ""]
         return feedback
 
     def __get_extra_fields(self, feedback_id):

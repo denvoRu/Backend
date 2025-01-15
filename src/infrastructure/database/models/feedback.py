@@ -1,6 +1,6 @@
 import uuid
-from sqlmodel import SQLModel, Field, ForeignKey, Time
-from datetime import time
+from sqlmodel import SQLModel, Field, ForeignKey, DateTime
+from datetime import datetime
 
 
 class Feedback(SQLModel, table=True):
@@ -12,6 +12,6 @@ class Feedback(SQLModel, table=True):
     mark: int = Field(nullable=False)
     tags: str = Field(nullable=False)
     comment: str = Field(max_length=300)
-    created_at: time = Time()
+    created_at: datetime = DateTime()
     is_disabled: bool = Field(nullable=False, default=False)
 
