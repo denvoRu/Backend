@@ -10,7 +10,7 @@ INITIAL_SQL = [
         SELECT COALESCE(AVG(mark), 0.0)
         INTO avg_rating
         FROM feedback
-        WHERE lesson_id = NEW.id;
+        WHERE lesson_id = NEW.lesson_id;
 
         -- Обновление рейтинга в таблице lesson
         UPDATE lesson
@@ -38,7 +38,7 @@ INITIAL_SQL = [
         SELECT COALESCE(AVG(rating), 0.0)
         INTO avg_rating
         FROM lesson
-        WHERE study_group_id = NEW.id;
+        WHERE study_group_id = NEW.study_group_id AND rating <> 0.0;
 
         -- Обновление рейтинга в таблице study_group
         UPDATE study_group
@@ -66,7 +66,7 @@ INITIAL_SQL = [
         SELECT COALESCE(AVG(rating), 0.0)
         INTO avg_rating
         FROM study_group
-        WHERE teacher_id = NEW.id;
+        WHERE teacher_id = NEW.teacher_id AND rating <> 0.0;
 
         -- Обновление рейтинга в таблице teacher
         UPDATE teacher
@@ -94,7 +94,7 @@ INITIAL_SQL = [
         SELECT COALESCE(AVG(rating), 0.0)
         INTO avg_rating
         FROM study_group
-        WHERE subject_id = NEW.id;
+        WHERE subject_id = NEW.subject_id AND rating <> 0.0;
 
         -- Обновление рейтинга в таблице subject
         UPDATE subject
@@ -122,7 +122,7 @@ INITIAL_SQL = [
         SELECT COALESCE(AVG(rating), 0.0)
         INTO avg_rating
         FROM subject
-        WHERE module_id = NEW.id;
+        WHERE module_id = NEW.module_id AND rating <> 0.0;
 
         -- Обновление рейтинга в таблице module
         UPDATE module
@@ -150,7 +150,7 @@ INITIAL_SQL = [
         SELECT COALESCE(AVG(rating), 0.0)
         INTO avg_rating
         FROM module
-        WHERE institute_id = NEW.id;
+        WHERE institute_id = NEW.institute_id AND rating <> 0.0;
 
         -- Обновление рейтинга в таблице institute
         UPDATE institute
