@@ -8,7 +8,7 @@ from src.infrastructure.database import (
     Feedback, Lesson, StudyGroup, Subject, ExtraField, ExtraFieldSetting, db
 )
 
-from sqlalchemy import select, text, desc as order_desc, func
+from sqlalchemy import distinct, select, text, desc as order_desc, func
 from typing import Tuple, Union, List, Dict, get_args
 from math import ceil
 from uuid import UUID
@@ -184,14 +184,17 @@ async def get_tags(lesson_id: UUID) -> Dict[str, int]:
 
 
 async def get_members(lesson_id: UUID):
-    stmt = select(Feedback.student_name).where(
+    stmt = select(distinct(Feedback.student_name), Feedback.created_at).where(
         Feedback.lesson_id == lesson_id,
         Feedback.student_name != "",
         Feedback.is_disabled == False
     )
 
     names = await db.execute(stmt)
-    return names.scalars().all()
+    return [{
+        "name": i[0],
+        "created_at": i[1]
+    } for i in names.all()]
 
 
 def get_tags_by_literal(tags: Dict[str, int], literal: Union[GoodTag, BadTag]):

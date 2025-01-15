@@ -1,134 +1,173 @@
 INITIAL_SQL = [
     """
-    -- Функция для обновления рейтинга
-    CREATE OR REPLACE FUNCTION update_rating_generic()
+    -- Триггер для обновления рейтинга в таблице lesson
+    CREATE OR REPLACE FUNCTION update_lesson_rating()
     RETURNS TRIGGER AS $$
     DECLARE
-        target_table TEXT;
-        target_column TEXT;
-        foreign_key_column TEXT;
-        source_table TEXT;
-        source_rating_column TEXT;
-        source_key_column TEXT;
         avg_rating FLOAT;
-        dynamic_query TEXT;
     BEGIN
-        -- Извлечение аргументов из триггера
-        target_table := TG_ARGV[0];
-        target_column := TG_ARGV[1];
-        foreign_key_column := TG_ARGV[2];
-        source_table := TG_ARGV[3];
-        source_rating_column := TG_ARGV[4];
-        source_key_column := TG_ARGV[5];
+        -- Расчёт среднего значения рейтинга для lesson
+        SELECT COALESCE(AVG(mark), 0.0)
+        INTO avg_rating
+        FROM feedback
+        WHERE lesson_id = NEW.id;
 
-        -- Расчет среднего значения рейтинга с помощью динамического SQL
-        dynamic_query := format(
-            'SELECT COALESCE(AVG(%I), 0.0) FROM %I WHERE %I = $1',
-            source_rating_column, source_table, source_key_column
-        );
-        EXECUTE dynamic_query INTO avg_rating USING NEW.id; -- Используем NEW.id для извлечения значения связи
-
-        -- Лог для отладки
-        RAISE NOTICE 'Calculated avg_rating=%, source_table=% for foreign_key_column=%', avg_rating, source_table, NEW.id;
-
-        -- Обновление целевой таблицы с помощью динамического SQL
-        dynamic_query := format(
-            'UPDATE %I SET %I = $1 WHERE %I = $2',
-            target_table, target_column, foreign_key_column
-        );
-        EXECUTE dynamic_query USING avg_rating, NEW.id;  -- Обновляем запись в целевой таблице
-
-        -- Лог для отладки
-        RAISE NOTICE 'Updating target_table=%, target_column=%, foreign_key_column=% with avg_rating=% for id=%',
-            target_table, target_column, foreign_key_column, avg_rating, NEW.id;
+        -- Обновление рейтинга в таблице lesson
+        UPDATE lesson
+        SET rating = avg_rating
+        WHERE id = NEW.lesson_id;
 
         RETURN NEW;
     END;
     $$ LANGUAGE plpgsql;
     """,
     """
-    -- триггер для обновления lesson
     CREATE TRIGGER update_lesson_trigger
     AFTER INSERT OR UPDATE ON feedback
     FOR EACH ROW
-    EXECUTE FUNCTION update_rating_generic(
-        'lesson',             -- Целевая таблица
-        'rating',             -- Поле рейтинга в целевой таблице
-        'id',                 -- Поле связи в целевой таблице
-        'feedback',           -- Таблица-источник
-        'mark',               -- Поле рейтинга в таблице-источнике
-        'lesson_id'           -- Поле связи в таблице-источнике
-    );
+    EXECUTE FUNCTION update_lesson_rating();     
     """,
     """
-    -- триггер для обновления study_group
+    -- Триггер для обновления рейтинга в таблице study_group
+    CREATE OR REPLACE FUNCTION update_study_group_rating()
+    RETURNS TRIGGER AS $$
+    DECLARE
+        avg_rating FLOAT;
+    BEGIN
+        -- Расчёт среднего значения рейтинга для study_group
+        SELECT COALESCE(AVG(rating), 0.0)
+        INTO avg_rating
+        FROM lesson
+        WHERE study_group_id = NEW.id;
+
+        -- Обновление рейтинга в таблице study_group
+        UPDATE study_group
+        SET rating = avg_rating
+        WHERE id = NEW.study_group_id;
+
+        RETURN NEW;
+    END;
+    $$ LANGUAGE plpgsql;
+    """,
+    """
     CREATE TRIGGER update_study_group_trigger
     AFTER INSERT OR UPDATE ON lesson
     FOR EACH ROW
-    EXECUTE FUNCTION update_rating_generic(
-        'study_group',           
-        'rating',          
-        'id',     
-        'lesson',  
-        'rating',        
-        'study_group_id'
-    );
+    EXECUTE FUNCTION update_study_group_rating();
     """,
     """
-    -- триггер для обновления teacher
+    -- Триггер для обновления рейтинга в таблице teacher
+    CREATE OR REPLACE FUNCTION update_teacher_rating()
+    RETURNS TRIGGER AS $$
+    DECLARE
+        avg_rating FLOAT;
+    BEGIN
+        -- Расчёт среднего значения рейтинга для teacher
+        SELECT COALESCE(AVG(rating), 0.0)
+        INTO avg_rating
+        FROM study_group
+        WHERE teacher_id = NEW.id;
+
+        -- Обновление рейтинга в таблице teacher
+        UPDATE teacher
+        SET rating = avg_rating
+        WHERE id = NEW.teacher_id;
+
+        RETURN NEW;
+    END;
+    $$ LANGUAGE plpgsql;
+    """,
+    """
     CREATE TRIGGER update_teacher_trigger
     AFTER INSERT OR UPDATE ON study_group
     FOR EACH ROW
-    EXECUTE FUNCTION update_rating_generic(
-        'teacher',           
-        'rating',          
-        'id',     
-        'study_group',  
-        'rating',        
-        'teacher_id'
-    );
+    EXECUTE FUNCTION update_teacher_rating();
     """,
     """
-    -- триггер для обновления subject
+    -- Триггер для обновления рейтинга в таблице subject
+    CREATE OR REPLACE FUNCTION update_subject_rating()
+    RETURNS TRIGGER AS $$
+    DECLARE
+        avg_rating FLOAT;
+    BEGIN
+        -- Расчёт среднего значения рейтинга для subject
+        SELECT COALESCE(AVG(rating), 0.0)
+        INTO avg_rating
+        FROM study_group
+        WHERE subject_id = NEW.id;
+
+        -- Обновление рейтинга в таблице subject
+        UPDATE subject
+        SET rating = avg_rating
+        WHERE id = NEW.subject_id;
+
+        RETURN NEW;
+    END;
+    $$ LANGUAGE plpgsql;
+    """,
+    """
     CREATE TRIGGER update_subject_trigger
     AFTER INSERT OR UPDATE ON study_group
     FOR EACH ROW
-    EXECUTE FUNCTION update_rating_generic(
-        'subject',           
-        'rating',          
-        'id',     
-        'study_group',  
-        'rating',        
-        'subject_id'
-    );
+    EXECUTE FUNCTION update_subject_rating();
     """,
     """
-    -- триггер для обновления module
+    -- Триггер для обновления рейтинга в таблице module
+    CREATE OR REPLACE FUNCTION update_module_rating()
+    RETURNS TRIGGER AS $$
+    DECLARE
+        avg_rating FLOAT;
+    BEGIN
+        -- Расчёт среднего значения рейтинга для module
+        SELECT COALESCE(AVG(rating), 0.0)
+        INTO avg_rating
+        FROM subject
+        WHERE module_id = NEW.id;
+
+        -- Обновление рейтинга в таблице module
+        UPDATE module
+        SET rating = avg_rating
+        WHERE id = NEW.module_id;
+
+        RETURN NEW;
+    END;
+    $$ LANGUAGE plpgsql;
+    """,
+    """
     CREATE TRIGGER update_module_trigger
     AFTER INSERT OR UPDATE ON subject
     FOR EACH ROW
-    EXECUTE FUNCTION update_rating_generic(
-        'module',           
-        'rating',          
-        'id',     
-        'subject',  
-        'rating',        
-        'module_id'
-    );
+    EXECUTE FUNCTION update_module_rating();
     """,
     """
-    -- триггер для обновления institute
+    -- Триггер для обновления рейтинга в таблице institute
+    CREATE OR REPLACE FUNCTION update_institute_rating()
+    RETURNS TRIGGER AS $$
+    DECLARE
+        avg_rating FLOAT;
+    BEGIN
+        -- Расчёт среднего значения рейтинга для institute
+        SELECT COALESCE(AVG(rating), 0.0)
+        INTO avg_rating
+        FROM module
+        WHERE institute_id = NEW.id;
+
+        -- Обновление рейтинга в таблице institute
+        UPDATE institute
+        SET rating = avg_rating
+        WHERE id = NEW.institute_id;
+
+        RETURN NEW;
+    END;
+    $$ LANGUAGE plpgsql;
+    """,
+    """
     CREATE TRIGGER update_institute_trigger
-    AFTER UPDATE ON module
+    AFTER INSERT OR UPDATE ON module
     FOR EACH ROW
-    EXECUTE FUNCTION update_rating_generic(
-        'institute',           
-        'rating',          
-        'id',     
-        'module',  
-        'rating',        
-        'institute_id'
-    );
+    EXECUTE FUNCTION update_institute_rating();
+    """,
+    """
     """,
     """
     INSERT INTO administrator (id, first_name, second_name, third_name, email, password)
