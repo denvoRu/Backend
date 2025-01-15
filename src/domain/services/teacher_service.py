@@ -72,7 +72,7 @@ async def get_by_id(user: User, teacher_id: str):
 
     teacher_data = await teacher_repository.get_by_id(teacher_id)
     
-    if  User.role == Role.TEACHER and \
+    if  user.role == Role.TEACHER and \
         not await teacher_repository.privelege.has_by_name(
         teacher_id, 
         Privilege.SEE_RATING
