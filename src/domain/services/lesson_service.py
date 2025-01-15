@@ -29,6 +29,7 @@ async def get_all(
     :param start_date: start date of search
     :param end_date: end date of search
     """
+    date_now = datetime.now().date()
     if not await teacher_repository.has_by_id(teacher_id):  
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -59,14 +60,17 @@ async def get_all(
         end_date, 
         subject_ids
     )
+    if start_date >= date_now or end_date >= date_now:
+        if start_date <= date_now and end_date >= date_now:
+            start_date = end_date
 
-    future_lessons = await schedule_repository.get_in_interval(
-        teacher_id,
-        start_date, 
-        end_date,
-        subject_ids
-    )
-    lessons.extend(future_lessons)
+        future_lessons = await schedule_repository.get_in_interval(
+            teacher_id,
+            start_date, 
+            end_date,
+            subject_ids
+        )
+        lessons.extend(future_lessons)
 
     return get_unique_lessons(lessons)
 
@@ -165,10 +169,16 @@ async def get_excel_with_members(user: User, lesson_id: UUID):
 async def add(teacher_id: UUID, dto: AddLessonDTO):
     now = datetime.now()
 
-    if dto.start_time < now.time() or dto.date < now.date():
+    if dto.date < now.date():
+        if dto.start_time < now.time():
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Start time and date must be in the future"
+            )
+        
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Start time and date must be in the future"
+            detail="Date must be in the future"
         )
     
     if dto.start_time > dto.end_time:
