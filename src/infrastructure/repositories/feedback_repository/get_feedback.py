@@ -193,5 +193,10 @@ async def get_members(lesson_id: UUID):
 
 
 def get_tags_by_literal(tags: Dict[str, int], literal: Union[GoodTag, BadTag]):
-    return [i for i in tags if i in get_args(literal)]
+    return [
+        {
+            "name": i,
+            "count": tags[i]
+        } for i in tags if i in get_args(literal)
+    ]
             

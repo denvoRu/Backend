@@ -235,13 +235,13 @@ async def edit_lesson(user: User, lesson_id: UUID, dto: EditLessonDTO):
     
     lesson_end_time, date = await lesson_repository.get_end_time_by_id(lesson_id)
 
-    if date != datetime.now().date():    
+    if not(date == datetime.now().date()):    
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="you cannot change lessons for dates other than today"
         )
-    
-    if dto.end_time is not None and lesson_end_time <= dto.end_time:
+
+    if dto.end_time is not None and lesson_end_time > dto.end_time:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="You cannot set the time less than it was originally"

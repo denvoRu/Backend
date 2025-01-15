@@ -11,8 +11,9 @@ INITIAL_SQL = [
         source_rating_column TEXT;
         source_key_column TEXT;
         avg_rating FLOAT;
+        dynamic_query TEXT;
     BEGIN
-        -- Извлечение параметров из TG_ARGV
+        -- Извлечение аргументов из триггера
         target_table := TG_ARGV[0];
         target_column := TG_ARGV[1];
         foreign_key_column := TG_ARGV[2];
@@ -20,20 +21,26 @@ INITIAL_SQL = [
         source_rating_column := TG_ARGV[4];
         source_key_column := TG_ARGV[5];
 
-        -- Рассчёт среднего значения рейтинга
-        EXECUTE format(
-            'SELECT AVG(%I) FROM %I WHERE %I = $1',
+        -- Расчет среднего значения рейтинга с помощью динамического SQL
+        dynamic_query := format(
+            'SELECT COALESCE(AVG(%I), 0.0) FROM %I WHERE %I = $1',
             source_rating_column, source_table, source_key_column
-        )
-        INTO avg_rating
-        USING NEW.id;
+        );
+        EXECUTE dynamic_query INTO avg_rating USING NEW.id; -- Используем NEW.id для извлечения значения связи
 
-        -- Обновление целевой таблицы
-        EXECUTE format(
-            'UPDATE %I SET %I = COALESCE($1, 0.0) WHERE %I = $2',
+        -- Лог для отладки
+        RAISE NOTICE 'Calculated avg_rating=%, source_table=% for foreign_key_column=%', avg_rating, source_table, NEW.id;
+
+        -- Обновление целевой таблицы с помощью динамического SQL
+        dynamic_query := format(
+            'UPDATE %I SET %I = $1 WHERE %I = $2',
             target_table, target_column, foreign_key_column
-        )
-        USING avg_rating, NEW.id;
+        );
+        EXECUTE dynamic_query USING avg_rating, NEW.id;  -- Обновляем запись в целевой таблице
+
+        -- Лог для отладки
+        RAISE NOTICE 'Updating target_table=%, target_column=%, foreign_key_column=% with avg_rating=% for id=%',
+            target_table, target_column, foreign_key_column, avg_rating, NEW.id;
 
         RETURN NEW;
     END;

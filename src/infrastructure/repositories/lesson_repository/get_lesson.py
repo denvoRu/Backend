@@ -72,6 +72,7 @@ async def get_by_id(lesson_id: UUID) -> Lesson:
 async def get_end_time_by_id(lesson_id: UUID) -> Tuple[time, date]:
     stmt = select(Lesson.end_time, Lesson.date).where(Lesson.id == lesson_id)
     return (await db.execute(stmt)).one()
+    
 
 
 async def get_active_by_id(lesson_id: UUID):
