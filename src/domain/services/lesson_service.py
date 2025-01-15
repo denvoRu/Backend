@@ -125,10 +125,11 @@ async def get_members(user: User, lesson_id: UUID):
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Lesson not found"
         )
-    
-    study_group = await study_group_repository.get_by_lesson(lesson_id)
 
-    if user.role == Role.TEACHER and study_group.teacher_id != user.id:
+    if user.role == Role.TEACHER and not await lesson_repository.is_teacher_of_lesson(
+        user.id, 
+        lesson_id
+    ):
           raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Lesson not found"
@@ -231,9 +232,10 @@ async def edit_lesson(user: User, lesson_id: UUID, dto: EditLessonDTO):
             detail="Lesson not found"
         )
     
-    study_group = await study_group_repository.get_by_lesson(lesson_id)
-
-    if user.role == Role.TEACHER and study_group.teacher_id != user.id:
+    if user.role == Role.TEACHER and not await lesson_repository.is_teacher_of_lesson(
+        user.id, 
+        lesson_id
+    ):
           raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Lesson not found"
