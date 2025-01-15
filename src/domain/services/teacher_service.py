@@ -69,6 +69,12 @@ async def get_by_id(teacher_id: str):
         )
 
     teacher_data = await teacher_repository.get_by_id(teacher_id)
+    
+    if not await teacher_repository.privelege.has_by_name(
+        teacher_id, 
+        Privilege.SEE_RATING
+    ):
+        teacher_data.pop("rating")
     privileges = await teacher_repository.privelege.get_by_id(teacher_id)
 
     teacher_data["privileges"] = privileges
