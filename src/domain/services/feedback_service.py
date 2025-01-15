@@ -89,13 +89,11 @@ async def get_xlsx_by_id(user: User, lesson_id: UUID):
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Lesson not found"
         )
-
-    check_privelege = await teacher_repository.privelege.has_by_name(
+    
+    if user.role == Role.TEACHER and not await teacher_repository.privelege.has_by_name(
         user.id, 
         Privilege.SEE_COMMENTS
-    )
-
-    if user.role == Role.TEACHER and not await check_privelege:
+    ):
         raise HTTPException(
             status_code=status.HTTP_405_METHOD_NOT_ALLOWED,
             detail="You don't have enough privileges"
@@ -105,7 +103,8 @@ async def get_xlsx_by_id(user: User, lesson_id: UUID):
         feedbacks, extra_fields = await feedback_repository.get_all_for_excel(
             lesson_id
         )
-    except Exception:
+    except Exception as e:
+        print(e)
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Feedbacks not found"

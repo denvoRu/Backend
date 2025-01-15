@@ -98,6 +98,7 @@ async def get_all_for_excel(lesson_id: UUID) -> Tuple[List[dict], List[dict]]:
     """
     try:
         feedback_stmt = select(
+            Feedback.id,
             Feedback.mark,
             Feedback.tags,
             Feedback.comment,
