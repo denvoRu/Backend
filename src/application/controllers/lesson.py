@@ -21,6 +21,7 @@ async def get_my_lessons(
     subject_ids: str = None
 ):
     return await lesson_service.get_all(
+        teacher,
         teacher.id, 
         start_date, 
         end_date, 
@@ -37,6 +38,7 @@ async def get_lessons_of_teacher(
     subject_ids: str = None
 ):
     return await lesson_service.get_all(
+        admin,
         teacher_id, 
         start_date, 
         end_date,

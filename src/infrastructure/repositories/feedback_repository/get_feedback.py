@@ -167,8 +167,9 @@ async def get_statistics(lesson_id: UUID):
     good_tags_with_count = get_tags_by_literal(tags, GoodTag)
 
     return {
-        "subject_name": subject[0],
-        "subject_rating": subject[1],
+        "subject_id": subject[0],
+        "subject_name": subject[1],
+        "subject_rating": subject[2],
         "marks": marks_dict,
         "bad_tags": bad_tags_with_count,
         "good_tags": good_tags_with_count

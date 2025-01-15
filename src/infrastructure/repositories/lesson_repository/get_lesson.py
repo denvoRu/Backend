@@ -17,7 +17,9 @@ async def get_all(
     teacher_id: UUID, 
     start_date: date, 
     end_date: date,
-    subject_ids: List[UUID] = None
+    subject_ids: List[UUID] = None,
+    *, 
+    see_rating: bool = False
 ):
     """
     Gets all lessons of teacher
@@ -26,10 +28,14 @@ async def get_all(
     :param end_date: end date of search
     """
     filters = []
+    columns = []
+
+    if see_rating:
+        columns.append(Lesson.rating)
 
     if subject_ids is not None and len(subject_ids) > 0:
         filters.append(StudyGroup.subject_id.in_(subject_ids))
-        
+
     stmt = select(
         Lesson.id,
         Lesson.speaker_name, 
@@ -37,8 +43,8 @@ async def get_all(
         Lesson.start_time,
         Lesson.end_time,
         Lesson.date,
-        Lesson.rating,
         Subject.name.label("subject_name"),
+        *columns
     ).select_from(Lesson).join(
         StudyGroup, 
         StudyGroup.id == Lesson.study_group_id

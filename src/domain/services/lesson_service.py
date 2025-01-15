@@ -19,6 +19,7 @@ from uuid import UUID
 
 
 async def get_all(
+        user: User,
         teacher_id: UUID, 
         start_date: date, 
         end_date: date,
@@ -55,11 +56,20 @@ async def get_all(
             detail="Interval must be less than 7 days"
         )
     
+    if user.role == Role.TEACHER:
+        see_rating = await teacher_repository.privelege.has_by_name(
+            teacher_id, 
+            Privilege.SEE_RATING
+        )
+    else: 
+        see_rating = True
+    
     lessons = await lesson_repository.get_all(
         teacher_id, 
         start_date, 
         end_date, 
-        subject_ids
+        subject_ids,
+        see_rating=see_rating
     )
     if start_date >= date_now or end_date >= date_now:
         if start_date <= date_now and end_date >= date_now:
