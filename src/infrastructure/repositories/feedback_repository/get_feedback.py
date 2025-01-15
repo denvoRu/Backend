@@ -139,7 +139,7 @@ async def get_statistics(lesson_id: UUID):
     Gets statistics for all feedbacks
     :param lesson_id: lesson of feedbacks
     """
-    subject_name_stmt = select(Subject.name).select_from(Lesson).join(
+    subject_stmt = select(Subject.name, Subject.rating).select_from(Lesson).join(
         StudyGroup,
         StudyGroup.id == Lesson.study_group_id
     ).join(
@@ -151,7 +151,8 @@ async def get_statistics(lesson_id: UUID):
         Feedback.is_disabled == False
     ).group_by(Feedback.mark)
     
-    subject_name = await db.execute(subject_name_stmt)
+    subject = (await db.execute(subject_stmt)).one()
+    print(subject)
     marks = await db.execute(marks)
 
     marks_dict = { str(i): j for i, j in marks.all() }
@@ -161,7 +162,8 @@ async def get_statistics(lesson_id: UUID):
     good_tags_with_count = get_tags_by_literal(tags, GoodTag)
 
     return {
-        "subject_name": subject_name.scalars().one(),
+        "subject_name": subject[0],
+        "subject_rating": subject[1],
         "marks": marks_dict,
         "bad_tags": bad_tags_with_count,
         "good_tags": good_tags_with_count
