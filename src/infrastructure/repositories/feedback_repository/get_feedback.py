@@ -7,8 +7,8 @@ from src.infrastructure.database import (
     Feedback, ExtraField, ExtraFieldSetting, db
 )
 
-from sqlalchemy import select, text, distinct, desc as order_desc, func
-from typing import Tuple, List
+from sqlalchemy import select, text, desc as order_desc, func
+from typing import Tuple, List, Dict
 from math import ceil
 from uuid import UUID
 
@@ -142,25 +142,29 @@ async def get_statistics(lesson_id: UUID):
         Feedback.lesson_id == lesson_id,
         Feedback.is_disabled == False
     ).group_by(Feedback.mark)
-
-    most_popular_tags = select(
-        text("unnest(string_to_array(tags, ', ')) AS tag_name"),
-        text("array_length(string_to_array(tags, ', '), 1) AS tag_count")
-    ).select_from(Feedback).where(
-        Feedback.lesson_id == lesson_id,
-        Feedback.is_disabled == False
-    )
     
     marks = await db.execute(marks)
-    most_popular_tags = await db.execute(most_popular_tags)
 
     marks_dict = { str(i): j for i, j in marks.all() }
-    most_popular_tags_dict = { str(i): j for i, j in most_popular_tags.all() }
+    most_popular_tags_dict = await get_tags(lesson_id)
 
     return {
         "marks": marks_dict,
         "tags_with_count": most_popular_tags_dict
     }
+
+
+async def get_tags(lesson_id: UUID) -> Dict[str, int]:
+    stmt = select(
+        text("unnest(string_to_array(tags, ', ')) AS tag_name"),
+        text("array_length(string_to_array(tags, ', '), 1) AS tag_count")
+    ).select_from(Feedback).where(
+        Feedback.lesson_id == lesson_id,
+        Feedback.is_disabled == False
+    ).order_by(order_desc(text('tag_count')))
+
+    tags = await db.execute(stmt)
+    return { str(i): j for i, j in tags.all() }
 
 
 async def get_members(lesson_id: UUID):

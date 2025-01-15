@@ -1,4 +1,5 @@
 from src.infrastructure.database.extensions.row_to_dict import row_to_dict
+from src.infrastructure.repositories import feedback_repository
 from src.infrastructure.database import (
     Lesson, StudyGroup, ScheduleLesson, Subject, get_by_id, db
 )
@@ -54,8 +55,15 @@ async def get_all(
     executed = await db.execute(stmt)
     lessons = executed.all()
 
-    return list(row_to_dict(i) for i in lessons)
+    lessons = list(row_to_dict(i) for i in lessons)
 
+    for i in lessons:
+        tag_dict = await feedback_repository.get_tags(i["id"])
+        tag_list = tag_dict.keys()
+
+        i["tags"] = [i for i in tag_list]
+
+    return lessons
 
 async def get_by_id(lesson_id: UUID) -> Lesson:
     return await get_by_id(Lesson, lesson_id)

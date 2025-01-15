@@ -17,6 +17,5 @@ async def has_instance(instance, where_args: Union[tuple, ColumnExpressionArgume
 
     stmt = stmt.where(*where_args)
 
-
     s = await db.execute(stmt)
     return len(s.all()) > 0
