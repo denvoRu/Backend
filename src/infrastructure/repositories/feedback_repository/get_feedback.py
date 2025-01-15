@@ -139,7 +139,11 @@ async def get_statistics(lesson_id: UUID):
     Gets statistics for all feedbacks
     :param lesson_id: lesson of feedbacks
     """
-    subject_stmt = select(Subject.name, Subject.rating).select_from(Lesson).join(
+    subject_stmt = select(
+        Subject.id, 
+        Subject.name, 
+        Subject.rating
+    ).select_from(Lesson).join(
         StudyGroup,
         StudyGroup.id == Lesson.study_group_id
     ).join(
