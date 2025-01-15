@@ -1,3 +1,4 @@
+from src.domain.helpers.schedule.last_monday import get_last_monday
 from src.domain.helpers.lesson import get_excel_file_with_members
 from src.infrastructure.constants.excel import XLSX_MEDIA_TYPE
 from src.domain.extensions.get_unique_lessons import get_unique_lessons
@@ -204,6 +205,9 @@ async def add(teacher_id: UUID, dto: AddLessonDTO):
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Teacher not found in subject"
         )
+    
+    if not await schedule_repository.has_by_id(teacher_id):
+        await schedule_repository.add(teacher_id, get_last_monday())
     
     study_group_id = await study_group_repository.get_by_ids(
         teacher_id, 
