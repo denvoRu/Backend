@@ -42,7 +42,7 @@ async def get_all_teachers(
 
 @router.get("/me", description="Show me")
 async def get_me(teacher: CurrentTeacher):
-    return await teacher_service.get_by_id(teacher.id)
+    return await teacher_service.get_by_id(teacher, teacher.id)
 
 
 @router.get("/me/subject", description="Show my subjects")
@@ -69,7 +69,7 @@ async def get_subject_of_me(
 
 @router.get("/{teacher_id}", description="Show teacher data (for admins)")
 async def get_current_teacher(admin: CurrentAdmin, teacher_id: UUID4):
-    return await teacher_service.get_by_id(teacher_id)
+    return await teacher_service.get_by_id(admin, teacher_id)
 
 
 @router.patch("/{teacher_id}", description="Edit a teacher (for admins)")
