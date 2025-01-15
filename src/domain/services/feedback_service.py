@@ -48,7 +48,7 @@ async def get_by_id(
   
 
     if user.role == Role.TEACHER and \
-       not await teacher_repository.privelege.has_by_name(
+       not await teacher_repository.privilege.has_by_name(
         user.id, 
         Privilege.SEE_COMMENTS
     ):
@@ -90,7 +90,7 @@ async def get_xlsx_by_id(user: User, lesson_id: UUID):
             detail="Lesson not found"
         )
     
-    if user.role == Role.TEACHER and not await teacher_repository.privelege.has_by_name(
+    if user.role == Role.TEACHER and not await teacher_repository.privilege.has_by_name(
         user.id, 
         Privilege.SEE_COMMENTS
     ):

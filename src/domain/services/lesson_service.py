@@ -57,7 +57,7 @@ async def get_all(
         )
     
     if user.role == Role.TEACHER:
-        see_rating = await teacher_repository.privelege.has_by_name(
+        see_rating = await teacher_repository.privilege.has_by_name(
             teacher_id, 
             Privilege.SEE_RATING
         )
@@ -117,7 +117,7 @@ async def get_statistics(user: User, lesson_id: UUID):
         )
     
     if user.role == Role.TEACHER:
-        if not await teacher_repository.privelege.has_by_name(
+        if not await teacher_repository.privilege.has_by_name(
             user.id, 
             Privilege.SEE_RATING
         ):
@@ -173,6 +173,8 @@ async def get_excel_with_members(user: User, lesson_id: UUID):
             detail="Members not found"
         )
     
+    members = [i["name"] for i in members]
+
     stream = get_excel_file_with_members(members)
 
     response = StreamingResponse(stream, media_type=XLSX_MEDIA_TYPE)

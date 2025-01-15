@@ -26,6 +26,7 @@ services:
     ports:
       - "${APP_PORT}:${APP_PORT}"
     environment: 
+      TZ: "Asia/Yekaterinburg"
       DATABASE_DRIVER_NAME: "postgresql+asyncpg"
       DATABASE_HOST: postgresql
       REDIS_OM_URL: "redis://${REDIS_USERNAME}:${REDIS_PASSWORD}@redis:6379/0"
