@@ -45,6 +45,28 @@ async def get_me(teacher: CurrentTeacher):
     return await teacher_service.get_by_id(teacher.id)
 
 
+@router.get("/me/subject", description="Show my subjects")
+async def get_subject_of_me(
+    teacher: CurrentTeacher,
+    page: int = 1,
+    limit: int = 10,
+    desc: int = 0,
+    columns: str = Query(None, alias="columns"),
+    sort: str = Query(None, alias="sort"),
+    search: str = Query(None, alias="search")
+):
+    return await teacher_service.get_subjects(
+        teacher.id,
+        page,
+        limit,
+        desc,
+        columns,
+        sort,
+        search
+    )
+
+
+
 @router.get("/{teacher_id}", description="Show teacher data (for admins)")
 async def get_current_teacher(admin: CurrentAdmin, teacher_id: UUID4):
     return await teacher_service.get_by_id(teacher_id)

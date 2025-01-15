@@ -1,3 +1,4 @@
+from src.infrastructure.repositories import subject_repository
 from src.infrastructure.enums.privilege import Privilege
 from src.application.dto.shared import EditUserDTO
 from src.infrastructure.repositories import teacher_repository
@@ -67,7 +68,11 @@ async def get_by_id(teacher_id: str):
             detail="Teacher not found"
         )
 
-    return await teacher_repository.get_by_id(teacher_id)
+    teacher_data = await teacher_repository.get_by_id(teacher_id)
+    privileges = await teacher_repository.privelege.get_by_id(teacher_id)
+
+    teacher_data["privileges"] = privileges
+    return teacher_data
 
 
 async def edit(teacher_id: UUID, dto: EditUserDTO):
@@ -142,3 +147,37 @@ async def delete_privilege(teacher_id: UUID, privilege: Privilege):
     await teacher_repository.privelege.delete_by_name(teacher_id, privilege.value)
     return Response(status_code=status.HTTP_200_OK)
 
+
+async def get_subjects(
+    teacher_id: UUID, 
+    page: int = 1,
+    limit: int = 10,
+    desc: int = 0,
+    columns: str = None,
+    sort: str = None,
+    search: str = None
+):
+    if not await teacher_repository.has_by_id(teacher_id):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Teacher not found"
+        )
+    
+    if search is not None and search != "":
+        search = "name*{0}".format(search)
+    
+    if columns is not None and columns != "":
+        columns = columns.split(",")
+    
+    if sort is not None and sort != "":
+        sort = sort.split(",")
+    
+    return await subject_repository.get_all(
+        page, 
+        limit, 
+        columns, 
+        sort, 
+        search, 
+        desc, 
+        teacher_ids=[teacher_id]
+    )
