@@ -66,7 +66,7 @@ async def get_all(
 
     for i in lessons:
         tag_dict = await feedback_repository.get_tags(i["id"])
-        tag_list = tag_dict.keys()[0:6]
+        tag_list = list(tag_dict.keys())[0:6]
 
         i["tags"] = [i for i in tag_list]
 
