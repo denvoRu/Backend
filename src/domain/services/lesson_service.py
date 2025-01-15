@@ -40,7 +40,7 @@ async def get_all(
     if not await schedule_repository.has_by_id(teacher_id):
         return []
     
-    if subject_ids is not None and len(subject_ids) == 0:
+    if subject_ids is not None and len(subject_ids) != 0:
         subject_ids = subject_ids.split(",")
     
     if start_date > end_date:

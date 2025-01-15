@@ -29,6 +29,7 @@ async def get_all(
 
     if subject_ids is not None and len(subject_ids) > 0:
         filters.append(StudyGroup.subject_id.in_(subject_ids))
+        
     stmt = select(
         Lesson.id,
         Lesson.speaker_name, 
