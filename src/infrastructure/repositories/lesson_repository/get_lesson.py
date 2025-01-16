@@ -92,7 +92,7 @@ async def get_active_by_study_group_id(study_group_id: UUID):
 
     filtered_study_groups = select(StudyGroup.id).where(
         StudyGroup.id == study_group_id,
-        StudyGroup.const_end_date <= date_now
+        StudyGroup.const_end_date >= date_now
     )
     return await get_active_by_condition(
         Lesson.study_group_id.in_(filtered_study_groups),
