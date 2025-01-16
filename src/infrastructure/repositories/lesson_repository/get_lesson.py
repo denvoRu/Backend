@@ -125,6 +125,7 @@ async def get_by_schedule(
 async def get_active_by_condition(*condition):
     now = datetime.now()
     stmt = select(
+        Lesson.id,
         Lesson.speaker_name, 
         Lesson.lesson_name,
         Lesson.start_time,
