@@ -4,6 +4,8 @@ from .has_study_group import has_by_id
 from .get_study_group import (
     get_by_ids, 
     get_subject_ids_by_teacher_statement,
-    get_by_lesson
+    get_by_lesson,
+    get_const_links
 )
+from .edit_study_group import update_by_id
 from .stmts import stmt_get_by_id
