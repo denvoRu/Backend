@@ -21,9 +21,7 @@ async def add_lesson_by_schedule(
     :param schedule_lesson: lesson from schedule
     :param date: date of the lesson
     """
-    date_now = datetime.now().date()
-
-    if study_group_end_date is None or date_now > study_group_end_date:
+    if study_group_end_date is None or date > study_group_end_date:
         study_group_access = False
     else: 
         study_group_access = True
