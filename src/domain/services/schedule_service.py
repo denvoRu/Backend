@@ -40,7 +40,7 @@ async def add_lesson(teacher_id: UUID, dto: AddLessonInScheduleDTO):
             detail="Teacher not found"
         )
     
-    if not await study_group_repository.has_by_id(dto.subject_id, teacher_id):
+    if not await study_group_repository.has_by_ids(dto.subject_id, teacher_id):
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="Teacher not found in subject"
@@ -127,7 +127,7 @@ async def import_from_modeus(
             detail="Teacher not found"
         )
     
-    if not(await study_group_repository.has_by_id(subject_id, teacher_id)):
+    if not(await study_group_repository.has_by_ids(subject_id, teacher_id)):
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="Teacher not found in subject"
@@ -180,9 +180,14 @@ async def add_lesson_scheduled(
             schedule_lesson,
             date
         ) 
+    
+    study_group_end_time = await study_group_repository.get_end_time(
+        study_group_id
+    )
 
     return await lesson_repository.add_lesson_by_schedule(
         study_group_id, 
+        study_group_end_time,
         schedule_lesson, 
         date
     )

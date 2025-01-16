@@ -1,3 +1,4 @@
+from src.infrastructure.database.extensions.row_to_dict import row_to_dict
 from src.infrastructure.models.page_response import PageResponse
 from src.infrastructure.database import (
     StudyGroup, Lesson, Subject, Teacher, Module, db, get_all
@@ -5,6 +6,7 @@ from src.infrastructure.database import (
 
 from sqlalchemy import or_, select, func
 from math import ceil
+from datetime import datetime
 from uuid import UUID
 
 
@@ -14,6 +16,7 @@ async def get_const_links(
     limit: int = 10,
     search: str = None,
 ):
+    date_now = datetime.now().date()
     filters = []
 
     if search is not None:
@@ -37,8 +40,15 @@ async def get_const_links(
 
     stmt = select(
         StudyGroup.id.label("id"),
+        Module.id.label("module_id"),
         Module.name.label("module_name"),
+        Subject.id.label("subject_id"),
         Subject.name.label("subject_name"),
+        func.concat(
+            Teacher.second_name, " ", 
+            Teacher.first_name, " ", 
+            Teacher.third_name
+        ).label("teacher_name"),
         StudyGroup.const_end_date.label("end_date")
     ).join(
         Subject,
@@ -50,7 +60,8 @@ async def get_const_links(
         Teacher,
         Teacher.id == StudyGroup.teacher_id
     ).where(
-        instiute_id == Module.institute_id,
+        Module.institute_id == instiute_id,
+        StudyGroup.const_end_date != None,
         *filters
     )
 
@@ -61,6 +72,7 @@ async def get_const_links(
     total_page = ceil(total_record / limit)
 
     content = (await db.execute(stmt)).all()
+    content = [row_to_dict(i) for i in content]
 
     return PageResponse(
         page_number=page,
@@ -91,6 +103,21 @@ async def get_by_ids(teacher_id : UUID, subject_id: UUID) -> UUID:
         stmt = select(StudyGroup.id).where(
             StudyGroup.teacher_id == teacher_id,
             StudyGroup.subject_id == subject_id,
+            StudyGroup.is_disabled == False
+        )
+
+        executed = await db.execute(stmt)
+
+        return executed.one()[0]
+    except Exception as e:
+        await db.commit_rollback()
+        raise Exception(str(e))
+    
+
+async def get_end_time(study_group_id: UUID) -> UUID:
+    try:
+        stmt = select(StudyGroup.const_end_date).where(
+            StudyGroup.id == study_group_id,
             StudyGroup.is_disabled == False
         )
 

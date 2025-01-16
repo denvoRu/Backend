@@ -63,7 +63,7 @@ async def add_by_teacher_ids(subject_id: UUID, teacher_ids: List[UUID]):
         )
     
     for teacher_id in teacher_ids:
-        if await study_group_repository.has_by_id(subject_id, teacher_id):
+        if await study_group_repository.has_by_ids(subject_id, teacher_id):
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 detail="Teacher already exists in subject"
@@ -90,7 +90,7 @@ async def add_by_subject_ids(teacher_id: UUID, subject_ids: List[UUID]):
         )
     
     for subject_id in subject_ids:
-        if await study_group_repository.has_by_id(subject_id, teacher_id):
+        if await study_group_repository.has_by_ids(subject_id, teacher_id):
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 detail="Teacher already exists in subject"
@@ -110,7 +110,7 @@ async def add_by_teacher_id(subject_id: UUID, teacher_id: UUID):
             detail="Subject not found"
         )
     
-    if await study_group_repository.has_by_id(subject_id, teacher_id):
+    if await study_group_repository.has_by_ids(subject_id, teacher_id):
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="Teacher already exists in subject"
@@ -127,7 +127,7 @@ async def delete_teacher(subject_id: UUID, teacher_id: UUID):
             detail="Subject not found"
         )
     
-    if not await study_group_repository.has_by_id(subject_id, teacher_id):
+    if not await study_group_repository.has_by_ids(subject_id, teacher_id):
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="Teacher already exists in subject"
@@ -159,7 +159,7 @@ async def delete_many(teacher_id: UUID, subject_ids: List[UUID]):
         )
     
     for subject_id in subject_ids:
-        if not await study_group_repository.has_by_id(subject_id, teacher_id):
+        if not await study_group_repository.has_by_ids(subject_id, teacher_id):
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 detail="Teacher not found in subject"
@@ -171,6 +171,11 @@ async def delete_many(teacher_id: UUID, subject_ids: List[UUID]):
 
 async def get_active(study_group_id: UUID):
     try:
+        if not await study_group_repository.has_end_date(study_group_id):
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Const link not found"
+            )
         return await lesson_repository.get_active_by_study_group_id(study_group_id)
     except Exception:
         raise HTTPException(

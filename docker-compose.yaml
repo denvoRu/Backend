@@ -1,37 +1,14 @@
 services:
   postgresql:
-    env_file: .env
     image: postgres:latest
     environment: 
-      POSTGRES_USER: ${DATABASE_USERNAME}
-      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
-      POSTGRES_DB: ${DATABASE}
+      POSTGRES_USER: "root"
+      POSTGRES_PASSWORD: "123"
+      POSTGRES_DB: "database"
     ports:
-      - "${DATABASE_PORT}:5432"
+      - "5432:5432"
   redis:
-    image: redis/redis-stack-server
-    env_file: .env
-    container_name: "redis"
+    image: redis/redis-stack
     ports:
       - "6379:6379"
-    environment:
-      REDIS_ARGS: "--requirepass ${REDIS_PASSWORD} --user ${REDIS_USERNAME} on >${REDIS_PASSWORD} ~* allcommands --user default off nopass nocommands"
-  selenium:
-    image: selenium/standalone-chrome
-    expose:
-      - "4444"
-  fastapi:
-    env_file: .env
-    build: .
-    ports:
-      - "${APP_PORT}:${APP_PORT}"
-    environment: 
-      TZ: "Asia/Yekaterinburg"
-      DATABASE_DRIVER_NAME: "postgresql+asyncpg"
-      DATABASE_HOST: postgresql
-      REDIS_OM_URL: "redis://${REDIS_USERNAME}:${REDIS_PASSWORD}@redis:6379/0"
-      SELENIUM_HUB_URL: "http://selenium:4444/wd/hub"
-    depends_on:
-      - postgresql
-      - redis
-      - selenium
+      - "8001:8001"

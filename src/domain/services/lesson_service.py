@@ -215,7 +215,7 @@ async def add(teacher_id: UUID, dto: AddLessonDTO):
             detail="Subject not found"
         )
 
-    if not await study_group_repository.has_by_id(dto.subject_id, teacher_id):
+    if not await study_group_repository.has_by_ids(dto.subject_id, teacher_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Teacher not found in subject"

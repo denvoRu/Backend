@@ -96,6 +96,7 @@ async def get_active_by_study_group_id(study_group_id: UUID):
     )
     return await get_active_by_condition(
         Lesson.study_group_id.in_(filtered_study_groups),
+        Lesson.study_group_access == True
     )
 
 
@@ -121,7 +122,7 @@ async def get_by_schedule(
         raise Exception(str(e))
     
 
-async def get_active_by_condition(condition):
+async def get_active_by_condition(*condition):
     now = datetime.now()
     stmt = select(
         Lesson.speaker_name, 
@@ -134,7 +135,7 @@ async def get_active_by_condition(condition):
         Lesson).join(StudyGroup, StudyGroup.id == Lesson.study_group_id).join(
             Subject, StudyGroup.subject_id == Subject.id
         ).where(
-            condition,
+            *condition,
             Lesson.date >= now.date(),
             Lesson.start_time <= now.time(),
             Lesson.end_time >= now.time(),
