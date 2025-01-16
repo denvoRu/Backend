@@ -10,7 +10,7 @@ from pydantic import UUID4
 router = APIRouter()
 
 
-@router.get("/{lesson_id}/feedback", description="Show all feedbacks  (universal)")
+@router.get("/{lesson_id}/feedback", description="Show all feedbacks (universal)")
 async def get_feedbacks_of_lesson(
     user: CurrentUser, 
     lesson_id: UUID4, 

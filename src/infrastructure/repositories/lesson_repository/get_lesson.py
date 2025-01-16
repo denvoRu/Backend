@@ -10,7 +10,7 @@ from datetime import date, datetime, time
 from uuid import UUID
 
 
-APPENDED = tuple(["rating", "subject_name"])
+APPENDED = ("rating", "subject_name")
 
 
 async def get_all(
@@ -43,6 +43,7 @@ async def get_all(
         Lesson.start_time,
         Lesson.end_time,
         Lesson.date,
+        StudyGroup.subject_id.label("subject_id"),
         Subject.name.label("subject_name"),
         *columns
     ).select_from(Lesson).join(

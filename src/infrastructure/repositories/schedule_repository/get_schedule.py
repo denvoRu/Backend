@@ -19,6 +19,7 @@ async def get_by_week(teacher_id: UUID, week: int, filters = []):
 
     stmt = select(
         ScheduleLesson.day.label("day"),
+        ScheduleLesson.subject_id.label("subject_id"),
         Subject.name.label("subject_name"),
         ScheduleLesson.id.label("schedule_lesson_id"),
         ScheduleLesson.speaker_name,
