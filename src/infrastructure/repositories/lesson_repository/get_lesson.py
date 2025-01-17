@@ -93,27 +93,37 @@ async def get_active_by_id(lesson_id: UUID):
 
 async def get_active_by_study_group_id(study_group_id: UUID):
     date_now = datetime.now().date()
-    subject_ids = select(
-        StudyGroup.subject_id
-    ).where(StudyGroup.id == study_group_id)
-    schedule_ids = select(
-        Schedule.id
-    ).where(Schedule.teacher_id == study_group_id)
 
-    schedule_lesson = await get_active_by_condition(
-        and_(
-            ScheduleLesson.subject_id.in_(subject_ids),
-            ScheduleLesson.schedule_id.in_(schedule_ids),
-            ScheduleLesson.end_date <= date_now
-        ),
-        model=ScheduleLesson.id,
-    )
+    try:
+        filtered_study_groups = select(StudyGroup.id).where(
+            StudyGroup.id == study_group_id,
+            StudyGroup.const_end_date >= date_now
+        )
+        return await get_active_by_condition(
+            Lesson.study_group_id.in_(filtered_study_groups)
+        )
+    except Exception:
+        subject_ids = select(
+            StudyGroup.subject_id
+        ).where(StudyGroup.id == study_group_id)
+        schedule_ids = select(
+            Schedule.id
+        ).where(Schedule.teacher_id == study_group_id)
 
-    return await get_by_schedule(
-        study_group_id, 
-        schedule_lesson, 
-        date_now
-    )
+        schedule_lesson = await get_active_by_condition(
+            and_(
+                ScheduleLesson.subject_id.in_(subject_ids),
+                ScheduleLesson.schedule_id.in_(schedule_ids),
+                ScheduleLesson.end_date <= date_now
+            ),
+            model=ScheduleLesson.id,
+        )
+
+        return await get_by_schedule(
+            study_group_id, 
+            schedule_lesson, 
+            date_now
+        )
 
 
 async def get_by_schedule(
