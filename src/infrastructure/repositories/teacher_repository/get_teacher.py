@@ -108,7 +108,7 @@ async def get_by_study_group(
     """
     filters = []
     if not_has_const_link: 
-        filters.append(StudyGroup.const_end_date != None)
+        filters.append(StudyGroup.const_end_date == None)
         
     stmt = select(StudyGroup.teacher_id).where(
         StudyGroup.subject_id == subject_id,
