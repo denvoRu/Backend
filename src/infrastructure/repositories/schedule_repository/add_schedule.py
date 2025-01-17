@@ -25,6 +25,7 @@ async def add_lesson(schedule_id: UUID, dto: dict):
         **dto
     )
     await add_instance(schedule_lesson)
+    return schedule_lesson.id
 
 
 async def add_lesson_from_modeus(

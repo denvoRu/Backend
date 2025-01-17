@@ -31,7 +31,6 @@ async def get_all(
     :param start_date: start date of search
     :param end_date: end date of search
     """
-    date_now = datetime.now().date()
     if not await teacher_repository.has_by_id(teacher_id):  
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -71,18 +70,7 @@ async def get_all(
         subject_ids,
         see_rating=see_rating
     )
-    if start_date >= date_now or end_date >= date_now:
-        if start_date <= date_now and end_date >= date_now:
-            start_date = end_date
-
-        future_lessons = await schedule_repository.get_in_interval(
-            teacher_id,
-            start_date, 
-            end_date,
-            subject_ids
-        )
-        lessons.extend(future_lessons)
-
+    
     return get_unique_lessons(lessons)
 
 

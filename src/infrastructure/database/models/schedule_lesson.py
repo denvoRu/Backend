@@ -1,6 +1,6 @@
 import uuid
-from sqlmodel import SQLModel, Field, ForeignKey, Time
-from datetime import time
+from sqlmodel import SQLModel, Field, ForeignKey, Time, Date
+from datetime import time, date
 
 
 class ScheduleLesson(SQLModel, table=True):
@@ -15,4 +15,5 @@ class ScheduleLesson(SQLModel, table=True):
     day: int = Field()
     start_time: time = Time()
     end_time: time = Time()
+    end_date: date = Date()
     

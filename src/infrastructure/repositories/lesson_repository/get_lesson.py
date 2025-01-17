@@ -1,10 +1,10 @@
 from src.infrastructure.database.extensions.row_to_dict import row_to_dict
 from src.infrastructure.repositories import feedback_repository
 from src.infrastructure.database import (
-    Lesson, StudyGroup, ScheduleLesson, Subject, get_by_id, db
+    Lesson, StudyGroup, Schedule, ScheduleLesson, Subject, get_by_id, db
 )
 
-from sqlalchemy import select
+from sqlalchemy import select, and_
 from typing import List, Tuple
 from datetime import date, datetime, time
 from uuid import UUID
@@ -66,10 +66,15 @@ async def get_all(
     lessons = list(row_to_dict(i) for i in lessons)
 
     for i in lessons:
-        tag_dict = await feedback_repository.get_tags(i["id"])
+        has_feedback = await feedback_repository.has_feedback_by_lesson(i["id"])
+        if has_feedback:
+            tag_dict = await feedback_repository.get_tags(i["id"])
+        else:
+            tag_dict = {}
         tag_list = list(tag_dict.keys())[0:6]
 
         i["tags"] = [i for i in tag_list]
+        i["has_feedback"] = has_feedback
 
     return lessons
 
@@ -82,21 +87,32 @@ async def get_end_time_by_id(lesson_id: UUID) -> Tuple[time, date]:
     return (await db.execute(stmt)).one()
     
 
-
 async def get_active_by_id(lesson_id: UUID):
     return await get_active_by_condition(Lesson.id == lesson_id)
 
 
 async def get_active_by_study_group_id(study_group_id: UUID):
     date_now = datetime.now().date()
+    subject_ids = select(
+        StudyGroup.subject_id
+    ).where(StudyGroup.id == study_group_id)
+    schedule_ids = select(
+        Schedule.id
+    ).where(Schedule.teacher_id == study_group_id)
 
-    filtered_study_groups = select(StudyGroup.id).where(
-        StudyGroup.id == study_group_id,
-        StudyGroup.const_end_date >= date_now
+    schedule_lesson = await get_active_by_condition(
+        and_(
+            ScheduleLesson.subject_id.in_(subject_ids),
+            ScheduleLesson.schedule_id.in_(schedule_ids),
+            ScheduleLesson.end_date <= date_now
+        ),
+        model=ScheduleLesson.id,
     )
-    return await get_active_by_condition(
-        Lesson.study_group_id.in_(filtered_study_groups),
-        Lesson.study_group_access == True
+
+    return await get_by_schedule(
+        study_group_id, 
+        schedule_lesson, 
+        date_now
     )
 
 
@@ -122,25 +138,27 @@ async def get_by_schedule(
         raise Exception(str(e))
     
 
-async def get_active_by_condition(*condition):
+async def get_active_by_condition(*condition, model=None):
+    model = model or Lesson
+
     now = datetime.now()
     stmt = select(
-        Lesson.id,
-        Lesson.speaker_name, 
-        Lesson.lesson_name,
-        Lesson.start_time,
-        Lesson.end_time,
-        Lesson.date,
+        model.id,
+        model.speaker_name, 
+        model.lesson_name,
+        model.start_time,
+        model.end_time,
+        model.date,
         Subject.name.label("subject_name")
     ).select_from(
         Lesson).join(StudyGroup, StudyGroup.id == Lesson.study_group_id).join(
             Subject, StudyGroup.subject_id == Subject.id
         ).where(
             *condition,
-            Lesson.date >= now.date(),
-            Lesson.start_time <= now.time(),
-            Lesson.end_time >= now.time(),
-            Lesson.is_disabled == False
+            model.date >= now.date(),
+            model.start_time <= now.time(),
+            model.end_time >= now.time(),
+            model.is_disabled == False
         )
 
     try:
@@ -149,5 +167,3 @@ async def get_active_by_condition(*condition):
     except Exception:
         await db.commit_rollback()
         raise Exception("Lesson not found")
-
-

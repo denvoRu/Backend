@@ -11,7 +11,6 @@ async def add(dto: dict):
 
 async def add_lesson_by_schedule(
     study_group_id: UUID, 
-    study_group_end_date: date,
     schedule_lesson: ScheduleLesson, 
     date: date
 ):
@@ -21,11 +20,6 @@ async def add_lesson_by_schedule(
     :param schedule_lesson: lesson from schedule
     :param date: date of the lesson
     """
-    if study_group_end_date is None or date > study_group_end_date:
-        study_group_access = False
-    else: 
-        study_group_access = True
-
     lesson = Lesson(
         study_group_id=study_group_id,
         lesson_name=schedule_lesson.lesson_name,
@@ -33,7 +27,6 @@ async def add_lesson_by_schedule(
         date=date,
         start_time=schedule_lesson.start_time,
         end_time=schedule_lesson.end_time,
-        study_group_access=study_group_access
     )
 
     await add_instance(lesson)

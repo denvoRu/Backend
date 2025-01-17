@@ -17,4 +17,3 @@ class Lesson(SQLModel, table=True):
     start_time: time = Time()
     end_time: time = Time()
     is_disabled: bool = Field(nullable=False, default=False)
-    study_group_access: bool = Field(nullable=False, default=False)
