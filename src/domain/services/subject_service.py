@@ -39,20 +39,25 @@ async def get_all(
     if search is not None and search != "":
         search = "name*{0}".format(search)
     
-    return await subject_repository.get_all(
-        page, 
-        limit, 
-        columns, 
-        sort, 
-        search, 
-        desc, 
-        teacher_ids, 
-        module_id,
-        not_in_module_by_id,
-        subject_without_teacher_by_id,
-        not_has_const_link_by_teacher_id
-    )
-
+    try:
+        return await subject_repository.get_all(
+            page, 
+            limit, 
+            columns, 
+            sort, 
+            search, 
+            desc, 
+            teacher_ids, 
+            module_id,
+            not_in_module_by_id,
+            subject_without_teacher_by_id,
+            not_has_const_link_by_teacher_id
+        )
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="One or more parameters are invalid"
+        )
 
 
 async def get_by_id(subject_id: UUID):
