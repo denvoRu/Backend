@@ -53,7 +53,8 @@ async def get_all(
             subject_without_teacher_by_id,
             not_has_const_link_by_teacher_id
         )
-    except Exception:
+    except Exception as e:
+        print(e)
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="One or more parameters are invalid"
