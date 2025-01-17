@@ -34,9 +34,6 @@ async def get_teachers(
             detail="Subject not found"
         )
     
-    if search is not None and search != "":
-        search = "first_name*{0},second_name*{0},third_name*{0}".format(search)
-    
     return await teacher_repository.get_by_study_group(
         subject_id, 
         page, 
@@ -45,6 +42,7 @@ async def get_teachers(
         sort, 
         search, 
         desc,
+        not_has_const_link
     )
 
 async def add_by_teacher_ids(subject_id: UUID, teacher_ids: List[UUID]):
