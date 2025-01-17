@@ -24,6 +24,7 @@ async def get_all_teachers(
     institute_ids: str = Query(None, alias="institute_ids"),
     subject_ids: str = Query(None, alias="subject_ids"),
     not_in_subject_by_id: UUID4 = Query(None, alias="not_in_subject_by_id"),
+    not_has_const_link: int = Query(False, alias="not_has_const_link"),
 ):
     return await teacher_service.get_all(
         page, 

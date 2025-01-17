@@ -17,7 +17,8 @@ async def get_all(
     teacher_ids, 
     module_id, 
     not_in_module_by_id,
-    subject_without_teacher_by_id
+    subject_without_teacher_by_id,
+    not_has_const_link
 ):
     """
     Gets all subjects
@@ -37,6 +38,14 @@ async def get_all(
 
     if search is not None and search != "":
         search = "name*{0}".format(search)
+
+    if subject_without_teacher_by_id is None \
+       and not_has_const_link not in [None, 0]:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="One or more parameters are invalid"
+        )
+
         
     try:
         return await subject_repository.get_all(
@@ -49,7 +58,8 @@ async def get_all(
             teacher_ids, 
             module_id,
             not_in_module_by_id,
-            subject_without_teacher_by_id
+            subject_without_teacher_by_id,
+            not_has_const_link
         )
     except Exception:
         raise HTTPException(

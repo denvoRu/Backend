@@ -11,7 +11,7 @@ router = APIRouter()
 
 @router.get("/", description="Show all const link (for admins)")
 async def get_const_link(
-    current_user: CurrentAdmin,
+    admin: CurrentAdmin,
     institute_id: UUID4,
     page: int = 1,
     limit: int = 10,
@@ -32,7 +32,7 @@ async def get_data_of_active_lesson(const_link_id: UUID4):
 
 @router.post("/", description="Create const link (for admins)", status_code=201)
 async def create_const_link(
-    current_user: CurrentAdmin,
+    admin: CurrentAdmin,
     dto: AddConstLinkDTO = Body(...), 
 ): 
     return await const_link_service.create(dto)
@@ -40,7 +40,7 @@ async def create_const_link(
 
 @router.patch("/{const_link_id}", description="Edit const link (for admins)")
 async def edit_const_link(
-    current_user: CurrentAdmin,
+    admin: CurrentAdmin,
     const_link_id: UUID4, 
     dto: EditConstLinkDTO = Body(...),
 ): 
@@ -49,7 +49,7 @@ async def edit_const_link(
 
 @router.delete("/{const_link_id}", description="Delete const link (for admins)")
 async def delete_const_link(
-    current_user: CurrentAdmin,
+    admin: CurrentAdmin,
     const_link_id: UUID4, 
 ): 
     return await const_link_service.delete(const_link_id)

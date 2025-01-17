@@ -86,7 +86,16 @@ async def get_all(
     return result
 
 
-async def get_by_study_group(subject_id, page, limit, columns, sort, search, desc):
+async def get_by_study_group(
+    subject_id, 
+    page, 
+    limit, 
+    columns, 
+    sort, 
+    search, 
+    desc,
+    not_has_const_link
+):
     """
     Gets teachers by study group id
     :param subject_id: subject id
@@ -97,9 +106,14 @@ async def get_by_study_group(subject_id, page, limit, columns, sort, search, des
     :param search: search string
     :param desc: sort direction
     """
+    filters = []
+    if not_has_const_link: 
+        filters.append(StudyGroup.const_end_date != None)
+        
     stmt = select(StudyGroup.teacher_id).where(
         StudyGroup.subject_id == subject_id,
-        StudyGroup.is_disabled == False
+        StudyGroup.is_disabled == False,
+        *filters 
     )
     
     return await get_all(

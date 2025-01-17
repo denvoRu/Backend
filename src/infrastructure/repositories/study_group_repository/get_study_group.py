@@ -129,11 +129,17 @@ async def get_end_time(study_group_id: UUID) -> UUID:
         raise Exception(str(e))
 
 
-def get_subject_ids_by_teacher_statement(teacher_ids):
+def get_subject_ids_by_teacher_statement(teacher_ids, not_has_const_link):
+    filters = []
+    
+    if not_has_const_link:
+        filters.append(StudyGroup.const_end_date == None)
+
     return (
         select(StudyGroup.subject_id)
         .where(
             StudyGroup.teacher_id.in_(teacher_ids), 
-            StudyGroup.is_disabled == False
+            StudyGroup.is_disabled == False,
+            *filters
         )
     )

@@ -18,7 +18,8 @@ async def get_all(
     teacher_ids = [],
     module_id = None,
     not_in_module_by_id: UUID = None,
-    subject_without_teacher_by_id: UUID = None
+    subject_without_teacher_by_id: UUID = None,
+    not_has_const_link: int = 0
 ):
     """
     Gets all subjects
@@ -53,7 +54,7 @@ async def get_all(
     if subject_without_teacher_by_id is not None:
         filters.append(
                 not_(Subject.id.in_(
-                    get_subject_ids_by_teacher_statement([subject_without_teacher_by_id])
+                    get_subject_ids_by_teacher_statement([subject_without_teacher_by_id], not_has_const_link)
                 )
             )
         )

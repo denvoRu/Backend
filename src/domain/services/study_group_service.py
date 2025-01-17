@@ -9,13 +9,14 @@ from uuid import UUID
 
 
 async def get_teachers(
-        subject_id, 
-        page: int = 1, 
-        limit: int = 10, 
-        columns: str = None, 
-        sort: str = None, 
-        search: str = None, 
-        desc: int = 0
+    subject_id, 
+    page: int = 1, 
+    limit: int = 10, 
+    columns: str = None, 
+    sort: str = None, 
+    search: str = None, 
+    desc: int = 0,
+    not_has_const_link = False
 ):
     """
     Get all teachers from study group
@@ -43,7 +44,7 @@ async def get_teachers(
         columns,
         sort, 
         search, 
-        desc
+        desc,
     )
 
 async def add_by_teacher_ids(subject_id: UUID, teacher_ids: List[UUID]):

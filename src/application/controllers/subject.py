@@ -22,7 +22,8 @@ async def get_all_subject(
     teacher_ids: str = Query(None, alias="teacher_ids"),
     module_id: UUID4 = Query(None, alias="module_id"),
     not_in_module_by_id: UUID4 = Query(None, alias="not_in_module_by_id"),
-    subject_without_teacher_by_id: UUID4 = Query(None, alias="subject_without_teacher_by_id")
+    subject_without_teacher_by_id: UUID4 = Query(None, alias="subject_without_teacher_by_id"),
+    not_has_const_link: int = Query(0, alias="not_has_const_link"),
 ):
     return await subject_service.get_all(
         page, 
@@ -34,7 +35,8 @@ async def get_all_subject(
         teacher_ids, 
         module_id,
         not_in_module_by_id,
-        subject_without_teacher_by_id
+        subject_without_teacher_by_id,
+        not_has_const_link
     )
 
 
@@ -66,10 +68,11 @@ async def get_teachers_by_subject(
     subject_id: UUID4, 
     page: int = 1, 
     limit: int = 10,
+    desc: int = 0,
     columns: str = Query(None, alias="columns"),
     sort: str = Query(None, alias="sort"),
     search: str = Query(None, alias="search"),
-    desc: int = 0
+    not_has_const_link: int = Query(0, alias="not_has_const_link"),
 ):
     return await study_group_service.get_teachers(
         subject_id,
@@ -78,7 +81,8 @@ async def get_teachers_by_subject(
         columns,
         sort,
         search,
-        desc
+        desc,
+        not_has_const_link
     )
 
 
