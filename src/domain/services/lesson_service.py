@@ -70,6 +70,13 @@ async def get_all(
         subject_ids,
         see_rating=see_rating
     )
+    future_lessons = await schedule_repository.get_in_interval(
+        teacher_id, 
+        start_date, 
+        end_date, 
+        subject_ids
+    )
+    lessons.extend(future_lessons)
     
     return get_unique_lessons(lessons)
 
