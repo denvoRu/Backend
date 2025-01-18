@@ -53,8 +53,10 @@ async def add_lesson(teacher_id: UUID, dto: AddLessonInScheduleDTO):
     schedule_id = await schedule_repository.get_by_id(teacher_id)
     if dto.week == 'all':
         dto_dict = dto.model_dump(exclude_none=True, exclude={'week'})
-        for i in (Week.FIRST, Week.SECOND):
-            await schedule_repository.add_lesson(schedule_id, dto_dict, week=i)
+        await schedule_repository.add_lesson_in_all_week(
+            schedule_id, 
+            dto_dict, 
+        )
     else:
         dto_dict = dto.model_dump(exclude_none=True)
         await schedule_repository.add_lesson(schedule_id, dto_dict)
