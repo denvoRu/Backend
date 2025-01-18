@@ -27,7 +27,6 @@ async def get_const_links(
     limit: int = 10,
     search: str = None,
 ):
-    date_now = datetime.now().date()
     filters = []
 
     if search is not None:

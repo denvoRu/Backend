@@ -14,7 +14,7 @@ async def add(teacher_id: UUID, week_start):
     await add_instance(schedule)
 
 
-async def add_lesson(schedule_id: UUID, dto: dict):
+async def add_lesson(schedule_id: UUID, dto: dict, *, week = None):
     """
     Adds a lesson to schedule
     :param schedule_id: id
@@ -22,6 +22,7 @@ async def add_lesson(schedule_id: UUID, dto: dict):
     """
     schedule_lesson = ScheduleLesson(
         schedule_id=schedule_id,
+        week=dto["week"] if "week" in dto else week,
         **dto
     )
     await add_instance(schedule_lesson)
