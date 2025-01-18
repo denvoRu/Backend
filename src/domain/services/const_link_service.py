@@ -71,7 +71,7 @@ async def edit(const_link_id: UUID, dto: EditConstLinkDTO):
 
 
 async def delete(const_link_id: UUID):
-    if not await study_group_repository.has_by_ids(const_link_id):
+    if not await study_group_repository.has_by_id(const_link_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Const link not found"
