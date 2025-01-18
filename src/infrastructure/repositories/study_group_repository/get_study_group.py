@@ -1,8 +1,19 @@
 from src.infrastructure.database.extensions.row_to_dict import row_to_dict
 from src.infrastructure.models.page_response import PageResponse
-from src.infrastructure.database import (
-    StudyGroup, Lesson, Subject, Teacher, Module, db, get_all
+from src.infrastructure.models.const_link_with_lessons import (
+    ConstLinkWithLessonsResponse
 )
+from src.infrastructure.database import (
+    StudyGroup, 
+    Schedule,
+    ScheduleLesson, 
+    Lesson, 
+    Subject, 
+    Teacher, 
+    Module, 
+    db
+)
+
 
 from sqlalchemy import or_, select, func
 from math import ceil
@@ -44,6 +55,7 @@ async def get_const_links(
         Module.name.label("module_name"),
         Subject.id.label("subject_id"),
         Subject.name.label("subject_name"),
+        StudyGroup.teacher_id.label("teacher_id"),
         func.concat(
             Teacher.second_name, " ", 
             Teacher.first_name, " ", 
@@ -71,15 +83,45 @@ async def get_const_links(
     stmt = stmt.offset((page - 1) * limit).limit(limit)
     total_page = ceil(total_record / limit)
 
-    content = (await db.execute(stmt)).all()
-    content = [row_to_dict(i) for i in content]
+    const_links = (await db.execute(stmt)).all()
+    const_links = [row_to_dict(i) for i in const_links]
+
+    teacher_ids = [i["teacher_id"] for i in const_links]
+
+    subject_ids = [i["subject_id"] for i in const_links]
+    schedule_lessons = select(Schedule.id).where(
+        Schedule.teacher_id.in_(teacher_ids),
+        Schedule.is_disabled == False)
+
+    stmt_lessons = select(
+        Schedule.teacher_id,
+        ScheduleLesson.subject_id,
+        ScheduleLesson.week,
+        ScheduleLesson.day,
+        ScheduleLesson.start_time,
+        ScheduleLesson.end_time
+    ).join(
+        Schedule,
+        ScheduleLesson.schedule_id == Schedule.id,
+    ).where(
+        ScheduleLesson.subject_id.in_(subject_ids),
+        ScheduleLesson.schedule_id.in_(schedule_lessons)
+    )
+
+    lessons = (await db.execute(stmt_lessons)).all()
+    lessons = [row_to_dict(i) for i in lessons]
+
+    content = ConstLinkWithLessonsResponse(
+        const_links,
+        lessons
+    )
 
     return PageResponse(
         page_number=page,
         page_size=limit,
         total_pages=total_page,
         total_record=total_record,
-        content=content
+        content=content.to_list()
     )
 
 
