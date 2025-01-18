@@ -15,9 +15,3 @@ class AddLessonDTO(BaseModel):
     start_time: time = Field(description="time in format HH:MM", examples=["12:00", "13:00"])
     end_time: time = Field(description="time in format HH:MM", examples=["13:30", "15:23"])
 
-    @validator("start_time", "end_time")
-    def validate_time(cls, value):
-        if ScheduleTime(start=value[0], end=value[1]) in SCHEDULE_TIME:
-            return value
-        
-        raise ValueError("time must be in schedule time")

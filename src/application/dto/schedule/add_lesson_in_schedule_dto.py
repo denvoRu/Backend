@@ -25,11 +25,3 @@ class AddLessonInScheduleDTO(BaseModel):
         
         raise ValueError("end date must be in future")
     
-
-    @validator("start_time", "end_time")
-    def validate_time(cls, value):
-        if ScheduleTime(start=value[0], end=value[1]) in SCHEDULE_TIME:
-            return value
-        
-        raise ValueError("time must be in schedule time")
-    
