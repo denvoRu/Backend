@@ -1,4 +1,4 @@
-from infrastructure.enums.week import Week
+from src.infrastructure.enums.week import Week
 from src.infrastructure.database import (
     Schedule, ScheduleLesson, Subject, StudyGroup, add_instance, db
 )

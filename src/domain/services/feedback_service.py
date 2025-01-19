@@ -141,7 +141,7 @@ async def add(lesson_id: UUID, dto: AddFeedbackDTO):
             detail="Lesson not found"
         )
     
-    feedback_dto_dict = dto.model_dump(exclude_none=True, exclude=["extra_fields"])
+    feedback_dto_dict = dto.model_dump(exclude_none=True, exclude={"extra_fields"})
 
     if await feedback_repository.has_feedback_by_created_at(feedback_dto_dict):
         raise HTTPException(

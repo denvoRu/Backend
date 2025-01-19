@@ -94,7 +94,7 @@ async def get_all(
             )
         else:
             result = list([i[0].model_dump(
-                exclude=["password", "is_disabled"]
+                exclude={"password", "is_disabled"}
             ) for i in result])
         
         return PageResponse(
