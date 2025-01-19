@@ -1,3 +1,4 @@
+from infrastructure.enums.week import Week
 from src.infrastructure.enums.day_of_week import DayOfWeek
 
 from pydantic import BaseModel, UUID4, Field
@@ -10,3 +11,4 @@ class EditLessonInScheduleDTO(BaseModel):
     day: DayOfWeek = Field(default=None, description="day of week", examples=[DayOfWeek.MONDAY, DayOfWeek.TUESDAY])
     lesson_name: str = Field(default=None, max_length=100, examples=["Разработка на Python (FastAPI)", "Javascript (React)"])
     speaker_name: str = Field(default=None, max_length=100, examples=["Смирнов Евгений Сергеевич", "Иванов Иван Иванович"])
+    week: Week = Field(default=None, description="number of week for alternate", examples=[Week.FIRST, Week.SECOND])
