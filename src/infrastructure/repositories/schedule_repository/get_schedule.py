@@ -34,7 +34,7 @@ async def get_by_week(teacher_id: UUID, week: int, filters = []):
         ScheduleLesson.week == week,
         and_(
             ScheduleLesson.end_date is not None,
-            ScheduleLesson.end_date <= date.today()
+            ScheduleLesson.end_date >= date.today()
         ),
         *filters
     ).join(Subject, Subject.id == ScheduleLesson.subject_id)
