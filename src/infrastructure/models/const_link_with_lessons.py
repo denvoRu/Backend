@@ -20,7 +20,6 @@ class ConstLinkWithLessonsResponse:
                 del j['subject_id']
                 del j['teacher_id']
 
-            lessons = [i for i in lessons if lessons.count(i) == 1]
             i['lessons'] = list(lessons)
       
     def to_list(self):
