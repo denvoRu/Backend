@@ -133,6 +133,6 @@ def replace_day_on_date(data: dict, start_date):
 
 def get_first_date_in_future(weekday: int, start_date):
     delta = weekday - start_date.weekday()
-    if delta <= 0:
-        delta += 7
+    if delta < 0:
+        delta += 6
     return start_date + timedelta(days=delta)

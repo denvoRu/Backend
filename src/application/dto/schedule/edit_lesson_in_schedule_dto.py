@@ -1,4 +1,4 @@
-from infrastructure.enums.week import Week
+from src.infrastructure.enums.week import Week
 from src.infrastructure.enums.day_of_week import DayOfWeek
 
 from pydantic import BaseModel, UUID4, Field
