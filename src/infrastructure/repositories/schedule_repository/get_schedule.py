@@ -4,7 +4,7 @@ from src.infrastructure.database import (
     Schedule, Subject, ScheduleLesson, get, has_instance, db
 )
 
-from sqlalchemy import select
+from sqlalchemy import select, and_
 from typing import List
 from aiomodeus.student_voice import ScheduleLessonList, ScheduleOfWeek
 from datetime import date, timedelta
@@ -32,7 +32,10 @@ async def get_by_week(teacher_id: UUID, week: int, filters = []):
     ).where(
         ScheduleLesson.schedule_id == schedule_id,
         ScheduleLesson.week == week,
-        ScheduleLesson.end_date <= date.today()
+        and_(
+            ScheduleLesson.end_date is not None,
+            ScheduleLesson.end_date <= date.today()
+        ),
         *filters
     ).join(Subject, Subject.id == ScheduleLesson.subject_id)
 
