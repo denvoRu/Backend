@@ -34,6 +34,7 @@ async def add_lesson_in_all_week(schedule_id: UUID, dto: dict):
         schedule_lesson = ScheduleLesson(
             schedule_id=schedule_id,
             week=i.value,
+            is_all_week=True,
             **dto
         )
         db.add(schedule_lesson)
