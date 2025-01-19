@@ -15,7 +15,7 @@ from src.infrastructure.database import (
 )
 
 
-from sqlalchemy import or_, select, func
+from sqlalchemy import or_, select, func, distinct
 from math import ceil
 from datetime import datetime
 from uuid import UUID
@@ -49,7 +49,7 @@ async def get_const_links(
         filters.append(or_(teacher_name, module_name, subject_name))
 
     stmt = select(
-        StudyGroup.id.label("id"),
+        distinct(StudyGroup.id.label("id")),
         Module.id.label("module_id"),
         Module.name.label("module_name"),
         Subject.id.label("subject_id"),
