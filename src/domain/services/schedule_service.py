@@ -96,7 +96,7 @@ async def edit_lesson(
             detail="Lesson not found"
         )
 
-    if not await subject_repository.has_by_id(dto.subject_id): 
+    if dto.subject_id and not await subject_repository.has_by_id(dto.subject_id): 
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Subject not found"
