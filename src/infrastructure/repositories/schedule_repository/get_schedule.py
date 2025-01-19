@@ -26,12 +26,13 @@ async def get_by_week(teacher_id: UUID, week: int, filters = []):
         ScheduleLesson.lesson_name,
         ScheduleLesson.start_time,
         ScheduleLesson.end_time,
-        ScheduleLesson.end_date <= date.today()
+        ScheduleLesson.end_date
     ).select_from(
         ScheduleLesson,
     ).where(
         ScheduleLesson.schedule_id == schedule_id,
         ScheduleLesson.week == week,
+        ScheduleLesson.end_date <= date.today()
         *filters
     ).join(Subject, Subject.id == ScheduleLesson.subject_id)
 
