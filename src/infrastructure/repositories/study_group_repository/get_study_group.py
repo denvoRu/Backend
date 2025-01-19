@@ -17,7 +17,6 @@ from src.infrastructure.database import (
 
 from sqlalchemy import or_, select, func, distinct
 from math import ceil
-from datetime import datetime
 from uuid import UUID
 
 
