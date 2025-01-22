@@ -22,21 +22,21 @@ async def get_all(
         filters = filters if filters is not None else []
 
         if columns is not None and columns != "all": 
-            columns = columns.split(',')
+            columns = columns.split(",")
             columns = delete_unsafe_data_from_array(columns)
             has_column = len(columns) > 0
         else:
             has_column = False
 
         if sort is not None and sort != "null": 
-            sort = sort.split(',')
+            sort = sort.split(",")
             sort = delete_unsafe_data_from_array(sort)
             has_sort = len(sort) > 0
         else:
             has_sort = False
         
         if search is not None and search != "null": 
-            search = search.split(',')
+            search = search.split(",")
             search = delete_unsafe_data_from_array(search)
             has_search = len(search) > 0
         else:
@@ -121,7 +121,7 @@ def delete_unsafe_data_from_array(data: List[str]):
     return data
 
 
-async def get_by_id(instance: TableInstance, instance_id: str, attr_name: str = None, id_name = 'id') -> TableInstance:
+async def get_by_id(instance: TableInstance, instance_id: str, attr_name: str = None, id_name = "id") -> TableInstance:
     try:
         where_args = [getattr(instance, id_name) == instance_id]
         getted_instance =  getattr(instance, attr_name) if attr_name else instance

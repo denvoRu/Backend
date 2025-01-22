@@ -99,7 +99,7 @@ async def add_extra_field(
     )
 
 
-@router.patch('/{lesson_id}', description='Edit an existing lesson (universal)')
+@router.patch("/{lesson_id}", description="Edit an existing lesson (universal)")
 async def edit_lesson(
     user: CurrentUser, 
     lesson_id: UUID4, 

@@ -1,0 +1,3 @@
+from .not_found import InstituteNotFoundException
+from .already_exists import InstituteAlreadyExistsException
+from .required import InstituteIsRequiredException

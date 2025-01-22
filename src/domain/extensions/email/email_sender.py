@@ -63,9 +63,9 @@ class EmailSender:
         :param html_template: HTML template for a message
         """
         msg = MIMEText(html_template, "html")
-        msg['Subject'] = subject
-        msg['From'] = f'Sportacus <{MAIL_FROM}>'
-        msg['To'] = email
+        msg["Subject"] = subject
+        msg["From"] = f"{PROJECT_NAME} <{MAIL_FROM}>"
+        msg["To"] = email
 
         async with EmailSender.client as c:
             await c.send_message(msg)

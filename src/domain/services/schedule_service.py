@@ -14,8 +14,16 @@ from src.application.dto.schedule import (
     AddLessonInScheduleDTO, 
     EditLessonInScheduleDTO
 )
+from src.infrastructure.exceptions import (
+    TeacherNotFoundException,
+    ScheduleLessonNotFoundException,
+    LessonNotFoundException,
+    SubjectNotFoundException,
+    TeacherNotFoundInSubjectException,
+    InitialFromScheduleException
+)
 
-from fastapi import HTTPException, Response, status
+from fastapi import Response, status
 from typing import List
 from datetime import date
 from uuid import UUID
@@ -23,10 +31,7 @@ from uuid import UUID
 
 async def get_by_teacher_id(teacher_id: UUID, week: Week = Week.FIRST): 
     if not await teacher_repository.has_by_id(teacher_id):
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Teacher not found"
-        )
+        raise TeacherNotFoundException()
     
     if not await schedule_repository.has_by_id(teacher_id):
         return []
@@ -36,17 +41,11 @@ async def get_by_teacher_id(teacher_id: UUID, week: Week = Week.FIRST):
 
 async def add_lessons(teacher_id: UUID, dto: List[AddLessonInScheduleDTO]):
     if not await teacher_repository.has_by_id(teacher_id):
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Teacher not found"
-        )
+        raise TeacherNotFoundException()
     
     subject_ids = [i.subject_id for i in dto]
     if not await study_group_repository.has_by_subjects(teacher_id, subject_ids):
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Teacher not found in subject"
-        )
+        raise TeacherNotFoundInSubjectException()
     
     week = get_last_monday()
     if not await schedule_repository.has_by_id(teacher_id):
@@ -56,12 +55,12 @@ async def add_lessons(teacher_id: UUID, dto: List[AddLessonInScheduleDTO]):
         schedule_id = schedule_repository.get_by_id(teacher_id)
         await schedule_repository.update_by_id(
             schedule_id,
-            {'week_start': week}
+            {"week_start": week}
         )
     
     dto_list = [i.model_dump(exclude_none=True) for i in dto]
     for i in dto_list:
-        if i['week'] == 'all':
+        if i["week"] == "all":
             i["week"] = 2
             dto_list.append(i.copy())
             i["week"] = 1
@@ -72,24 +71,18 @@ async def add_lessons(teacher_id: UUID, dto: List[AddLessonInScheduleDTO]):
 
 async def add_lesson(teacher_id: UUID, dto: AddLessonInScheduleDTO):
     if not await teacher_repository.has_by_id(teacher_id):
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Teacher not found"
-        )
+        raise TeacherNotFoundException()
     
     if not await study_group_repository.has_by_ids(dto.subject_id, teacher_id):
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Teacher not found in subject"
-        )
+        raise TeacherNotFoundInSubjectException()
     
     if not await schedule_repository.has_by_id(teacher_id):
         week = get_last_monday()
         await schedule_repository.add(teacher_id, week)
 
     schedule_id = await schedule_repository.get_by_id(teacher_id)
-    if dto.week == 'all':
-        dto_dict = dto.model_dump(exclude_none=True, exclude={'week'})
+    if dto.week == "all":
+        dto_dict = dto.model_dump(exclude_none=True, exclude={"week"})
         await schedule_repository.add_lesson_in_all_weeks(
             schedule_id, 
             dto_dict, 
@@ -103,19 +96,13 @@ async def add_lesson(teacher_id: UUID, dto: AddLessonInScheduleDTO):
 
 async def delete_lesson(user: User, schedule_lesson_id: UUID):
     if not await schedule_repository.has_lesson(schedule_lesson_id):
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Lesson not found"
-        )
+        raise LessonNotFoundException()
 
     if user.role == Role.TEACHER and \
        not await schedule_repository.is_teacher_of_lesson(
         user.id, schedule_lesson_id
     ):
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Lesson not found"
-        )
+        raise LessonNotFoundException()
     
     await schedule_repository.delete_lesson(schedule_lesson_id)
     return Response(status_code=status.HTTP_200_OK)
@@ -127,26 +114,17 @@ async def edit_lesson(
     dto: EditLessonInScheduleDTO
 ):  
     if not await schedule_repository.has_lesson(schedule_lesson_id):
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Lesson not found"
-        )
+        raise LessonNotFoundException()
 
     if dto.subject_id and not await subject_repository.has_by_id(dto.subject_id): 
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Subject not found"
-        )
+        raise SubjectNotFoundException()
     
     
     if user.role == Role.TEACHER and \
        not await schedule_repository.is_teacher_of_lesson(
         user.id, schedule_lesson_id
     ):
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Lesson not found"
-        )
+        raise LessonNotFoundException()
 
     dto_dict = dto.model_dump(exclude_none=True)
     await schedule_repository.update_lesson_by_id(schedule_lesson_id, dto_dict)
@@ -156,25 +134,21 @@ async def edit_lesson(
 async def from_modeus(
     teacher_id: UUID, 
     subject_id: UUID,
-    week_count: int
+    week_count
 ):
-    if week_count != 1 and week_count != 2:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Week count must be 1 or 2"
-        ) 
+    # Create logic with UNION  
+    #
+    # if week_count != 1 and week_count != 2:
+    #    raise HTTPException(
+    #        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+    #        detail="Week count must be 1 or 2"
+    #    ) 
     
     if not(await teacher_repository.has_by_id(teacher_id)):
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Teacher not found"
-        )
+        raise TeacherNotFoundException()
     
     if not(await study_group_repository.has_by_ids(subject_id, teacher_id)):
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Teacher not found in subject"
-        )
+        raise TeacherNotFoundInSubjectException()
     
     if not(await schedule_repository.has_by_id(teacher_id)):
         last_monday = get_last_monday()
@@ -190,18 +164,12 @@ async def add_lesson_scheduled(
     date: date
 ):
     if not await schedule_repository.has_lesson(schedule_lesson_id):
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Schedule lesson not found"
-        )
+        raise ScheduleLessonNotFoundException()
     
     schedule_lesson = await schedule_repository.get_lesson_by_id(schedule_lesson_id)
 
     if date.weekday() != schedule_lesson.day:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="You cannot create a lesson for this day"
-        )
+        raise InitialFromScheduleException()
 
     try: 
         study_group_id = await study_group_repository.get_by_ids(
@@ -209,10 +177,7 @@ async def add_lesson_scheduled(
             schedule_lesson.subject_id
         )
     except Exception:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="You cannot create a lesson for this subject"
-        )
+        raise TeacherNotFoundInSubjectException()
 
     has_lesson = lesson_repository.has_by_schedule(
         study_group_id, schedule_lesson, date

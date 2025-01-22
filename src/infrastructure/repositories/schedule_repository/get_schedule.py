@@ -101,8 +101,8 @@ async def get_by_id(teacher_id: UUID):
     return await get.get_by_id(
         Schedule, 
         teacher_id,
-        attr_name='id',
-        id_name='teacher_id'
+        attr_name="id",
+        id_name="teacher_id"
     )
 
 
@@ -118,9 +118,9 @@ async def get_exists_by_subject_id(
 
 def get_clean_column_name(column_name: str):
     return (column_name
-        .replace('schedule_lesson.id', 'schedule_lesson_id')
-        .replace('schedule_lesson.', '')
-        .replace('.', '_')
+        .replace("schedule_lesson.id", "schedule_lesson_id")
+        .replace("schedule_lesson.", "")
+        .replace(".", "_")
     )
 
 

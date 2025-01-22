@@ -9,7 +9,7 @@ from pydantic import UUID4
 router = APIRouter()
 
 
-@router.get('/', description="Get all existing modules (for admins)")
+@router.get("/", description="Get all existing modules (for admins)")
 async def get_all_modules(
     current_user: CurrentAdmin,
     page: int = 1,

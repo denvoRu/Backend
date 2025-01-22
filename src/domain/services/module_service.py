@@ -1,7 +1,12 @@
 from src.application.dto.module import CreateModuleDTO, EditModuleDTO
 from src.infrastructure.repositories import module_repository
+from src.infrastructure.exceptions import (
+    ModuleNotFoundException,
+    InvalidParametersException,
+    ModuleAlreadyExistsException
+)
 
-from fastapi import HTTPException, Response, status
+from fastapi import Response, status
 from uuid import UUID
 
 
@@ -47,10 +52,7 @@ async def get_all_with_subjects(
             teacher_ids
         )
     except Exception:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="One or more parameters are invalid"
-        )
+        raise InvalidParametersException()
 
 
 async def get_all(page, limit, columns, sort, search, desc, institute_id):
@@ -72,18 +74,12 @@ async def get_all(page, limit, columns, sort, search, desc, institute_id):
             page, limit, columns, sort, search, desc, institute_id
         )
     except Exception:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="One or more parameters are invalid"
-        )
+        raise InvalidParametersException()
 
 
 async def get_by_id(module_id: UUID): 
     if not await module_repository.has_by_id(module_id):
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Module not found"
-        )
+        raise ModuleNotFoundException()
     
     return await module_repository.get_by_id(module_id)
 
@@ -91,10 +87,7 @@ async def get_by_id(module_id: UUID):
 async def create(dto: CreateModuleDTO): 
     has_name = await module_repository.has_by_name(dto.name)
     if has_name:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Module already exists"
-        )
+        raise ModuleAlreadyExistsException()
     
     await module_repository.add(dto.institute_id, dto.name)
     return Response(status_code=status.HTTP_201_CREATED)
@@ -102,10 +95,7 @@ async def create(dto: CreateModuleDTO):
 
 async def edit(module_id: UUID, dto: EditModuleDTO):
     if not await module_repository.has_by_id(module_id):
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Module not found"
-        )
+        raise ModuleNotFoundException()
     
     dto = dto.model_dump(exclude_none=True)
 
@@ -117,10 +107,7 @@ async def edit(module_id: UUID, dto: EditModuleDTO):
 async def delete(module_id: UUID):
     has_id = await module_repository.has_by_id(module_id)
     if not has_id:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Module not found"
-        )
+        raise ModuleNotFoundException()
     
     await module_repository.delete_by_id(module_id)
     return Response(status_code=status.HTTP_200_OK)

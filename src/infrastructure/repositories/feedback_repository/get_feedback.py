@@ -183,7 +183,7 @@ async def get_tags(lesson_id: UUID) -> Dict[str, int]:
     ).select_from(Feedback).where(
         Feedback.lesson_id == lesson_id,
         Feedback.is_disabled == False
-    ).order_by(order_desc(text('tag_count')))
+    ).order_by(order_desc(text("tag_count")))
 
     tags = await db.execute(stmt)
     return { str(i): j for i, j in tags.all() }

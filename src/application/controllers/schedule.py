@@ -28,11 +28,10 @@ async def get_schedule_of_teacher(
     return await schedule_service.get_by_teacher_id(teacher_id, week)
 
 
-@router.get('/from_modeus', description="Show lessons from Modeus")
+@router.get("/from_modeus", description="Show lessons from Modeus")
 async def get_lessons_from_modeus(
     teacher: CurrentTeacher, 
-    subject_id: UUID4,
-    
+    subject_id: UUID4
 ):
     return await schedule_service.from_modeus(
         teacher.id, 

@@ -1,7 +1,12 @@
 from src.application.dto.institute import CreateInstituteDTO, EditInstituteDTO
 from src.infrastructure.repositories import institute_repository
+from src.infrastructure.exceptions import (
+    InstituteNotFoundException,
+    InvalidParametersException,
+    InstituteAlreadyExistsException
+)
 
-from fastapi import HTTPException, Response, status
+from fastapi import Response, status
 from uuid import UUID
 
 
@@ -23,28 +28,19 @@ async def get_all(page, limit, columns, sort, search, desc):
             page, limit, columns, sort, search, desc
         )
     except Exception:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="One or more parameters are invalid"
-        )
+        raise InvalidParametersException()
 
 
 async def get_by_id(institute_id: UUID):
     if not await institute_repository.has_by_id(institute_id):
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Institute not found"
-        )
+        raise InstituteNotFoundException()
  
     return await institute_repository.get_by_id(institute_id)
         
 
 async def create(dto: CreateInstituteDTO):
     if await institute_repository.has_by_name(dto.name):
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Institute already exists"
-        )
+        raise InstituteAlreadyExistsException()
     
     await institute_repository.add(
         dto.name, 
@@ -56,10 +52,7 @@ async def create(dto: CreateInstituteDTO):
 
 async def edit(institute_id: UUID, dto: EditInstituteDTO):
     if not await institute_repository.has_by_id(institute_id):
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Institute not found"
-        )
+        raise InstituteNotFoundException()
     
     await institute_repository.update_by_id(
         institute_id, 
@@ -70,10 +63,7 @@ async def edit(institute_id: UUID, dto: EditInstituteDTO):
 
 async def delete(institute_id: UUID):
     if not await institute_repository.has_by_id(institute_id):
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Institute not found"
-        )
+        raise InstituteNotFoundException()
 
     await institute_repository.delete_by_id(institute_id)
     return Response(status_code=status.HTTP_200_OK)

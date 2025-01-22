@@ -1,8 +1,9 @@
 from src.domain.extensions.get_current_user import get_current_user
 from src.infrastructure.enums.role import Role
+from src.infrastructure.exceptions import RoleMatchException
 from .user import User
 
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends
 from typing_extensions import Annotated
 
 
@@ -21,10 +22,7 @@ class RoleChecker:
             current_user: CurrentUser,
         ):
             if current_user.role != role:
-                raise HTTPException(
-                    status_code=status.HTTP_405_METHOD_NOT_ALLOWED, 
-                    detail=f"You are not {role.lower()}, you are {current_user.role.lower()}"
-                )
+                raise RoleMatchException(current_user.role, role)
             return current_user
     
         return get_current_active_user

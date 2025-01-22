@@ -10,20 +10,20 @@ from datetime import time, date
 
 class AddLessonInScheduleDTO(BaseModel):
     # lesson data transfer add fields
-    subject_id: UUID4 = Field(description="id of subject", examples=['d216bd55-4f57-40fa-a6d1-8444f43ccacf'])
+    subject_id: UUID4 = Field(description="id of subject", examples=["d216bd55-4f57-40fa-a6d1-8444f43ccacf"])
     lesson_name: str = Field(min_length=2, max_length=100, examples=["Разработка на Python (FastAPI)", "Javascript (React)"])
     speaker_name: str = Field(min_length=2, max_length=100, examples=["Смирнов Евгений Сергеевич", "Иванов Иван Иванович"])
-    week: Union[Week, Literal['all']] = Field(default='all', description="number of week for alternate", examples=[Week.FIRST, Week.SECOND])
+    week: Union[Week, Literal["all"]] = Field(default="all", description="number of week for alternate", examples=[Week.FIRST, Week.SECOND])
     day: DayOfWeek = Field(default=DayOfWeek.MONDAY, description="day of week", examples=[DayOfWeek.MONDAY, DayOfWeek.TUESDAY])
     start_time: time = Field(description="time in format HH:MM", examples=["12:00", "13:00"])
     end_time: time = Field(description="time in format HH:MM", examples=["13:30", "15:23"])
     end_date: date = Field(description="date in format YYYY-MM-DD", examples=["2023-01-01", "2023-01-02"])
 
 
-    @field_validator("end_time", mode='after')
+    @field_validator("end_time", mode="after")
     def validate_times(cls, end_time, values):
         time_slot = ScheduleTime(values.data["start_time"], end_time)
         if time_slot in SCHEDULE_TIME:
             return end_time
         
-        raise ValueError('time must be in range of schedule lessons')
+        raise ValueError("time must be in range of schedule lessons")

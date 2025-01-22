@@ -48,7 +48,7 @@ async def get_const_links(
         filters.append(or_(teacher_name, module_name, subject_name))
 
     stmt = select(
-        distinct(StudyGroup.id.label("id")).label('id'),
+        distinct(StudyGroup.id).label("id"),
         Module.id.label("module_id"),
         Module.name.label("module_name"),
         Subject.id.label("subject_id"),
@@ -121,8 +121,6 @@ async def get_const_links(
         total_record=total_record,
         content=content.to_list()
     )
-
-
 
 
 async def get_by_lesson(lesson_id: UUID) -> StudyGroup:

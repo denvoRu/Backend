@@ -1,13 +1,25 @@
 from src.domain.extensions.get_hex_uuid import get_hex_uuid
 from src.infrastructure.enums.role import Role
-from src.infrastructure.repositories import (
-    institute_repository, study_group_repository, subject_repository,
-    auth_repository
-)
 from src.domain.extensions.email.email_sender import EmailSender
 from src.domain.extensions.token import create_token
+from src.infrastructure.repositories import (
+    institute_repository, 
+    study_group_repository, 
+    subject_repository,
+    auth_repository
+)
 from src.application.dto.auth import (
-    RegisterDTO, RestorePasswordDTO, UpdatePasswordDTO
+    RegisterDTO, 
+    RestorePasswordDTO, 
+    UpdatePasswordDTO
+)
+from src.infrastructure.exceptions import (
+    InstituteNotFoundException, 
+    InstituteIsRequiredException,
+    UserNotFoundException, 
+    SubjectNotFoundException,
+    UserAlreadyExistsException,
+    IncorrectUsernameOrPasswordException
 )
 from src.domain.helpers.auth import (
     add_in_teacher_or_admin, get_user_password_and_id_by_email_and_role, 
@@ -24,31 +36,19 @@ from fastapi.security import OAuth2PasswordRequestForm
 async def register(dto: RegisterDTO) -> str:
     # some checks if something's wrong with current register try
     if await is_in_teacher_or_admin(dto.email, dto.role):
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="User already exists"
-        )
+        raise UserAlreadyExistsException()
     
     if dto.role == Role.TEACHER and not dto.institute_id:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Institute id is required"
-        )
+        raise InstituteIsRequiredException()
     
     has_subjects = len(dto.subjects) > 0 and dto.role == Role.TEACHER
 
     if has_subjects and not await subject_repository.has_many(dto.subjects):
-            raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail="One or more subjects not found"
-            )
+            raise SubjectNotFoundException()
     
     is_has = await institute_repository.has_by_id(dto.institute_id)
     if dto.role == Role.TEACHER and not(is_has):
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Institute not found"
-        )
+        raise InstituteNotFoundException()
 
     # creating hashed password, user and his subjects if needed
     salt = gensalt()
@@ -67,10 +67,7 @@ async def login(form_data: OAuth2PasswordRequestForm, role: Role) -> str:
             form_data.username, role
         )
     except Exception:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, 
-            detail="Incorrect username or password"
-        )
+        raise IncorrectUsernameOrPasswordException
 
     if checkpw(form_data.password.encode(), user.password.encode()):
         token = create_token(user.id, role)
@@ -79,17 +76,11 @@ async def login(form_data: OAuth2PasswordRequestForm, role: Role) -> str:
             token.access_token, token.refresh_token
         )
         if pk != token.refresh_token:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
-                detail="Error adding token in redis"
-            )
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
         return token
 
-    raise HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED, 
-        detail="Incorrect username or password"
-    )
+    raise IncorrectUsernameOrPasswordException
 
 
 async def token(refresh_token: str) -> str:
@@ -106,10 +97,7 @@ async def token(refresh_token: str) -> str:
     
 async def restore_password(dto: RestorePasswordDTO):
     if not await is_in_teacher_or_admin(dto.email, dto.role):
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="User not found"
-        )
+        raise UserNotFoundException()
 
     # get token, add this data in Redis and create a restore link
     restore_token = get_hex_uuid()
