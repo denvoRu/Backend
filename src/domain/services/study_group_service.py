@@ -132,7 +132,7 @@ async def delete_teacher(subject_id: UUID, teacher_id: UUID):
             detail="Teacher already exists in subject"
         )
      
-    await study_group_repository.delete_from_subject(
+    await study_group_repository.delete_by_subject(
         subject_id, teacher_id
     )
     return Response(status_code=status.HTTP_200_OK)

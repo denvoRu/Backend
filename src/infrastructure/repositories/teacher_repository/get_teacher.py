@@ -135,3 +135,11 @@ async def get_by_id(teacher_id: UUID) -> dict:
         await get.get_by_id(Teacher, teacher_id), 
         include=["institute_id", "rating"]
     )
+
+
+async def get_id_by_study_group(study_group_id: UUID) -> UUID:
+    return await get.get_by_id(
+        StudyGroup,
+        study_group_id,
+        attr_name='teacher_id'
+    )

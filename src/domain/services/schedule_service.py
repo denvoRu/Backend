@@ -16,6 +16,7 @@ from src.application.dto.schedule import (
 )
 
 from fastapi import HTTPException, Response, status
+from typing import List
 from datetime import date
 from uuid import UUID
 
@@ -32,6 +33,42 @@ async def get_by_teacher_id(teacher_id: UUID, week: Week = Week.FIRST):
     
     return await schedule_repository.get_by_week(teacher_id, week)
 
+
+async def add_lessons(teacher_id: UUID, dto: List[AddLessonInScheduleDTO]):
+    if not await teacher_repository.has_by_id(teacher_id):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Teacher not found"
+        )
+    
+    subject_ids = [i.subject_id for i in dto]
+    if not await study_group_repository.has_by_subjects(teacher_id, subject_ids):
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Teacher not found in subject"
+        )
+    
+    week = get_last_monday()
+    if not await schedule_repository.has_by_id(teacher_id):
+        await schedule_repository.add(teacher_id, week)
+        schedule_id = await schedule_repository.get_by_id(teacher_id)
+    else:
+        schedule_id = schedule_repository.get_by_id(teacher_id)
+        await schedule_repository.update_by_id(
+            schedule_id,
+            {'week_start': week}
+        )
+    
+    dto_list = [i.model_dump(exclude_none=True) for i in dto]
+    for i in dto_list:
+        if i['week'] == 'all':
+            i["week"] = 2
+            dto_list.append(i.copy())
+            i["week"] = 1
+    
+    await schedule_repository.add_lessons(schedule_id, dto)
+    return Response(status_code=status.HTTP_201_CREATED)
+    
 
 async def add_lesson(teacher_id: UUID, dto: AddLessonInScheduleDTO):
     if not await teacher_repository.has_by_id(teacher_id):
@@ -53,7 +90,7 @@ async def add_lesson(teacher_id: UUID, dto: AddLessonInScheduleDTO):
     schedule_id = await schedule_repository.get_by_id(teacher_id)
     if dto.week == 'all':
         dto_dict = dto.model_dump(exclude_none=True, exclude={'week'})
-        await schedule_repository.add_lesson_in_all_week(
+        await schedule_repository.add_lesson_in_all_weeks(
             schedule_id, 
             dto_dict, 
         )
@@ -70,7 +107,6 @@ async def delete_lesson(user: User, schedule_lesson_id: UUID):
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Lesson not found"
         )
-    
 
     if user.role == Role.TEACHER and \
        not await schedule_repository.is_teacher_of_lesson(
@@ -117,7 +153,7 @@ async def edit_lesson(
     return Response(status_code=status.HTTP_200_OK)
 
 
-async def import_from_modeus(
+async def from_modeus(
     teacher_id: UUID, 
     subject_id: UUID,
     week_count: int

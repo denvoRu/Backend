@@ -1,7 +1,13 @@
-from src.application.dto.lesson import AddLessonDTO, EditLessonDTO
 from src.domain.services import lesson_service
+from src.application.dto.lesson import (
+    AddLessonDTO, 
+    AddLessonExtraFieldDTO, 
+    EditLessonDTO
+)
 from src.domain.extensions.check_role import (
-    CurrentTeacher, CurrentAdmin, CurrentUser
+    CurrentTeacher, 
+    CurrentAdmin, 
+    CurrentUser
 )
 
 from fastapi import APIRouter, Body
@@ -80,15 +86,41 @@ async def add_lesson_to_teacher(
     return await lesson_service.add(teacher_id, dto)
 
 
+@router.post("/{lesson_id}/extra_field", description="Add a new extra field to lesson (universal)", status_code=201)
+async def add_extra_field(
+    user: CurrentUser, 
+    lesson_id: UUID4,
+    dto: AddLessonExtraFieldDTO
+):
+    return await lesson_service.add_extra_field(
+        user,
+        lesson_id,
+        dto
+    )
+
+
 @router.patch('/{lesson_id}', description='Edit an existing lesson (universal)')
 async def edit_lesson(
     user: CurrentUser, 
     lesson_id: UUID4, 
     dto: EditLessonDTO = Body(...)
-):
+):    
     return await lesson_service.edit_lesson(user, lesson_id, dto)
 
 
 @router.delete("/{lesson_id}", description="Delete a lesson (universal)")
 async def delete_lesson(user: CurrentUser, lesson_id: UUID4):
     return await lesson_service.delete(user, lesson_id)
+
+
+@router.delete("/{lesson_id}/extra_field/{extra_field_id}", "Delete a extra field from lesson (universal)")
+async def delete_extra_field_from_lesson(
+    user: CurrentUser,
+    lesson_id: UUID4,
+    extra_field_id: UUID4
+):
+    return await lesson_service.delete_extra_field(
+        user, 
+        lesson_id, 
+        extra_field_id
+    )

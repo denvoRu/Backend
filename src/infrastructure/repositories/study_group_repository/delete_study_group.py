@@ -2,7 +2,7 @@ from src.infrastructure.database import StudyGroup, db
 from sqlalchemy import update
 
 
-async def delete_from_subject(subject_id, teacher_id):
+async def delete_by_subject(subject_id, teacher_id):
     stmt = update(StudyGroup).where(
         StudyGroup.subject_id == subject_id,
         StudyGroup.teacher_id == teacher_id,

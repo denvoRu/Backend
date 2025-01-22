@@ -6,6 +6,7 @@ from src.application.dto.schedule import (
 )
 
 from fastapi import APIRouter, Body
+from typing import Union, List
 from datetime import date
 from pydantic import UUID4
 
@@ -27,25 +28,37 @@ async def get_schedule_of_teacher(
     return await schedule_service.get_by_teacher_id(teacher_id, week)
 
 
-@router.post('/import_from_modeus', description="Add lessons to my schedule from Modeus", status_code=201)
-async def import_lessons_from_modeus(
+@router.get('/from_modeus', description="Show lessons from Modeus")
+async def get_lessons_from_modeus(
     teacher: CurrentTeacher, 
     subject_id: UUID4,
-    week_count: int = 1
+    
 ):
-    return await schedule_service.import_from_modeus(
+    return await schedule_service.from_modeus(
         teacher.id, 
         subject_id, 
-        week_count
     )
 
 
 @router.post("/", description="Add lesson to my schedule", status_code=201)
 async def add_lesson_in_my_schedule(
     teacher: CurrentTeacher, 
-    dto: AddLessonInScheduleDTO = Body(...)
+    dto: Union[AddLessonInScheduleDTO, List[AddLessonInScheduleDTO]] = Body(...)
 ):
+    if isinstance(dto, list):
+        return await schedule_service.add_lessons(teacher.id, dto)
     return await schedule_service.add_lesson(teacher.id, dto)
+
+
+@router.post("/{teacher_id}", description="Add lesson to teacher schedule (for admins)", status_code=201)
+async def add_lesson_in_schedule_of_teacher(    
+    admin: CurrentAdmin, 
+    teacher_id: UUID4,
+    dto: Union[AddLessonInScheduleDTO, List[AddLessonInScheduleDTO]] = Body(...)
+):
+    if isinstance(dto, list):
+        return await schedule_service.add_lessons(teacher_id, dto)
+    return await schedule_service.add_lesson(teacher_id, dto)
 
 
 @router.post("/{schedule_lesson_id}/lesson", description="Add a lesson from the schedule to the scheduled ones")
@@ -72,15 +85,6 @@ async def get_lesson_id_of_teacher_shedule_lesson(
         schedule_lesson_id, 
         date
     )
-
-
-@router.post("/{teacher_id}", description="Add lesson to teacher schedule (for admins)", status_code=201)
-async def add_lesson_in_schedule_of_teacher(    
-    admin: CurrentAdmin, 
-    teacher_id: UUID4,
-    dto: AddLessonInScheduleDTO = Body(...)
-):
-    return await schedule_service.add_lesson(teacher_id, dto)
 
 
 @router.patch("/{schedule_lesson_id}", description="Edit lesson in my schedule (universal)")

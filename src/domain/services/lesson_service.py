@@ -4,12 +4,16 @@ from src.infrastructure.constants.excel import XLSX_MEDIA_TYPE
 from src.domain.extensions.get_unique_lessons import get_unique_lessons
 from src.infrastructure.enums.role import Role
 from src.infrastructure.enums.privilege import Privilege
-from src.application.dto.lesson import EditLessonDTO, AddLessonDTO
 from src.domain.extensions.check_role.user import User
 from src.infrastructure.repositories import (
     lesson_repository, schedule_repository,
     study_group_repository, feedback_repository,
     teacher_repository, subject_repository
+)
+from src.application.dto.lesson import (
+    EditLessonDTO, 
+    AddLessonDTO, 
+    AddLessonExtraFieldDTO
 )
 
 from fastapi import HTTPException, Response, status
@@ -289,4 +293,62 @@ async def delete(user: User, lesson_id: UUID):
         )
     
     await lesson_repository.delete_by_id(lesson_id)
+    return Response(status_code=status.HTTP_200_OK)
+
+
+async def add_extra_field(
+    user: User, 
+    lesson_id: UUID, 
+    dto: AddLessonExtraFieldDTO
+): 
+    if user.role == Role.TEACHER:
+        if not await lesson_repository.is_teacher_of_lesson(user.id, lesson_id):
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Lesson not found"
+            )
+    else:
+        if not await lesson_repository.has_by_id(lesson_id):
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Lesson not found"
+            )
+        
+    if await lesson_repository.extra_field.has_by_name(lesson_id, dto.name):
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Extra field already exists"
+        )
+    
+    dto_dict = dto.model_dump(exclude_none=True)
+
+    await lesson_repository.extra_field.add(lesson_id, dto_dict)
+    return Response(status_code=status.HTTP_201_CREATED)
+
+
+async def delete_extra_field(
+    user: User,
+    lesson_id: UUID,
+    extra_field_id: UUID
+): 
+    if user.role == Role.TEACHER:
+        if not await lesson_repository.is_teacher_of_lesson(user.id, lesson_id):
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Lesson not found"
+            )
+    else:
+        if not await lesson_repository.has_by_id(lesson_id):
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Lesson not found"
+            )
+        
+    if not await lesson_repository.extra_field.has_by_id(extra_field_id):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="extra field not found"
+        )
+    
+    await lesson_repository.extra_field.delete_by_id(extra_field_id)
     return Response(status_code=status.HTTP_200_OK)

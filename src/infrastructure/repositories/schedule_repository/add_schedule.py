@@ -29,7 +29,18 @@ async def add_lesson(schedule_id: UUID, dto: dict):
     return schedule_lesson.id
 
 
-async def add_lesson_in_all_week(schedule_id: UUID, dto: dict):
+async def add_lessons(schedule_id: UUID, dto: list):
+    for lesson_dto in dto:
+        schedule_lesson = ScheduleLesson(
+            schedule_id=schedule_id,
+            **lesson_dto
+        )
+        db.add(schedule_lesson)
+
+    await db.commit_rollback()
+
+
+async def add_lesson_in_all_weeks(schedule_id: UUID, dto: dict):
     for i in Week:
         schedule_lesson = ScheduleLesson(
             schedule_id=schedule_id,

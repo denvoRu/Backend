@@ -1,10 +1,21 @@
 from src.infrastructure.database.extensions.row_to_dict import row_to_dict
-from src.infrastructure.repositories import feedback_repository
+from src.infrastructure.repositories import (
+    feedback_repository, 
+    schedule_repository,
+    teacher_repository,
+)
 from src.infrastructure.database import (
-    Lesson, StudyGroup, Schedule, ScheduleLesson, Subject, get_by_id, db
+    ExtraFieldSetting, 
+    Lesson, 
+    StudyGroup, 
+    ScheduleLesson, 
+    Subject, 
+    has_instance,
+    get_by_id, 
+    db
 )
 
-from sqlalchemy import select, and_
+from sqlalchemy import select
 from typing import List, Tuple
 from datetime import date, datetime, time
 from uuid import UUID
@@ -92,38 +103,36 @@ async def get_active_by_id(lesson_id: UUID):
 
 
 async def get_active_by_study_group_id(study_group_id: UUID):
-    date_now = datetime.now().date()
+    now = datetime.now()
+    now_date = now.date()
+    now_time = now.time()
 
-    try:
+    if await has_instance(Lesson, (
+        Lesson.date >= now_date,
+        Lesson.start_time <= now_time,
+        Lesson.end_time >= now_time,
+    )):
         filtered_study_groups = select(StudyGroup.id).where(
             StudyGroup.id == study_group_id,
-            StudyGroup.const_end_date >= date_now
+            StudyGroup.const_end_date >= now_date
         )
         return await get_active_by_condition(
             Lesson.study_group_id.in_(filtered_study_groups)
         )
-    except Exception:
-        subject_ids = select(
-            StudyGroup.subject_id
-        ).where(StudyGroup.id == study_group_id)
-        schedule_ids = select(
-            Schedule.id
-        ).where(Schedule.teacher_id == study_group_id)
-
-        schedule_lesson = await get_active_by_condition(
-            and_(
-                ScheduleLesson.subject_id.in_(subject_ids),
-                ScheduleLesson.schedule_id.in_(schedule_ids),
-                ScheduleLesson.end_date <= date_now
-            ),
-            model=ScheduleLesson.id,
-        )
-
-        return await get_by_schedule(
+    
+    schedule_lessons = await __find_schedule_lessons_by_date(
+        study_group_id, 
+        now_date
+    )
+    if len(schedule_lessons) > 0:
+        lesson_id = await __find_by_schedule_lesson_dict(
             study_group_id, 
-            schedule_lesson, 
-            date_now
+            schedule_lessons[0], 
+            now_date
         )
+        return await get_active_by_id(lesson_id)
+    else:
+        raise Exception("Not found")
 
 
 async def get_by_schedule(
@@ -148,32 +157,83 @@ async def get_by_schedule(
         raise Exception(str(e))
     
 
-async def get_active_by_condition(*condition, model=None):
-    model = model or Lesson
-
+async def get_active_by_condition(*condition):
     now = datetime.now()
-    stmt = select(
-        model.id,
-        model.speaker_name, 
-        model.lesson_name,
-        model.start_time,
-        model.end_time,
-        model.date,
+    lesson_stmt = select(
+        Lesson.id,
+        Lesson.speaker_name, 
+        Lesson.lesson_name,
+        Lesson.start_time,
+        Lesson.end_time,
+        Lesson.date,
         Subject.name.label("subject_name")
     ).select_from(
-        Lesson).join(StudyGroup, StudyGroup.id == Lesson.study_group_id).join(
-            Subject, StudyGroup.subject_id == Subject.id
-        ).where(
-            *condition,
-            model.date >= now.date(),
-            model.start_time <= now.time(),
-            model.end_time >= now.time(),
-            model.is_disabled == False
-        )
+        Lesson
+    ).join(
+        StudyGroup, 
+        StudyGroup.id == Lesson.study_group_id
+    ).join(
+            Subject, 
+            StudyGroup.subject_id == Subject.id
+    ).where(
+        *condition,
+        Lesson.date >= now.date(),
+        Lesson.start_time <= now.time(),
+        Lesson.end_time >= now.time(),
+        Lesson.is_disabled == False
+    )
+
+    field_stmt = select(
+        ExtraFieldSetting.id,
+        ExtraFieldSetting.extra_field_name
+    ).select_from(
+        ExtraFieldSetting
+    ).join(
+        Lesson, 
+        Lesson.id == ExtraFieldSetting.lesson_id
+    ).where(
+        *condition,
+        Lesson.date >= now.date(),
+        Lesson.start_time <= now.time(),
+        Lesson.end_time >= now.time(),
+        Lesson.is_disabled == False
+    )
 
     try:
-        lesson = (await db.execute(stmt)).one()
-        return row_to_dict(lesson)
+        lesson = (await db.execute(lesson_stmt)).one()
+        fields = (await db.execute(field_stmt)).all()
+        fields = [row_to_dict(field) for field in fields]
+        lesson = row_to_dict(lesson)
+        lesson["extra_field"] = fields
+        
+        return lesson
     except Exception:
         await db.commit_rollback()
         raise Exception("Lesson not found")
+
+
+async def __find_schedule_lessons_by_date(
+    study_group_id: UUID, 
+    date: date
+):
+    teacher_id = await teacher_repository.get_id_by_study_group(
+        study_group_id
+    )
+    return await schedule_repository.get_in_interval(
+        teacher_id, 
+        date, 
+        date, 
+    )
+
+
+async def __find_by_schedule_lesson_dict(
+    study_group_id,
+    schedule_lesson: dict,
+    date: date
+    ):
+    schedule_lesson = ScheduleLesson.model_validate(schedule_lesson)
+    return await get_by_schedule(
+        study_group_id, 
+        schedule_lesson, 
+        date
+    )

@@ -3,7 +3,7 @@ from src.infrastructure.enums.week import Week
 from src.infrastructure.config.schedule_time import SCHEDULE_TIME
 from src.infrastructure.models.schedule_time import ScheduleTime
 
-from pydantic import BaseModel, Field, validator, UUID4
+from pydantic import BaseModel, Field, field_validator, UUID4
 from typing_extensions import Union, Literal
 from datetime import time, date
 
@@ -19,10 +19,11 @@ class AddLessonInScheduleDTO(BaseModel):
     end_time: time = Field(description="time in format HH:MM", examples=["13:30", "15:23"])
     end_date: date = Field(description="date in format YYYY-MM-DD", examples=["2023-01-01", "2023-01-02"])
 
-    @validator("end_date")
-    def validate_end_date(cls, value):
-        if value >= date.today():
-            return value
+
+    @field_validator("end_time", mode='after')
+    def validate_times(cls, end_time, values):
+        time_slot = ScheduleTime(values.data["start_time"], end_time)
+        if time_slot in SCHEDULE_TIME:
+            return end_time
         
-        raise ValueError("end date must be in future")
-    
+        raise ValueError('time must be in range of schedule lessons')

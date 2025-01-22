@@ -1,3 +1,4 @@
+from src.infrastructure.repositories.lesson_repository import extra_field
 from .add_lesson import add, add_lesson_by_schedule
 from .delete_lesson import delete_by_id
 from .edit_lesson import update_by_id
