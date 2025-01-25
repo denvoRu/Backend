@@ -6,7 +6,7 @@ from src.application.dto.schedule import (
 )
 
 from fastapi import APIRouter, Body
-from typing import Union, List
+from typing import List
 from datetime import date
 from pydantic import UUID4
 
@@ -37,7 +37,7 @@ async def get_schedule_of_teacher(
 @router.get("/from_modeus", description="Show lessons from Modeus")
 async def get_lessons_from_modeus(
     teacher: CurrentTeacher, 
-    subject_id: UUID4
+    subject_id: UUID4 = None,
 ):
     return await schedule_lesson_service.get_from_modeus(
         teacher.id, 

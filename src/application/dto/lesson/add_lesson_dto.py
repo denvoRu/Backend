@@ -16,7 +16,10 @@ class AddLessonDTO(BaseModel):
 
     @field_validator("end_time", mode="after")
     def validate_times(cls, end_time, values):
-        time_slot = ScheduleTime(values.data["start_time"], end_time)
+        time_slot = ScheduleTime(
+            start=values.data["start_time"], 
+            end=end_time
+        )
         if time_slot in SCHEDULE_TIME:
             return end_time
         

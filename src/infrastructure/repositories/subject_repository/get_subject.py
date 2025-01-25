@@ -1,8 +1,8 @@
+from .stmt import stmt_get_by_module_id
+from src.infrastructure.database import Subject, get
 from src.infrastructure.repositories.study_group_repository import (
     get_subject_ids_by_teacher_statement
 )
-from .stmt import stmt_get_by_module_id
-from src.infrastructure.database import Subject, get
 
 from sqlalchemy import not_
 from uuid import UUID
@@ -81,4 +81,3 @@ async def get_all(
 
 async def get_by_id(subject_id: UUID) -> Subject:
     return await get.get_by_id(Subject, subject_id)
-
