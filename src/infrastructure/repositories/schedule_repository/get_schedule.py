@@ -21,7 +21,6 @@ async def get_by_week(teacher_id: UUID, week: int, filters = []):
         ScheduleLesson.day.label("day"),
         ScheduleLesson.subject_id.label("subject_id"),
         Subject.name.label("subject_name"),
-        ScheduleLesson.is_all_week.label("has_all_week"),
         ScheduleLesson.id.label("schedule_lesson_id"),
         ScheduleLesson.speaker_name,
         ScheduleLesson.week,

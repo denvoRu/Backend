@@ -16,5 +16,4 @@ class ScheduleLesson(SQLModel, table=True):
     start_time: time = Time()
     end_time: time = Time()
     end_date: date = Date()
-    is_all_week: bool = Field(default=False)
     
