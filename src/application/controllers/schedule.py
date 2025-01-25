@@ -59,12 +59,10 @@ async def add_lesson_in_my_schedule(
 async def add_lesson_in_schedule_of_teacher(    
     admin: CurrentAdmin, 
     teacher_id: UUID4,
-    dto: Union[AddLessonInScheduleDTO, List[AddLessonInScheduleDTO]] = Body(...)
+    dto: List[AddLessonInScheduleDTO] = Body(...)
 ):
-    if isinstance(dto, list):
-        return await schedule_lesson_service.add_many(teacher_id, dto)
-    return await schedule_lesson_service.add(teacher_id, dto)
-
+    return await schedule_lesson_service.add_many(teacher_id, dto)
+    
 
 @router.post("/{schedule_lesson_id}/lesson", description="Add a lesson from the schedule to the scheduled ones")
 async def get_lesson_id_of_shedule_lesson(
