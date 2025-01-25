@@ -48,11 +48,9 @@ async def get_lessons_from_modeus(
 @router.post("/", description="Add lesson to my schedule", status_code=201)
 async def add_lesson_in_my_schedule(
     teacher: CurrentTeacher, 
-    dto: Union[AddLessonInScheduleDTO, List[AddLessonInScheduleDTO]] = Body(...)
+    dto: List[AddLessonInScheduleDTO] = Body(...)
 ):
-    if isinstance(dto, list):
-        return await schedule_lesson_service.add_many(teacher.id, dto)
-    return await schedule_lesson_service.add(teacher.id, dto)
+    return await schedule_lesson_service.add_many(teacher.id, dto)
 
 
 @router.post("/{teacher_id}", description="Add lesson to teacher schedule (for admins)", status_code=201)
