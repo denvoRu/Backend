@@ -1,25 +1,22 @@
-from src.application.dto.module import CreateModuleDTO, EditModuleDTO
 from src.infrastructure.repositories import module_repository
 from src.infrastructure.exceptions import (
     ModuleNotFoundException,
     InvalidParametersException,
-    ModuleAlreadyExistsException
 )
 
-from fastapi import Response, status
 from uuid import UUID
 
 
 async def get_all_with_subjects(
-        page, 
-        limit, 
-        sort, 
-        search, 
-        desc, 
-        rating_start, 
-        rating_end, 
-        institute_ids,
-        teacher_ids
+    page, 
+    limit, 
+    sort, 
+    search, 
+    desc, 
+    rating_start, 
+    rating_end, 
+    institute_ids,
+    teacher_ids
 ):
     """
     Returns all modules with subjects
@@ -55,7 +52,15 @@ async def get_all_with_subjects(
         raise InvalidParametersException()
 
 
-async def get_all(page, limit, columns, sort, search, desc, institute_id):
+async def get_all(
+    page, 
+    limit, 
+    columns, 
+    sort, 
+    search, 
+    desc, 
+    institute_id
+):
     """
     Returns all modules
     :param page: current page
@@ -71,7 +76,13 @@ async def get_all(page, limit, columns, sort, search, desc, institute_id):
 
     try:
         return await module_repository.get_all(
-            page, limit, columns, sort, search, desc, institute_id
+            page, 
+            limit, 
+            columns, 
+            sort, 
+            search, 
+            desc, 
+            institute_id
         )
     except Exception:
         raise InvalidParametersException()
@@ -82,32 +93,3 @@ async def get_by_id(module_id: UUID):
         raise ModuleNotFoundException()
     
     return await module_repository.get_by_id(module_id)
-
-
-async def create(dto: CreateModuleDTO): 
-    has_name = await module_repository.has_by_name(dto.name)
-    if has_name:
-        raise ModuleAlreadyExistsException()
-    
-    await module_repository.add(dto.institute_id, dto.name)
-    return Response(status_code=status.HTTP_201_CREATED)
-
-
-async def edit(module_id: UUID, dto: EditModuleDTO):
-    if not await module_repository.has_by_id(module_id):
-        raise ModuleNotFoundException()
-    
-    dto = dto.model_dump(exclude_none=True)
-
-    await module_repository.update_by_id(module_id, dto)
-    return Response(status_code=status.HTTP_200_OK)
-
-
-
-async def delete(module_id: UUID):
-    has_id = await module_repository.has_by_id(module_id)
-    if not has_id:
-        raise ModuleNotFoundException()
-    
-    await module_repository.delete_by_id(module_id)
-    return Response(status_code=status.HTTP_200_OK)

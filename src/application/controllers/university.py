@@ -8,4 +8,4 @@ router = APIRouter()
 
 @router.get("/rating", description="Show overall rating")
 async def get_university_rating(admin: CurrentAdmin):
-    return await university_service.get_rating()
+    return await university_service.get()

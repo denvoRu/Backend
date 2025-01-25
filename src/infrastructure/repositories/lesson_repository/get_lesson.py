@@ -102,7 +102,7 @@ async def get_active_by_id(lesson_id: UUID):
     return await get_active_by_condition(Lesson.id == lesson_id)
 
 
-async def get_active_by_study_group_id(study_group_id: UUID):
+async def get_active_by_const_link_id(study_group_id: UUID):
     now = datetime.now()
     now_date = now.date()
     now_time = now.time()

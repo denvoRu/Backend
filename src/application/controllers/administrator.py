@@ -41,7 +41,12 @@ async def get_all_admins(
     :return: all administrators
     """
     return await administrator_service.get_all(
-        page, limit, columns, sort, search, desc
+        page, 
+        limit, 
+        columns, 
+        sort, 
+        search, 
+        desc
     )
 
 
@@ -49,7 +54,8 @@ async def get_all_admins(
 async def edit_admin(
     admin: CurrentAdmin, admin_id: UUID4, dto: EditUserDTO = Body(...)
 ):
-    return await administrator_service.edit(admin_id, dto)  # edits admin with needed params
+    # edits admin with needed params
+    return await administrator_service.edit(admin_id, dto) 
     
 
 @router.delete("/{admin_id}", description="Delete an existing user")

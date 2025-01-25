@@ -1,18 +1,15 @@
-from src.application.dto.shared import EditUserDTO
 from src.domain.extensions.check_role.user import User
-from src.infrastructure.enums.role import Role
-from src.infrastructure.repositories import subject_repository
 from src.infrastructure.enums.privilege import Privilege
-from src.infrastructure.repositories import teacher_repository
+from src.infrastructure.enums.role import Role
+from src.infrastructure.repositories import (
+    teacher_repository,
+    subject_repository
+)
 from src.infrastructure.exceptions import (
     TeacherNotFoundException,
-    InvalidParametersException,
-    PrivilegeAlreadyExistsException,
-    PrivilegeNotFoundException
+    InvalidParametersException
 )
-                                        
-from fastapi import Response, status
-from bcrypt import gensalt, hashpw
+
 from uuid import UUID
 
 
@@ -82,58 +79,6 @@ async def get_by_id(user: User, teacher_id: str):
 
     teacher_data["privileges"] = privileges
     return teacher_data
-
-
-async def edit(teacher_id: UUID, dto: EditUserDTO):
-    if not await teacher_repository.has_by_id(teacher_id):
-        raise TeacherNotFoundException()
-    
-    salt = gensalt()
-    dto.password = hashpw(dto.password.encode(), salt).decode()
-    dto_dict = dto.model_dump(exclude_none=True)
-
-    await teacher_repository.update_by_id(teacher_id, dto_dict)
-    return Response(status_code=status.HTTP_200_OK)
-
-
-async def delete(teacher_id: UUID):
-    if not await teacher_repository.has_by_id(teacher_id):
-        raise TeacherNotFoundException()
-    
-    await teacher_repository.delete_by_id(teacher_id)
-    return Response(status_code=status.HTTP_200_OK)
-
-
-async def get_privileges(teacher_id: UUID):
-    """
-    Gets teacher's privileges (is teacher allowed to see some statistics)
-    """
-    if not await teacher_repository.has_by_id(teacher_id):
-        raise TeacherNotFoundException()
-    
-    return await teacher_repository.privilege.get_by_id(teacher_id)
-
-
-async def add_privilege(teacher_id: UUID, privilege: Privilege):
-    if not await teacher_repository.has_by_id(teacher_id):
-        raise TeacherNotFoundException()
-
-    if await teacher_repository.privilege.has_by_name(teacher_id, privilege.value):
-        raise PrivilegeAlreadyExistsException()
-
-    await teacher_repository.privilege.add(teacher_id, privilege.value)
-    return Response(status_code=status.HTTP_201_CREATED)
-
-
-async def delete_privilege(teacher_id: UUID, privilege: Privilege):
-    if not await teacher_repository.has_by_id(teacher_id):
-        raise TeacherNotFoundException()
-
-    if not await teacher_repository.privilege.has_by_name(teacher_id, privilege.value):
-        raise PrivilegeNotFoundException()
-    
-    await teacher_repository.privilege.delete_by_name(teacher_id, privilege.value)
-    return Response(status_code=status.HTTP_200_OK)
 
 
 async def get_subjects(

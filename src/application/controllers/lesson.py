@@ -59,17 +59,26 @@ async def get_data_of_active_lesson(lesson_id: UUID4):
 
 @router.get("/{lesson_id}/members", description="Show members of lesson")
 async def get_members_of_lesson(user: CurrentUser, lesson_id: UUID4):
-    return await lesson_service.get_members(user, lesson_id)
+    return await lesson_service.feedback.get_members(
+        user, 
+        lesson_id
+    )
 
 
 @router.get("/{lesson_id}/members/xlsx", description="Show members of lesson", response_class=StreamingResponse)
 async def get_excel_file_with_members_of_lesson(user: CurrentUser, lesson_id: UUID4):
-    return await lesson_service.get_excel_with_members(user, lesson_id)
+    return await lesson_service.feedback.get_excel_with_members(
+        user, 
+        lesson_id
+    )
 
 
 @router.get("/{lesson_id}/statistics", description="Show statistics of lesson")
 async def get_statistics_of_lesson(user: CurrentUser, lesson_id: UUID4):
-    return await lesson_service.get_statistics(user, lesson_id)
+    return await lesson_service.feedback.get_statistics(
+        user, 
+        lesson_id
+    )
 
 
 @router.post("/", description="Add a new lesson", status_code=201)
@@ -92,7 +101,7 @@ async def add_extra_field(
     lesson_id: UUID4,
     dto: AddLessonExtraFieldDTO
 ):
-    return await lesson_service.add_extra_field(
+    return await lesson_service.extra_field.add(
         user,
         lesson_id,
         dto
@@ -105,7 +114,7 @@ async def edit_lesson(
     lesson_id: UUID4, 
     dto: EditLessonDTO = Body(...)
 ):    
-    return await lesson_service.edit_lesson(user, lesson_id, dto)
+    return await lesson_service.edit(user, lesson_id, dto)
 
 
 @router.delete("/{lesson_id}", description="Delete a lesson (universal)")
@@ -113,13 +122,13 @@ async def delete_lesson(user: CurrentUser, lesson_id: UUID4):
     return await lesson_service.delete(user, lesson_id)
 
 
-@router.delete("/{lesson_id}/extra_field/{extra_field_id}", "Delete a extra field from lesson (universal)")
+@router.delete("/{lesson_id}/extra_field/{extra_field_id}", description="Delete a extra field from lesson (universal)")
 async def delete_extra_field_from_lesson(
     user: CurrentUser,
     lesson_id: UUID4,
     extra_field_id: UUID4
 ):
-    return await lesson_service.delete_extra_field(
+    return await lesson_service.extra_field.delete(
         user, 
         lesson_id, 
         extra_field_id

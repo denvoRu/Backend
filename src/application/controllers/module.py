@@ -56,11 +56,11 @@ async def get_current_module(current_user: CurrentAdmin, module_id: UUID4):
     return await module_service.get_by_id(module_id)
 
 
-@router.post("/", description="Create a new module", status_code=201)
-async def create_module(
+@router.post("/", description="Add a new module", status_code=201)
+async def add_module(
     current_user: CurrentAdmin, dto: CreateModuleDTO = Body(...)
 ):
-    return await module_service.create(dto)
+    return await module_service.add(dto)
 
 
 @router.patch("/{module_id}", description="Edit an existing module (for admins)")

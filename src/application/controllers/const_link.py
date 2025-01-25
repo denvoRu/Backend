@@ -1,5 +1,5 @@
 from src.application.dto.const_link import AddConstLinkDTO, EditConstLinkDTO
-from src.domain.services import const_link_service, study_group_service
+from src.domain.services import const_link_service
 from src.domain.extensions.check_role import CurrentAdmin
 
 from fastapi import APIRouter, Body, Query
@@ -27,15 +27,15 @@ async def get_const_link(
 
 @router.get("/active/{const_link_id}", description="Show lesson data if this lesson is active for this const link")
 async def get_data_of_active_lesson(const_link_id: UUID4):
-    return await study_group_service.get_active(const_link_id)
+    return await const_link_service.get_active(const_link_id)
 
 
-@router.post("/", description="Create const link (for admins)", status_code=201)
+@router.post("/", description="Add a new const link (for admins)", status_code=201)
 async def create_const_link(
     admin: CurrentAdmin,
     dto: AddConstLinkDTO = Body(...), 
 ): 
-    return await const_link_service.create(dto)
+    return await const_link_service.add(dto)
 
 
 @router.patch("/{const_link_id}", description="Edit const link (for admins)")

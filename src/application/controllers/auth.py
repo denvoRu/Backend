@@ -2,7 +2,9 @@ from src.infrastructure.enums.role import Role
 from src.domain.services import auth_service
 from src.domain.extensions.check_role import CurrentAdmin
 from src.application.dto.auth import (
-    RegisterDTO, RestorePasswordDTO, UpdatePasswordDTO
+    RegisterDTO, 
+    RestorePasswordDTO, 
+    UpdatePasswordDTO
 )
 
 from typing import Any

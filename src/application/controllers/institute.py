@@ -19,28 +19,44 @@ async def get_all_institutes(
     sort: str = Query(None, alias="sort"),
     search: str = Query(None, alias="search"),
 ):
-    return await institute_service.get_all(page, limit, columns, sort, search, desc)
+    return await institute_service.get_all(
+        page, 
+        limit, 
+        columns, 
+        sort, 
+        search, 
+        desc
+    )
 
 
 @router.get("/{institute_id}", description="Get an existing institute with id")
-async def get_current_institute(current_user: CurrentAdmin, institute_id: UUID4):
+async def get_current_institute(
+    current_user: CurrentAdmin, 
+    institute_id: UUID4
+):
     return await institute_service.get_by_id(institute_id)
 
 
-@router.post("/", description="Create a new institute", status_code=201)
-async def create_institute(
-    current_user: CurrentAdmin, dto: CreateInstituteDTO = Body(...)
+@router.post("/", description="Add a new institute", status_code=201)
+async def add_institute(
+    current_user: CurrentAdmin, 
+    dto: CreateInstituteDTO = Body(...)
 ):
-    return await institute_service.create(dto)
+    return await institute_service.add(dto)
 
 
 @router.patch("/{institute_id}", description="Edit an existing institute")
 async def edit_institute(
-    current_user: CurrentAdmin, institute_id: UUID4, dto: EditInstituteDTO = Body(...)
+    current_user: CurrentAdmin, 
+    institute_id: UUID4, 
+    dto: EditInstituteDTO = Body(...)
 ):
     return await institute_service.edit(institute_id, dto)
 
 
 @router.delete("/{institute_id}", description="Delete an existing institute")
-async def delete_institute(current_user: CurrentAdmin, institute_id: UUID4):
+async def delete_institute(
+    current_user: CurrentAdmin, 
+    institute_id: UUID4
+):
     return await institute_service.delete(institute_id)
