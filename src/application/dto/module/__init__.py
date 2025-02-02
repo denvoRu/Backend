@@ -1,2 +1,2 @@
-from .create_module_dto import CreateModuleDTO
+from .add_module_dto import AddModuleDTO
 from .edit_module_dto import EditModuleDTO

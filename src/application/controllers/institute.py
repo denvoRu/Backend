@@ -1,4 +1,4 @@
-from src.application.dto.institute import CreateInstituteDTO, EditInstituteDTO
+from src.application.dto.institute import AddInstituteDTO, EditInstituteDTO
 from src.domain.services import institute_service
 from src.domain.extensions.check_role import CurrentAdmin
 
@@ -40,7 +40,7 @@ async def get_current_institute(
 @router.post("/", description="Add a new institute", status_code=201)
 async def add_institute(
     current_user: CurrentAdmin, 
-    dto: CreateInstituteDTO = Body(...)
+    dto: AddInstituteDTO = Body(...)
 ):
     return await institute_service.add(dto)
 

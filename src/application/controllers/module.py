@@ -1,4 +1,4 @@
-from src.application.dto.module import CreateModuleDTO, EditModuleDTO
+from src.application.dto.module import AddModuleDTO, EditModuleDTO
 from src.domain.services import module_service
 from src.domain.extensions.check_role import CurrentAdmin
 
@@ -58,13 +58,18 @@ async def get_current_module(current_user: CurrentAdmin, module_id: UUID4):
 
 @router.post("/", description="Add a new module", status_code=201)
 async def add_module(
-    current_user: CurrentAdmin, dto: CreateModuleDTO = Body(...)
+    current_user: CurrentAdmin, 
+    dto: AddModuleDTO = Body(...)
 ):
     return await module_service.add(dto)
 
 
 @router.patch("/{module_id}", description="Edit an existing module (for admins)")
-async def edit_module(current_user: CurrentAdmin, module_id: UUID4, dto: EditModuleDTO = Body(...)):
+async def edit_module(
+    current_user: CurrentAdmin, 
+    module_id: UUID4, 
+    dto: EditModuleDTO = Body(...)
+):
     return await module_service.edit(module_id, dto)
 
 

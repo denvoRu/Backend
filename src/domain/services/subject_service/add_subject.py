@@ -1,4 +1,4 @@
-from src.application.dto.subject import CreateSubjectDTO
+from src.application.dto.subject import AddSubjectDTO
 from src.infrastructure.repositories import (
     subject_repository, 
     module_repository
@@ -11,7 +11,7 @@ from src.infrastructure.exceptions import (
 from fastapi import Response, status
     
 
-async def create(dto: CreateSubjectDTO):
+async def add(dto: AddSubjectDTO):
     if await subject_repository.has_by_name(dto.name):
         raise SubjectAlreadyExistsException()
     

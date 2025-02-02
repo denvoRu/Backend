@@ -17,9 +17,23 @@ services:
     environment:
       REDIS_ARGS: "--requirepass ${REDIS_PASSWORD} --user ${REDIS_USERNAME} on >${REDIS_PASSWORD} ~* allcommands --user default off nopass nocommands"
   selenium:
-    image: selenium/standalone-chrome
-    expose:
-      - "4444"
+    image: selenium/hub:4.7.2
+    ports:
+      - "4444:4444"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4444/wd/hub/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  chrome:
+    image: selenium/node-chrome:4.7.2
+    depends_on:
+      - selenium-hub
+    environment:
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
   fastapi:
     env_file: .env
     build: .
@@ -33,4 +47,5 @@ services:
     depends_on:
       - postgresql
       - redis
+      - chrome
       - selenium

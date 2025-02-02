@@ -22,7 +22,12 @@ async def get_all(page, limit, columns, sort, search, desc):
         
     try: 
         return await institute_repository.get_all(
-            page, limit, columns, sort, search, desc
+            page, 
+            limit, 
+            columns, 
+            sort, 
+            search, 
+            desc
         )
     except Exception:
         raise InvalidParametersException()

@@ -95,6 +95,21 @@ async def add_lesson_to_teacher(
     return await lesson_service.add(teacher_id, dto)
 
 
+@router.post("/from_modeus", description="Add a new lessons from modeus on week", status_code=201)
+async def add_lessons_from_modeus_on_week(
+    teacher: CurrentTeacher
+):
+    return await lesson_service.add_from_modeus_on_week(teacher.id)
+
+
+@router.post("/{teacher_id}/from_modeus", description="Add a new lessons from modeus on week", status_code=201)
+async def add_lessons_from_modeus_on_week(
+    admin: CurrentAdmin, 
+    teacher_id: UUID4,
+):
+    return await lesson_service.add_from_modeus_on_week(teacher_id)
+
+
 @router.post("/{lesson_id}/extra_field", description="Add a new extra field to lesson (universal)", status_code=201)
 async def add_extra_field(
     user: CurrentUser, 

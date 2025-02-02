@@ -1,4 +1,5 @@
 from src.domain.helpers.schedule.last_monday import get_last_monday
+from src.domain.helpers.schedule.import_from_modeus import import_from_modeus_by_id
 from src.application.dto.lesson import AddLessonDTO
 from src.infrastructure.repositories import (
     lesson_repository, 
@@ -13,6 +14,7 @@ from src.infrastructure.exceptions import (
 )
 
 from uuid import UUID
+from fastapi import Response, status
 
 
 async def add(teacher_id: UUID, dto: AddLessonDTO):
@@ -40,3 +42,17 @@ async def add(teacher_id: UUID, dto: AddLessonDTO):
     dto["study_group_id"] = study_group_id
     return await lesson_repository.add(dto)
 
+
+async def add_from_modeus_on_week(teacher_id: UUID):
+    modeus_lessons = await import_from_modeus_by_id(
+        teacher_id, 
+        with_counter=True,
+        week_count=1
+    )
+
+    await lesson_repository.add_many_from_modeus(
+        teacher_id,
+        modeus_lessons,
+        get_last_monday()
+    )
+    return Response(status_code=status.HTTP_201_CREATED)

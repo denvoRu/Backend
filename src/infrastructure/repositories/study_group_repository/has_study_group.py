@@ -27,5 +27,5 @@ async def has_end_date(study_group_id):
 
 async def has_by_subjects(teacher_id, subject_ids):
     return all(
-        await has_by_ids(subject_id, teacher_id) for subject_id in subject_ids
+        [await has_by_ids(subject_id, teacher_id) for subject_id in subject_ids]
     )

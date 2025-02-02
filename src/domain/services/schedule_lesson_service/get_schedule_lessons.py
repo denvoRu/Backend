@@ -13,7 +13,6 @@ from src.infrastructure.exceptions import (
     TeacherNotFoundInSubjectException
 )
 
-from fastapi import Response, status
 from uuid import UUID
 
 
@@ -42,12 +41,15 @@ async def get_from_modeus(
     if not await teacher_repository.has_by_id(teacher_id):
         raise TeacherNotFoundException()
     
-    if not await study_group_repository.has_by_ids(subject_id, teacher_id):
+    if subject_id and not await study_group_repository.has_by_ids(subject_id, teacher_id):
         raise TeacherNotFoundInSubjectException()
     
     if not await schedule_repository.has_by_id(teacher_id):
         last_monday = get_last_monday()
         await schedule_repository.add(teacher_id, last_monday)
 
-    await import_from_modeus_by_id(teacher_id, subject_id)
-    return Response(status_code=status.HTTP_200_OK)
+    return await import_from_modeus_by_id(
+        teacher_id, 
+        subject_id=subject_id, 
+        with_counter=False
+    )

@@ -1,4 +1,4 @@
-from src.application.dto.subject import CreateSubjectDTO, EditSubjectDTO
+from src.application.dto.subject import AddSubjectDTO, EditSubjectDTO
 from src.domain.services import subject_service, study_group_service
 from src.domain.extensions.check_role import CurrentAdmin
 
@@ -45,11 +45,11 @@ async def get_current_subject(admin: CurrentAdmin, subject_id: UUID4):
     return await subject_service.get_by_id(subject_id)
 
 
-@router.post("/", description="Create a new subject (for admins)", status_code=201)
-async def create_subject(
-    teacher: CurrentAdmin, dto: CreateSubjectDTO = Body(...)
+@router.post("/", description="Add a new subject (for admins)", status_code=201)
+async def add_subject(
+    teacher: CurrentAdmin, dto: AddSubjectDTO = Body(...)
 ):
-    return await subject_service.create(dto)
+    return await subject_service.add(dto)
 
 
 @router.patch("/{subject_id}", description="Edit an existing subject (for admins)")

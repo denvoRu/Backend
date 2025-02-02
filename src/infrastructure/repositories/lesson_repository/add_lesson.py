@@ -1,7 +1,8 @@
-from src.infrastructure.database import Lesson, ScheduleLesson, add_instance
+from src.infrastructure.repositories import study_group_repository
+from src.infrastructure.database import Lesson, ScheduleLesson, add_instance, db
 
 from uuid import UUID
-from datetime import date, datetime
+from datetime import date, timedelta, datetime
 
 
 async def add(dto: dict):
@@ -31,3 +32,40 @@ async def add_lesson_by_schedule(
 
     await add_instance(lesson)
     return lesson.id
+
+
+async def add_many(lessons: list):
+    for lesson in lessons:
+        l = Lesson(**lesson)
+        db.add(l)
+
+    await db.commit_rollback()
+
+
+async def add_many_from_modeus(teacher_id: UUID, lessons: list, date: date):
+    now = datetime.now()
+    date_now = now.date()
+    time_now = now.time()
+
+    for lesson in lessons:
+        del lesson["week"]
+        
+        if date_now > (date + timedelta(days=lesson["day"])) and \
+            time_now > lesson["start_time"]:
+            lesson["date"] = date + timedelta(days=lesson["day"]+1+7)
+        else:
+            lesson["date"] = date + timedelta(days=lesson["day"]+1)
+
+        try:
+            lesson["study_group_id"] = await study_group_repository.get_by_ids(
+                teacher_id,
+                lesson["subject_id"]
+            )
+        except Exception: 
+            continue
+        del lesson["day"]
+        del lesson["subject_id"]
+        l = Lesson(**lesson)
+        db.add(l)
+
+    await db.commit_rollback()

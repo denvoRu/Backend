@@ -32,7 +32,7 @@ async def add_many(teacher_id: UUID, dto: List[AddLessonInScheduleDTO]):
         await schedule_repository.add(teacher_id, week)
         schedule_id = await schedule_repository.get_by_id(teacher_id)
     else:
-        schedule_id = schedule_repository.get_by_id(teacher_id)
+        schedule_id = await schedule_repository.get_by_id(teacher_id)
         await schedule_repository.update_by_id(
             schedule_id,
             {"week_start": week}
@@ -45,7 +45,7 @@ async def add_many(teacher_id: UUID, dto: List[AddLessonInScheduleDTO]):
             dto_list.append(i.copy())
             i["week"] = 1
     
-    await schedule_repository.add_lessons(schedule_id, dto)
+    await schedule_repository.add_lessons(schedule_id, dto_list)
     return Response(status_code=status.HTTP_201_CREATED)
     
 

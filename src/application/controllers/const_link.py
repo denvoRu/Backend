@@ -31,7 +31,7 @@ async def get_data_of_active_lesson(const_link_id: UUID4):
 
 
 @router.post("/", description="Add a new const link (for admins)", status_code=201)
-async def create_const_link(
+async def add_const_link(
     admin: CurrentAdmin,
     dto: AddConstLinkDTO = Body(...), 
 ): 

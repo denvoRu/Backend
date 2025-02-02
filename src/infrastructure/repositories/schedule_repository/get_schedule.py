@@ -106,13 +106,29 @@ async def get_by_id(teacher_id: UUID):
 
 
 async def get_exists_by_subject_id(
-        schedule: ScheduleOfWeek, 
-        subject_id: UUID
-) -> ScheduleLessonList:
-    return ScheduleLessonList([
-        i for i in schedule.schedule_lessons.get_in_unique_time()
-        if (await i.find_subject_id(db, Subject)) == subject_id
-    ])
+    schedule: ScheduleOfWeek, 
+    subject_id: UUID = None
+) -> List[dict]:
+    lessons = []
+    for i in schedule.schedule_lessons.get_in_unique_time():
+        lesson_subject_id = await i.find_subject_id(db, Subject)
+        
+        if lesson_subject_id is not None:
+            if subject_id is not None and lesson_subject_id != subject_id:
+                continue
+
+            lesson = i.model_dump(
+                exclude_none=True, 
+                exclude={
+                    "id", 
+                    "subject"
+                }
+            )
+
+            lesson["subject_id"] = lesson_subject_id
+            lessons.append(lesson)
+
+    return lessons
 
 
 def get_clean_column_name(column_name: str):
