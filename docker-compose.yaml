@@ -48,4 +48,4 @@ services:
       - postgresql
       - redis
       - chrome
-      - selenium
+      - selenium-hub
