@@ -14,17 +14,17 @@ from uuid import UUID
 
 
 async def get_all(
-        page: int = 1,
-        limit: int = 10,
-        columns: str = None,
-        sort: str = None,
-        search: str = None,
-        desc: int = 0,
-        rating_start: int = -1,
-        rating_end: int = -1,
-        institute_ids: str = None,
-        subject_ids: str = None,
-        not_in_subject_by_id: UUID = None
+    page: int = 1,
+    limit: int = 10,
+    columns: str = None,
+    sort: str = None,
+    search: str = None,
+    desc: int = 0,
+    rating_start: int = -1,
+    rating_end: int = -1,
+    institute_ids: str = None,
+    subject_ids: str = None,
+    not_in_subject_by_id: UUID = None
 ):
     """
     Gets all teachers

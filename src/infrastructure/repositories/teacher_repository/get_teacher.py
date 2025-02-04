@@ -43,7 +43,10 @@ async def get_all(
         filters.append(Teacher.rating <= rating_end)
 
     if subject_ids is not None and len(subject_ids) > 0:
-        filters.append(Teacher.id.in_(subject_ids))
+        study_groups_ids_stmt = select(StudyGroup.teacher_id).where(
+            StudyGroup.subject_id.in_(subject_ids)
+        )
+        filters.append(Teacher.id.in_(study_groups_ids_stmt))
 
     if institute_ids is not None and len(institute_ids) > 0:
         filters.append(Teacher.institute_id.in_(institute_ids))
