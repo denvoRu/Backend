@@ -44,6 +44,7 @@ services:
       DATABASE_HOST: postgresql
       REDIS_OM_URL: "redis://${REDIS_USERNAME}:${REDIS_PASSWORD}@redis:6379/0"
       SELENIUM_HUB_URL: "http://selenium-hub:4444/wd/hub"
+      TZ: "Asia/Yekaterinburg"
     depends_on:
       - postgresql
       - redis
