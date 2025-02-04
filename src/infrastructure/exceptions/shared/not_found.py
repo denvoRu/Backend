@@ -10,7 +10,7 @@ class NotFoundException(HTTPException):
         super().__init__(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=one_or_more(
-                f"{name.value} not found{' ' + in_(in_name.value)}.", 
+                f"{name.value} not found{' ' + in_(in_name.value) if in_name is not None else ''}.", 
                 has_one_or_more
             )
         )
