@@ -28,11 +28,18 @@ class AddLessonDTO(BaseModel):
     @field_validator("date")
     def validate_date(cls, date, values):
         now = datetime.now()
+        active = (
+            values.data["start_time"] <= now.time() and
+            values.data["end_time"] >= now.time() and
+            values.data["date"] == now.date()
+        )
 
         if date < now.date():
             raise ValueError("Date must be in the future")
         
-        if date == now.date() and values.data["start_time"] < now.time():
+        if date == now.date() and \
+           values.data["start_time"] < now.time() and \
+           not active:
             raise ValueError("Time must be in the future")
             
         return date
