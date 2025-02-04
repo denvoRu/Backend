@@ -1,15 +1,15 @@
 from src.infrastructure.exceptions.shared import CannotException
 
 
-class NotTodayDateException(CannotException):
+class FutureDateException(CannotException):
     def __init__(self):
-        super().__init__("change lessons for dates other than today")
-    
+        super().__init__("set a future date")
 
-class TimeLessOriginalException(CannotException):
+
+class UpdateLessonWithFeedbackException(CannotException):
     def __init__(self):
-        super().__init__("set the time less than it was originally")
-    
+        super().__init__("update a lesson with feedback") 
+
 
 class DeleteLessonWithFeedbackException(CannotException):
     def __init__(self):

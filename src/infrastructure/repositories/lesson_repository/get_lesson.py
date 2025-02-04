@@ -104,8 +104,8 @@ async def get_by_id(lesson_id: UUID) -> Lesson:
     return await get_by_id(Lesson, lesson_id)
 
 
-async def get_end_time_by_id(lesson_id: UUID) -> Tuple[time, date]:
-    stmt = select(Lesson.end_time, Lesson.date).where(Lesson.id == lesson_id)
+async def get_datetimes_by_id(lesson_id: UUID) -> Tuple[time, date]:
+    stmt = select(Lesson.start_time, Lesson.end_time, Lesson.date).where(Lesson.id == lesson_id)
     return (await db.execute(stmt)).one()
     
 

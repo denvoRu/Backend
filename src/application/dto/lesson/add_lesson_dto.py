@@ -14,6 +14,7 @@ class AddLessonDTO(BaseModel):
     end_time: time = Field(description="time in format HH:MM", examples=["13:30", "15:23"])
     date: dateType = Field(description="date in format YYYY-MM-DD", examples=["2023-01-01", "2023-01-02"])
 
+
     @field_validator("end_time", mode="after")
     def validate_times(cls, end_time, values):
         time_slot = ScheduleTime(
@@ -24,6 +25,7 @@ class AddLessonDTO(BaseModel):
             return end_time
         
         raise ValueError("time must be in range of schedule lessons")
+
 
     @field_validator("date")
     def validate_date(cls, date, values):

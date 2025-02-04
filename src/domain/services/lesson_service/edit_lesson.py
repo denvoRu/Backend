@@ -1,11 +1,11 @@
 from src.infrastructure.enums.role import Role
 from src.domain.extensions.check_role.user import User
-from src.infrastructure.repositories import lesson_repository
+from src.infrastructure.repositories import lesson_repository, feedback_repository
 from src.application.dto.lesson import EditLessonDTO
 from src.infrastructure.exceptions import (
     LessonNotFoundException, 
-    TimeLessOriginalException,
-    NotTodayDateException
+    UpdateLessonWithFeedbackException,
+    FutureDateException
 )
 
 from fastapi import Response, status
@@ -23,13 +23,29 @@ async def edit(user: User, lesson_id: UUID, dto: EditLessonDTO):
     ):
         raise LessonNotFoundException()
     
-    lesson_end_time, date = await lesson_repository.get_end_time_by_id(lesson_id)
-
-    if not(date == datetime.now().date()):    
-        raise NotTodayDateException()
+    if await feedback_repository.has_feedback_by_lesson(lesson_id):
+        raise UpdateLessonWithFeedbackException()
     
-    if dto.end_time is not None and lesson_end_time > dto.end_time:
-        raise TimeLessOriginalException()
+    start_time, end_time, date = await lesson_repository.get_datetimes_by_id(
+        lesson_id
+    )
+
+    now = datetime.now()
+    if dto.date is not None and dto.date < now.date():    
+        raise FutureDateException()
+    
+    start_time = dto.start_time if dto.start_time is not None else start_time
+    end_time = dto.end_time if dto.end_time is not None else end_time
+    date = dto.date if dto.date is not None else date
+
+    active = (
+        start_time <= now.time() and
+        end_time >= now.time() and
+        date == now.date()
+    )
+
+    if date == now.date() and start_time < now.time() and not active:
+        raise FutureDateException()
     
     dto_dict = dto.model_dump(exclude_none=True)
 
