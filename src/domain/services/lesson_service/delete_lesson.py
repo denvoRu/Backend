@@ -1,36 +1,14 @@
-from src.domain.helpers.schedule.last_monday import get_last_monday
-from src.domain.helpers.lesson import get_excel_file_with_members
-from src.infrastructure.constants.excel import XLSX_MEDIA_TYPE
-from src.domain.extensions.get_unique_lessons import get_unique_lessons
 from src.infrastructure.enums.role import Role
-from src.infrastructure.enums.privilege import Privilege
 from src.domain.extensions.check_role.user import User
 from src.infrastructure.repositories import (
-    lesson_repository, schedule_repository,
-    study_group_repository, feedback_repository,
-    teacher_repository, subject_repository
-)
-from src.application.dto.lesson import (
-    EditLessonDTO, 
-    AddLessonDTO, 
-    AddLessonExtraFieldDTO
+    lesson_repository, feedback_repository,
 )
 from src.infrastructure.exceptions import (
-    SubjectNotFoundException,
-    FeedbacksNotFoundException,
     LessonNotFoundException, 
-    TeacherNotFoundException,
-    ExtraFieldNotFoundException,
-    ExtraFieldAlreadyExistsException,
-    NotHaveEnoughPrivilegesException,
-    TimeLessOriginalException,
     DeleteLessonWithFeedbackException,
-    NotTodayDateException
 )
 
-from fastapi import HTTPException, Response, status
-from fastapi.responses import StreamingResponse
-from datetime import date, datetime
+from fastapi import Response, status
 from uuid import UUID
 
 
