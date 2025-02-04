@@ -80,6 +80,6 @@ async def get_all(
 async def get_active(lesson_id: UUID):
     try:
         return await lesson_repository.get_active_by_id(lesson_id)
-    except Exception:
+    except Exception as e:
         raise LessonNotFoundException()
     

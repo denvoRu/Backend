@@ -188,11 +188,11 @@ async def get_active_by_condition(*condition):
     ).select_from(
         Lesson
     ).join(
-        Teacher, 
-        Teacher.id == StudyGroup.teacher_id
-    ).join(
         StudyGroup, 
         StudyGroup.id == Lesson.study_group_id
+    ).join(
+        Teacher, 
+        Teacher.id == StudyGroup.teacher_id
     ).join(
             Subject, 
             StudyGroup.subject_id == Subject.id
@@ -228,7 +228,8 @@ async def get_active_by_condition(*condition):
         lesson["extra_field"] = fields
         
         return lesson
-    except Exception:
+    except Exception as e:
+        print("TREUUUUEUEUE", e)
         await db.commit_rollback()
         raise Exception("Lesson not found")
 
