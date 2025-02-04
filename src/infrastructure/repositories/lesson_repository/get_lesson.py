@@ -10,12 +10,13 @@ from src.infrastructure.database import (
     StudyGroup, 
     ScheduleLesson, 
     Subject, 
+    Teacher,
     has_instance,
     get_by_id, 
     db
 )
 
-from sqlalchemy import select
+from sqlalchemy import select, func
 from typing import List, Tuple
 from datetime import date, datetime, time
 from uuid import UUID
@@ -50,6 +51,13 @@ async def get_all(
     stmt = select(
         Lesson.id,
         Lesson.speaker_name, 
+        func.concat(
+            Teacher.second_name, 
+            " ", 
+            Teacher.first_name, 
+            " ", 
+            Teacher.third_name
+        ).label("teacher_name"),
         Lesson.lesson_name,
         Lesson.start_time,
         Lesson.end_time,
@@ -60,6 +68,9 @@ async def get_all(
     ).select_from(Lesson).join(
         StudyGroup, 
         StudyGroup.id == Lesson.study_group_id
+    ).join(
+        Teacher, 
+        Teacher.id == StudyGroup.teacher_id
     ).join(
         Subject,
         StudyGroup.subject_id == Subject.id
@@ -161,7 +172,14 @@ async def get_active_by_condition(*condition):
     now = datetime.now()
     lesson_stmt = select(
         Lesson.id,
-        Lesson.speaker_name, 
+        Lesson.speaker_name,
+        func.concat(
+            Teacher.second_name, 
+            " ", 
+            Teacher.first_name, 
+            " ", 
+            Teacher.third_name
+        ).label("teacher_name"), 
         Lesson.lesson_name,
         Lesson.start_time,
         Lesson.end_time,
@@ -169,6 +187,9 @@ async def get_active_by_condition(*condition):
         Subject.name.label("subject_name")
     ).select_from(
         Lesson
+    ).join(
+        Teacher, 
+        Teacher.id == StudyGroup.teacher_id
     ).join(
         StudyGroup, 
         StudyGroup.id == Lesson.study_group_id

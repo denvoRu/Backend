@@ -1,10 +1,16 @@
 from src.infrastructure.config import config
 from src.infrastructure.database.extensions.row_to_dict import row_to_dict
 from src.infrastructure.database import (
-    Schedule, Subject, ScheduleLesson, get, has_instance, db
+    Schedule, 
+    Subject, 
+    ScheduleLesson,
+    Teacher,
+    get, 
+    has_instance, 
+    db
 )
 
-from sqlalchemy import select, and_
+from sqlalchemy import select, and_, func
 from typing import List
 from aiomodeus.student_voice import ScheduleLessonList, ScheduleOfWeek
 from datetime import date, timedelta
@@ -23,6 +29,13 @@ async def get_by_week(teacher_id: UUID, week: int, filters = []):
         Subject.name.label("subject_name"),
         ScheduleLesson.id.label("schedule_lesson_id"),
         ScheduleLesson.speaker_name,
+        func.concat(
+            Teacher.second_name, 
+            " ", 
+            Teacher.first_name, 
+            " ", 
+            Teacher.third_name
+        ).label("teacher_name"), 
         ScheduleLesson.week,
         ScheduleLesson.lesson_name,
         ScheduleLesson.start_time,
@@ -30,6 +43,12 @@ async def get_by_week(teacher_id: UUID, week: int, filters = []):
         ScheduleLesson.end_date
     ).select_from(
         ScheduleLesson,
+    ).join(
+        Schedule,
+        Schedule.id == ScheduleLesson.schedule_id
+    ).join(
+        Teacher, 
+        Teacher.id == Schedule.teacher_id
     ).where(
         ScheduleLesson.schedule_id == schedule_id,
         ScheduleLesson.week == week,
