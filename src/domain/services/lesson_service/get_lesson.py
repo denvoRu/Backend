@@ -13,7 +13,7 @@ from src.infrastructure.exceptions import (
 )
 
 from fastapi import HTTPException, status
-from datetime import date, datetime
+from datetime import date
 from uuid import UUID
 
 
@@ -67,13 +67,11 @@ async def get_all(
         see_rating=see_rating
     )
 
-    now = datetime.now()
     future_lessons = await schedule_repository.get_in_interval(
         teacher_id, 
-        now.date(), 
+        start_date, 
         end_date, 
-        subject_ids,
-        now.time()
+        subject_ids
     )
     lessons.extend(future_lessons)
     

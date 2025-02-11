@@ -13,7 +13,7 @@ from src.infrastructure.database import (
 from sqlalchemy import select, and_, func
 from typing import List
 from aiomodeus.student_voice import ScheduleOfWeek
-from datetime import date, time, timedelta
+from datetime import date, time, timedelta, datetime
 from uuid import UUID
 
 
@@ -69,15 +69,18 @@ async def get_in_interval(
     start: date, 
     end: date,
     subject_ids: List[UUID] = None,
-    now_time: time = None
 ):
     """
     Gets a schedule of teacher in the needed interval with start and end dates
     """
     filters = []
-    
-    if start > config.END_OF_SEMESTR or start > end:
+    now_date = datetime.date()
+
+    if start > config.END_OF_SEMESTR or end < now_date:
         return []
+    
+    if start < now_date:
+        start = now_date
     
     if subject_ids is not None and len(subject_ids) > 0:
         filters.append(ScheduleLesson.subject_id.in_(subject_ids))
