@@ -13,17 +13,17 @@ from src.infrastructure.exceptions import (
 )
 
 from fastapi import HTTPException, status
-from datetime import date
+from datetime import date, datetime
 from uuid import UUID
 
 
 async def get_all(
-        user: User,
-        teacher_id: UUID, 
-        start_date: date, 
-        end_date: date,
-        subject_ids: str = None
-    ):
+    user: User,
+    teacher_id: UUID, 
+    start_date: date, 
+    end_date: date,
+    subject_ids: str = None
+):
     """
     Gets all lessons of teacher depending on dates
     :param teacher_id: id of teacher
@@ -66,11 +66,14 @@ async def get_all(
         subject_ids,
         see_rating=see_rating
     )
+
+    now = datetime.now()
     future_lessons = await schedule_repository.get_in_interval(
         teacher_id, 
-        start_date, 
+        now.date(), 
         end_date, 
-        subject_ids
+        subject_ids,
+        now.time()
     )
     lessons.extend(future_lessons)
     
@@ -80,6 +83,6 @@ async def get_all(
 async def get_active(lesson_id: UUID):
     try:
         return await lesson_repository.get_active_by_id(lesson_id)
-    except Exception as e:
+    except Exception:
         raise LessonNotFoundException()
     
