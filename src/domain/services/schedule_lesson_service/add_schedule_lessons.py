@@ -41,7 +41,7 @@ async def add_many(teacher_id: UUID, dto: List[AddLessonInScheduleDTO]):
     dto_list = [i.model_dump(exclude_none=True) for i in dto]
     for i in dto_list:
         if i["week"] == "all":
-            i["week"] = 2
+            i["week"] = 0
             dto_list.append(i.copy())
             i["week"] = 1
     
