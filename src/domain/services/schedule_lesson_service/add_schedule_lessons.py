@@ -1,5 +1,6 @@
 from src.domain.helpers.schedule import get_last_monday
 from src.application.dto.schedule import AddLessonInScheduleDTO
+from src.infrastructure.enums.week import Week
 from src.infrastructure.repositories import (
     schedule_repository, 
     teacher_repository,
@@ -41,9 +42,9 @@ async def add_many(teacher_id: UUID, dto: List[AddLessonInScheduleDTO]):
     dto_list = [i.model_dump(exclude_none=True) for i in dto]
     for i in dto_list:
         if i["week"] == "all":
-            i["week"] = 0
+            i["week"] = Week.FIRST
             dto_list.append(i.copy())
-            i["week"] = 1
+            i["week"] = Week.SECOND
     
     await schedule_repository.add_lessons(schedule_id, dto_list)
     return Response(status_code=status.HTTP_201_CREATED)
