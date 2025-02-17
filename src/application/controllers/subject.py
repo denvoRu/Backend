@@ -98,4 +98,4 @@ async def add_teacher_to_subject(admin: CurrentAdmin, subject_id: UUID4, teacher
 
 @router.delete("/{subject_id}/teachers/{teacher_id}", description="Delete teacher from subject (for admins)")
 async def delete_teacher_from_subject(admin: CurrentAdmin, subject_id: UUID4, teacher_id: UUID4):
-    return await study_group_service.delete_teacher(subject_id, teacher_id)
+    return await study_group_service.delete_by_teacher(subject_id, teacher_id)

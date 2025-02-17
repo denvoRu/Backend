@@ -75,7 +75,6 @@ async def add_scheduled(
     except Exception:
         raise TeacherNotFoundInSubjectException()
 
-
     if await lesson_repository.has_by_schedule(
         study_group_id, schedule_lesson, date
     ):
