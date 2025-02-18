@@ -33,7 +33,7 @@ class AddLessonDTO(BaseModel):
         active = (
             values.data["start_time"] <= now.time() and
             values.data["end_time"] >= now.time() and
-            values.data["date"] == now.date()
+            date == now.date()
         )
 
         if date < now.date():
